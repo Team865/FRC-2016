@@ -49,7 +49,7 @@ public class Warp7Robot extends SampleRobot {
 	public void autonomous() {
 		
 		while(isAutonomous()) {
-			
+			// nice meme no auto for us yet...
 		}
 	}
 	
