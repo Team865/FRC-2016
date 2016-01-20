@@ -25,7 +25,7 @@ public class GearBox{
 	}
 	
 	public GearBox(int[] pins, char[] motorTypes2){
-		if(pins.length == 3 || pins.length == 2){
+		if(pins.length == 3 || pins.length == 2 || pins.length == 1){
 			motorTypes = motorTypes2;
 			motors = new SafePWM[pins.length];
 			

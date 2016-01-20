@@ -1,23 +1,40 @@
 package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.vision.ShooterHelper;
-import edu.wpi.first.wpilibj.TalonSRX;
+import edu.wpi.first.wpilibj.CANTalon;
 
 public class Shooter {
 
-	TalonSRX flyWheel;
+	private static CANTalon flyWheel;
 	
-	
-	public Shooter(TalonSRX motor){
+	/**
+	 * @param motor Should be a TalonSRX
+	 */
+	public static void init(CANTalon motor){
 		flyWheel = motor;
 	}
 	
-	public void fire(Intakes intakes){
+	public static void fire(){
 		prepareToFire(5);
-		intakes.intake(false);
+		if(readyToFire()){
+			Intakes.intake(false);
+		}
 	}
 	
-	public void prepareToFire(double distance){
+	private static boolean readyToFire() {
+		// TODO Do something with an encoder
+		return true;
+	}
+
+	public static void prepareToFire(double distance){
 		flyWheel.set(ShooterHelper.getDesiredRPM(distance));
+	}
+	
+	public static void set(double speed){
+		flyWheel.set(speed);
+	}
+	
+	public static void stop(){
+		flyWheel.set(0);
 	}
 }

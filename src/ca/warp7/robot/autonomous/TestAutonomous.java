@@ -1,16 +1,16 @@
 package ca.warp7.robot.autonomous;
 
-import edu.wpi.first.wpilibj.TalonSRX;
+import ca.warp7.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.Timer;
 
 public class TestAutonomous {
 
-	public static double sinAuto(TalonSRX flyWheel, double speed) {
+	public static double sinAuto(double distance) {
 		
-    		speed = Math.cos(Timer.getFPGATimestamp()/5);
-        	flyWheel.set(speed);
+    		distance = Math.cos(Timer.getFPGATimestamp()/5);
+        	Shooter.prepareToFire(distance);
         	
-        	return speed;
+        	return distance;
     	
 	}
 

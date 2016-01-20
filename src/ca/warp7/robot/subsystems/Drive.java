@@ -6,24 +6,31 @@ import ca.warp7.robot.hardware.GearBox;
 public class Drive {
 
 	//https://code.google.com/p/3647robotics/source/browse/WCDRobot/src/Robot/DriveTrain.java?r=63
+	private static int direction;
+	private static GearBox rightGearBox;
+	private static GearBox leftGearBox;
 	
-	private static int direction = 1;
+	public static void init(GearBox right, GearBox left){
+		rightGearBox = right;
+		leftGearBox = left;
+		direction = 1;
+	}
 	
 	public static void changeDirection(){
 		direction *= -1;
 	}
 	
-	public static void tankDrive(GearBox rightGearBox, GearBox leftGearBox) {
+	public static void tankDrive() {
 		double left = Warp7Robot.driver.getLeftY();
 		double right = Warp7Robot.driver.getRightY();
 		
 		left = createDeadband(left);
 		right = createDeadband(right);
 		
-		move(left, right, leftGearBox, rightGearBox);
+		move(left, right);
 	}
 	
-	public static void cheesyDrive(GearBox rightGearBox, GearBox leftGearBox) {
+	public static void cheesyDrive() {
         double throttle = Warp7Robot.driver.getLeftY();
         double wheel = Warp7Robot.driver.getRightX();
         
@@ -63,10 +70,10 @@ public class Drive {
             lPower += overPower * (-1.0 - rPower);
             rPower = -1.0;
         }
-        move(lPower, rPower, leftGearBox, rightGearBox);
+        move(lPower, rPower);
     }
 
-	private static void move(double left, double right, GearBox leftGearBox, GearBox rightGearBox) {
+	private static void move(double left, double right) {
 		right *= direction;
 		left *= direction;
 		
@@ -82,5 +89,10 @@ public class Drive {
 		num = Math.pow(num, 3);
 		
 		return num;
+	}
+
+	public static void stop() {
+		rightGearBox.set(0);
+		leftGearBox.set(0);
 	}
 }

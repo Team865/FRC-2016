@@ -7,12 +7,12 @@ import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ChandlerDefault;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intakes;
+import ca.warp7.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.TalonSRX;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Victor;
 
 public class Warp7Robot extends SampleRobot {
     
@@ -61,21 +61,22 @@ public class Warp7Robot extends SampleRobot {
 		}
 		
 		if(driver.getLeftTrigger() >= 0.5){
-			if(driver.getRightTrigger() <= 0.5){
-				intakes.intake(false);
+			if(driver.getRightTrigger() >= 0.5){
+				Intakes.intake(false);
 			}else{
-				intakes.intake(photosensor.get());
+				//TODO Intakes.intake(photosensor.get());
+				Intakes.intake(false);
 			}
 		}else{
-			intakes.stop();
+			Intakes.stop();
 		}
 		
 		if(driver.getBbutton()){
-			intakes.outake();
+			Intakes.outake();
 		}
 		
 		if(driver.getXbutton()){
-			intakes.stop();
+			Intakes.stop();
 		}
 		
 		if(driver.getYbutton()) speed = 1.0;
@@ -87,7 +88,7 @@ public class Warp7Robot extends SampleRobot {
 		if(speed != 0){
 			System.out.println(speed);
 		}
-		flyWheel.set(speed);
+		Shooter.set(speed);
 		
 		if(driver.getRightStickButton()){
 			if(!changed){
@@ -133,45 +134,39 @@ public class Warp7Robot extends SampleRobot {
 	public void operatorControl() {
         while (isOperatorControl() && isEnabled()) {
         	controls();
-        	Drive.cheesyDrive(rightGearBox, leftGearBox);
+        	Drive.cheesyDrive();
             Timer.delay(0.005);		// wait for a motor update time
         }
     }
     
     public void autonomous() {
-    	double speed = 0.0;
+    	double distance = 0.0;
     	while(isAutonomous() && !isOperatorControl() && isEnabled()){
-    		speed = TestAutonomous.sinAuto(flyWheel, speed);
+    		distance = TestAutonomous.sinAuto(distance);
     	}
     }
 
 	public void disabled(){
     	while(!isEnabled()){
-    		flyWheel.set(0);
-    		rightGearBox.set(0);
-    		leftGearBox.set(0);
-    		intakes.stop();
+    		Shooter.stop();
+    		Drive.stop();
+    		Intakes.stop();
+    		
+    		//System.out.println("Robot Disabled!!!!!");
     	}
     }
 	
 	public static XboxController driver;   // set to ID 1 in DriverStation
 	public static XboxController operator; // set to ID 2 in DriverStation
-    TalonSRX flyWheel;
-    GearBox rightGearBox;
-    GearBox leftGearBox;
-    Intakes intakes;
     Solenoid piston;
     ADXRS453Gyro gyro;
     DigitalInput photosensor;
 	
 	private void initRobot(){
-		
-		flyWheel = new TalonSRX(Constants.SHOOTER_FLY_WHEEL);   
-    	
-    	leftGearBox = new GearBox(Constants.LEFT_DRIVE_MOTORS, Constants.LEFT_DRIVE_MOTOR_TYPES);
-    	rightGearBox = new GearBox(Constants.RIGHT_DRIVE_MOTORS, Constants.RIGHT_DRIVE_MOTOR_TYPES);
-    	
-    	intakes = new Intakes(new Victor(Constants.INTAKE_MOTOR));
+    	Shooter.init(new CANTalon(Constants.SHOOTER_CAN_ID));
+    	Drive.init(new GearBox(Constants.RIGHT_DRIVE_MOTORS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
+    			   new GearBox(Constants.LEFT_DRIVE_MOTORS, Constants.LEFT_DRIVE_MOTOR_TYPES));
+    	Intakes.init(new GearBox(new int[]{Constants.INTAKE_MOTOR}, new char[]{Constants.VICTOR}));
     	
     	piston = new Solenoid(0);
     	
