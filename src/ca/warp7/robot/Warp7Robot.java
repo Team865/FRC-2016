@@ -1,5 +1,8 @@
 package ca.warp7.robot;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import ca.warp7.robot.autonomous.TestAutonomous;
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
@@ -10,6 +13,7 @@ import ca.warp7.robot.subsystems.Intakes;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.TalonSRX;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
@@ -166,10 +170,9 @@ public class Warp7Robot extends SampleRobot {
 	
 	private void initRobot(){
 		
-		flyWheel = new TalonSRX(Constants.SHOOTER_FLY_WHEEL);   
-    	
-    	leftGearBox = new GearBox(Constants.LEFT_DRIVE_MOTORS, Constants.LEFT_DRIVE_MOTOR_TYPES);
-    	rightGearBox = new GearBox(Constants.RIGHT_DRIVE_MOTORS, Constants.RIGHT_DRIVE_MOTOR_TYPES);
+		flyWheel = new TalonSRX(Constants.SHOOTER_FLY_WHEEL);
+    	leftGearBox = new GearBox(Talon.class, Constants.LEFT_DRIVE_MOTORS);
+    	rightGearBox = new GearBox(Talon.class, Constants.RIGHT_DRIVE_MOTORS);
     	
     	intakes = new Intakes(new Victor(Constants.INTAKE_MOTOR));
     	

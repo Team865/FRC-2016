@@ -1,42 +1,41 @@
 package ca.warp7.robot.hardware;
 
-import ca.warp7.robot.Constants;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+
+import javax.activation.MimeType;
+
 import edu.wpi.first.wpilibj.SafePWM;
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.Victor;
 
 public class GearBox{
 
-	private SafePWM[] motors;
-	private char[] motorTypes;
+	private Object[] motors;	
 	
-	
+	@SuppressWarnings("unchecked")
 	public void set(double speed){
-		for(int i = 0; i < motorTypes.length; i++){
-			switch(motorTypes[i]){
-			case Constants.TALON:
-				((Talon) motors[i]).set(speed);
-				break;
-			case Constants.VICTOR:
-				((Victor) motors[i]).set(speed);
-				break;
+		for(int i = 0; i < motors.length; i++){
+			try {
+				Method m = motors.getClass().getDeclaredMethod("set", (Class<? extends SafePWM>[]) motors[i]);
+				m.invoke((Class<? extends SafePWM>[]) motors[i], speed);
+			} catch(Exception e) {
+				System.err.println("Error setting PWM in " + e.getClass().getCanonicalName() 
+						+ " because: " + e.getMessage());
 			}
 		}
 	}
 	
-	public GearBox(int[] pins, char[] motorTypes2){
-		if(pins.length == 3 || pins.length == 2){
-			motorTypes = motorTypes2;
-			motors = new SafePWM[pins.length];
-			
-			for(int i = 0; i < motors.length; i++){
-				switch(motorTypes2[i]){
-				case Constants.TALON:
-					motors[i] = new Talon(pins[i]);
-					break;
-				case Constants.VICTOR:
-					motors[i] = new Victor(pins[i]);
-					break;
+	public GearBox(Class<? extends SafePWM> motorType, int pins[]){
+		if(pins.length >= 1 && pins.length <= 3){
+			this.motors = new Object[pins.length];
+			for(int i = 0; i < pins.length; i++){
+				Constructor cons;
+				try {
+					cons = motorType.getConstructor(Integer.class);
+					this.motors[i] = cons.newInstance(pins[i]);
+				} catch (Exception e) {
+					System.err.println("Failed to instantiate motor on pin " + pins[i]);
 				}
 			}
 		}else{
