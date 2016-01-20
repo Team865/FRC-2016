@@ -1,6 +1,7 @@
-package ca.warp7.robot.subSystems;
+package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.hardware.GearBox;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 
@@ -15,10 +16,15 @@ public class Intakes {
 	public Intakes(Talon motor){tal = motor;}
 	public Intakes(GearBox motor){box = motor;}
 	
-	public void intake(){
-		if(vic != null) vic.set(1);
-		if(tal != null) tal.set(1);
-		if(box != null) box.set(1);
+	public void intake(boolean sensor){
+		
+		if(!sensor){
+			if(vic != null) vic.set(1);
+			if(tal != null) tal.set(1);
+			if(box != null) box.set(1);
+		}else{
+			stop();
+		}
 	}
 	
 	public void outake(){

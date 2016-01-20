@@ -1,5 +1,10 @@
 package ca.warp7.robot.hardware;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
+import ca.warp7.robot.hardware.controlerSettings.XboxControllerCommands;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.communication.FRCNetworkCommunicationsLibrary;
@@ -14,7 +19,9 @@ import edu.wpi.first.wpilibj.communication.UsageReporting;
  * depends on the code in the driver station.
  */
 public class XboxController extends GenericHID {
-
+	
+  protected XboxControllerCommands bindings;
+  
   static final byte LEFTSTICKY = 0;
   static final byte LEFTSTICKX = 1;
   static final byte RIGHTSTICKY = 4;
@@ -169,8 +176,10 @@ public class XboxController extends GenericHID {
    * @param port The port on the driver station that the controller is plugged
    *        into.
    */  
-  public XboxController(final int port) {
+  public XboxController(final int port, XboxControllerCommands commands) {
     this(port, AxisType.NumAxis.value, ButtonType.NumButton.value);
+    
+    bindings = commands;
 
     m_axes[AxisType.LX.value] = LEFTSTICKY;
     m_axes[AxisType.LY.value] = LEFTSTICKX;
@@ -191,6 +200,8 @@ public class XboxController extends GenericHID {
     m_buttons[ButtonType.BRIGHTSTICKPRESS.value] = RIGHTSTICKPRESS;
 
     UsageReporting.report(tResourceType.kResourceType_Joystick, port);
+    
+    //TODO go here
   }
 
   /**
@@ -665,4 +676,12 @@ public int getPOV(int pov) {
 	// TODO Auto-generated method stub
 	return 0;
 }
+
+
+	public void runCommands(){
+		if(getAbutton()){
+			//TODO put repeating command here
+		}
+		
+	}
 }

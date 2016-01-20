@@ -4,25 +4,30 @@ import ca.warp7.robot.autonomous.TestAutonomous;
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.hardware.XboxController;
-import ca.warp7.robot.subSystems.Drive;
-import ca.warp7.robot.subSystems.Intakes;
+import ca.warp7.robot.hardware.controlerSettings.ChandlerDefault;
+import ca.warp7.robot.subsystems.Drive;
+import ca.warp7.robot.subsystems.Intakes;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.TalonSRX;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 
 public class Warp7Robot extends SampleRobot {
     
     private double speed;
-    private double speed2;
     private boolean increased;
+    private boolean changed;
     
     
     public Warp7Robot(){
+    	driver = new XboxController(0, new ChandlerDefault());
+        operator = new XboxController(1, new ChandlerDefault());
+        
     	initRobot();
 
     	speed = 0.0;
-		speed2 = 0.0;
     	increased = false;
     }
 	
@@ -33,9 +38,8 @@ public class Warp7Robot extends SampleRobot {
 			piston.set(false);
 		}
 
-		if(driver.getLeftBumperbutton()){
+		if(operator.getRightBumperbutton()){
 			System.out.println("getAngle " + gyro.getAngle());
-			System.out.println(gyro.getID());
 		}
 		
 		if(driver.getDPad() == 0){
@@ -56,15 +60,63 @@ public class Warp7Robot extends SampleRobot {
 			increased = false;
 		}
 		
+		if(driver.getLeftTrigger() >= 0.5){
+			if(driver.getRightTrigger() <= 0.5){
+				intakes.intake(false);
+			}else{
+				intakes.intake(photosensor.get());
+			}
+		}else{
+			intakes.stop();
+		}
+		
+		if(driver.getBbutton()){
+			intakes.outake();
+		}
+		
+		if(driver.getXbutton()){
+			intakes.stop();
+		}
+		
 		if(driver.getYbutton()) speed = 1.0;
 		
 		speed = Math.max(-1, Math.min(1, speed));
 		
 		if(driver.getRightTrigger() <= 0.5) speed = 0.0;
 		
-		System.out.println(speed);
+		if(speed != 0){
+			System.out.println(speed);
+		}
+		flyWheel.set(speed);
 		
-		motorA.set(speed);
+		if(driver.getRightStickButton()){
+			if(!changed){
+				Drive.changeDirection();
+				changed = true;
+			}
+		}else{
+			changed = false;
+		}
+		
+		
+		
+		
+		if(operator.getLeftBumperbutton()){
+			System.out.println(gyro.getStatus());
+		}
+		if(operator.getStartButton()){
+			gyro.calibrate();
+		}
+		if(operator.getBackButton()){
+			gyro.stopCalibrating();
+		}
+		if(operator.getAbutton()){
+			if(gyro.isCalibrating()){
+				System.out.println("Gyro is calibrating");
+			}else{
+				System.out.println("Gyro is not calibrating");
+			}
+		}
 	}
 	
 	
@@ -89,14 +141,13 @@ public class Warp7Robot extends SampleRobot {
     public void autonomous() {
     	double speed = 0.0;
     	while(isAutonomous() && !isOperatorControl() && isEnabled()){
-    		speed = TestAutonomous.sinAuto(motorA, speed);
+    		speed = TestAutonomous.sinAuto(flyWheel, speed);
     	}
     }
 
 	public void disabled(){
     	while(!isEnabled()){
-    		motorA.set(0);
-    		motorB.set(0);
+    		flyWheel.set(0);
     		rightGearBox.set(0);
     		leftGearBox.set(0);
     		intakes.stop();
@@ -105,27 +156,26 @@ public class Warp7Robot extends SampleRobot {
 	
 	public static XboxController driver;   // set to ID 1 in DriverStation
 	public static XboxController operator; // set to ID 2 in DriverStation
-    Victor motorA;
-    Victor motorB;
+    TalonSRX flyWheel;
     GearBox rightGearBox;
     GearBox leftGearBox;
     Intakes intakes;
     Solenoid piston;
     ADXRS453Gyro gyro;
+    DigitalInput photosensor;
 	
 	private void initRobot(){
-		driver = new XboxController(0);
-        operator = new XboxController(1);
 		
-		motorA = new Victor(Constants.SHOOTER_FLY_WHEEL);
-    	motorB = new Victor(Constants.SHOOTER_HOOD_MOTOR);    
+		flyWheel = new TalonSRX(Constants.SHOOTER_FLY_WHEEL);   
     	
     	leftGearBox = new GearBox(Constants.LEFT_DRIVE_MOTORS, Constants.LEFT_DRIVE_MOTOR_TYPES);
-    	rightGearBox = new GearBox(Constants.RIGHT_DRIVE_MOTORS, new char[]{Constants.TALON, Constants.TALON});
+    	rightGearBox = new GearBox(Constants.RIGHT_DRIVE_MOTORS, Constants.RIGHT_DRIVE_MOTOR_TYPES);
     	
     	intakes = new Intakes(new Victor(Constants.INTAKE_MOTOR));
     	
     	piston = new Solenoid(0);
+    	
+    	photosensor = new DigitalInput(0);
     	
     	gyro = new ADXRS453Gyro();
     	gyro.startThread();
