@@ -1,5 +1,7 @@
 package ca.warp7.robot;
 
+import java.util.concurrent.SynchronousQueue;
+
 import ca.warp7.robot.autonomous.TestAutonomous;
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
@@ -42,6 +44,10 @@ public class Warp7Robot extends SampleRobot {
 			System.out.println("getAngle " + gyro.getAngle());
 		}
 		
+		if(driver.getXbutton()){
+			speed = 0.4;
+		}
+		
 		if(driver.getDPad() == 0){
 			if(!increased){
 				speed += 0.01;
@@ -61,11 +67,11 @@ public class Warp7Robot extends SampleRobot {
 		}
 		
 		if(driver.getLeftTrigger() >= 0.5){
-			if(driver.getRightTrigger() >= 0.5){
+			if(driver.getRightBumperbutton()){
 				Intakes.intake(false);
 			}else{
-				//TODO Intakes.intake(photosensor.get());
-				Intakes.intake(false);
+				Intakes.intake(photosensor.get());
+				//Intakes.intake(false);
 			}
 		}else{
 			Intakes.stop();
@@ -75,11 +81,7 @@ public class Warp7Robot extends SampleRobot {
 			Intakes.outake();
 		}
 		
-		if(driver.getXbutton()){
-			Intakes.stop();
-		}
-		
-		if(driver.getYbutton()) speed = 1.0;
+		if(driver.getYbutton()) speed = 0.75;
 		
 		speed = Math.max(-1, Math.min(1, speed));
 		
