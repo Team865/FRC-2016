@@ -24,6 +24,9 @@ public class Drive {
 		double left = Warp7Robot.driver.getLeftY();
 		double right = Warp7Robot.driver.getRightY();
 		
+		left *= direction;
+		right *= direction;
+		
 		left = createDeadband(left);
 		right = createDeadband(right);
 		
@@ -34,12 +37,16 @@ public class Drive {
         double throttle = Warp7Robot.driver.getLeftY();
         double wheel = Warp7Robot.driver.getRightX();
         
+        throttle *= direction;
+        wheel *= direction;
+        
         throttle = createDeadband(throttle);
         wheel = createDeadband(wheel);
         
         boolean quickTurn = Warp7Robot.driver.getLeftBumperbutton();
         
         if(throttle < 0 && !quickTurn)wheel *= -1; // chandler's modification
+        else if(quickTurn && direction != -1)wheel *= -1; // my + chandler's modification
 		
 		double angular_power = 0.0;
         double overPower = 0.0;
@@ -48,7 +55,7 @@ public class Drive {
         double lPower = 0.0;
         if (quickTurn) {
             overPower = .25;
-            sensitivity = .75;
+            sensitivity = .30;//used to be 0.75
             angular_power = wheel;
         } else {
             overPower = 0.0;
@@ -73,10 +80,7 @@ public class Drive {
         move(lPower, rPower);
     }
 
-	private static void move(double left, double right) {
-		right *= direction;
-		left *= direction;
-		
+	private static void move(double left, double right) {		
 		rightGearBox.set(right*(-1));
 		leftGearBox.set((left));
 	}

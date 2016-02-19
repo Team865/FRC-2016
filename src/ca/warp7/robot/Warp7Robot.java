@@ -1,7 +1,5 @@
 package ca.warp7.robot;
 
-import java.util.concurrent.SynchronousQueue;
-
 import ca.warp7.robot.autonomous.TestAutonomous;
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
@@ -12,6 +10,7 @@ import ca.warp7.robot.subsystems.Intakes;
 import ca.warp7.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
@@ -34,6 +33,10 @@ public class Warp7Robot extends SampleRobot {
     }
 	
 	private void controls(){
+		if(operator.getBbutton()){
+			System.out.println(Shooter.getPosition());
+		}
+		
 		if(driver.getRightBumperbutton()){
 			piston.set(true);
 		}else{
@@ -163,16 +166,18 @@ public class Warp7Robot extends SampleRobot {
     Solenoid piston;
     ADXRS453Gyro gyro;
     DigitalInput photosensor;
+    public DigitalInput flyWheelSensor;
+    Encoder enc;
 	
 	private void initRobot(){
-    	Shooter.init(new CANTalon(Constants.SHOOTER_CAN_ID));
-    	Drive.init(new GearBox(Constants.RIGHT_DRIVE_MOTORS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
-    			   new GearBox(Constants.LEFT_DRIVE_MOTORS, Constants.LEFT_DRIVE_MOTOR_TYPES));
+    	Shooter.init(new CANTalon(Constants.SHOOTER_CAN_ID), enc = new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B));
+    	Drive.init(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
+    			   new GearBox(Constants.LEFT_DRIVE_MOTOR_PINS, Constants.LEFT_DRIVE_MOTOR_TYPES));
     	Intakes.init(new GearBox(new int[]{Constants.INTAKE_MOTOR}, new char[]{Constants.VICTOR}));
     	
-    	piston = new Solenoid(0);
+    	piston = new Solenoid(Constants.PISTON);
     	
-    	photosensor = new DigitalInput(0);
+    	photosensor = new DigitalInput(Constants.INTAKE_PHOTOSENSOR);
     	
     	gyro = new ADXRS453Gyro();
     	gyro.startThread();

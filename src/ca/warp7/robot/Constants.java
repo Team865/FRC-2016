@@ -1,20 +1,29 @@
 package ca.warp7.robot;
 
-
 public class Constants {
-	public static final int FLY_WHEEL_PIN = 0;
-	public static final int[] LEFT_DRIVE_MOTOR_PINS = new int[]{2, 3};
-	public static final int[] RIGHT_DRIVE_MOTOR_PINS = new int[]{4, 5};
-	public static final int[] LEFT_DRIVE_MOTORS = new int[]{2, 3};
-	public static final char[] LEFT_DRIVE_MOTOR_TYPES = new char[]{Constants.TALON, Constants.TALON};
-	public static final int[] RIGHT_DRIVE_MOTORS = new int[]{4, 5};
-	public static final char[] RIGHT_DRIVE_MOTOR_TYPES = new char[]{Constants.TALON, Constants.TALON};
-	public static final int INTAKE_MOTOR = 1;
-	public static final int SHOOTER_CAN_ID = 0;
-	
+	//General References
 	public static final char TALON = 't';
 	public static final char VICTOR = 'v';
 	public static final char GEAR_BOX = 'g';
+	
+	//PWM Pins
+	public static final int[] LEFT_DRIVE_MOTOR_PINS = new int[]{0, 1, 2};
+	public static final int[] RIGHT_DRIVE_MOTOR_PINS = new int[]{3, 4, 5};
+	public static final int FLY_WHEEL_PIN = 6;
+	public static final int INTAKE_MOTOR = 7;
+	public static final char[] LEFT_DRIVE_MOTOR_TYPES = new char[]{VICTOR, VICTOR, VICTOR};
+	public static final char[] RIGHT_DRIVE_MOTOR_TYPES = new char[]{VICTOR, VICTOR, VICTOR};
+	
+	//CAN ID's
+	public static final int SHOOTER_CAN_ID = 0;
+	
+	//DIG Pins
+	public static final int INTAKE_PHOTOSENSOR = 0;
+	public static final int FLY_ENC_A = 1;
+	public static final int FLY_ENC_B = 2;
+	
+	//Solinoids
+	public static final int PISTON = 0;
 	
 	// Robot dimesions and stuff
 	private static double TARGET_HEIGHT = 3;
