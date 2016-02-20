@@ -158,14 +158,14 @@ public class Warp7Robot extends SampleRobot {
 	public static XboxController driver;   // set to ID 1 in DriverStation
 	public static XboxController operator; // set to ID 2 in DriverStation
     public static ADXRS453Gyro gyro;
-    DigitalInput photosensor;
+    public static DigitalInput photosensor;
 	
 	private void initRobot(){
     	Shooter.init(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B));
     	Drive.init(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
     			   new GearBox(Constants.LEFT_DRIVE_MOTOR_PINS, Constants.LEFT_DRIVE_MOTOR_TYPES),
     			   new Solenoid(Constants.GEAR_CHANGE), new Solenoid(Constants.PTO));
-    	Intakes.init(new GearBox(Constants.INTAKE_MOTOR, Constants.INTAKE_MOTOR_TYPES));
+    	Intakes.init(new GearBox(Constants.INTAKE_MOTOR, Constants.INTAKE_MOTOR_TYPES), new Solenoid(Constants.INTAKE_PISTON_A), new Solenoid(Constants.INTAKE_PISTON_B));
 
     	photosensor = new DigitalInput(Constants.INTAKE_PHOTOSENSOR);
     	

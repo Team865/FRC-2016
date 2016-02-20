@@ -4,10 +4,10 @@ public class Constants {
 	//PWM Pins
 	public static final int[] LEFT_DRIVE_MOTOR_PINS = new int[] {0, 1, 2};
 	public static final int[] RIGHT_DRIVE_MOTOR_PINS = new int[]{3, 4, 5};
-	public static final int   FLY_WHEEL_PIN =                    6;
-	public static final int[] LEFT_HOOD = new int[]             {7};
-	public static final int[] RIGHT_HOOD = new int[]            {8};
-	public static final int[] INTAKE_MOTOR = new int[]          {9};
+	public static final int   FLY_WHEEL_PIN = 6;
+	public static final int[] LEFT_HOOD = new int[]{7};
+	public static final int[] RIGHT_HOOD = new int[]{8};
+	public static final int[] INTAKE_MOTOR = new int[]{9};
 	
 	//CAN ID's
 	public static final int SHOOTER_CAN_ID = 0;
@@ -17,13 +17,13 @@ public class Constants {
 	public static final int FLY_ENC_A = 1;
 	public static final int FLY_ENC_B = 2;
 	
-	//Solinoids
+	//Solenoids
 	public static final int GEAR_CHANGE = 0;
 	public static final int PTO = 1;
 	public static final int INTAKE_PISTON_A = 2;
 	public static final int INTAKE_PISTON_B = 3;
 
-	// Robot dimesions and stuff
+	// Robot dimensions and stuff
 	private static double TARGET_HEIGHT = 3;
 	private static double ROBOT_HEIGHT = 2;
 	public static double HEIGHT_DIFFERENCE = TARGET_HEIGHT - ROBOT_HEIGHT;

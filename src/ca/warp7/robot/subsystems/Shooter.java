@@ -20,7 +20,7 @@ public class Shooter {
 	}
 	
 	public static double getPosition(){
-		return flyWheel.getEncVelocity();
+		return encoder.getRate();
 	}
 	
 	public static void fire(){
@@ -46,7 +46,7 @@ public class Shooter {
 	}
 
 	private static void prepareToFire(double wantedRPM){
-		/*
+		/*TODO
 		if(!(readyToFire(wantedRPM))){
 			int multiplier = 1;
 			double currentRPM = encoder.getRate() * CONVERSION;

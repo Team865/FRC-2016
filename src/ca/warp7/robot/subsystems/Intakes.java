@@ -1,13 +1,26 @@
 package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.hardware.GearBox;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class Intakes {
 	private static GearBox box;
 	private static final double SPEED = 1.0;
+	private static Solenoid initialArm;
+	private static Solenoid adjustingArm;
 	
-	public static void init(GearBox motor){
+	public static void init(GearBox motor, Solenoid initialArm_, Solenoid adjustingArm_){
 		box = motor;
+		initialArm = initialArm_;
+		adjustingArm = adjustingArm_;
+	}
+	
+	public void moveInitialArm(){
+		initialArm.set(!(initialArm.get()));
+	}
+	
+	public void moveAdjustingArm(){
+		adjustingArm.set(!(adjustingArm.get()));
 	}
 	
 	/**
