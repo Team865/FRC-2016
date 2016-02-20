@@ -2,6 +2,7 @@ package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.Warp7Robot;
 import ca.warp7.robot.hardware.GearBox;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class Drive {
 
@@ -9,11 +10,15 @@ public class Drive {
 	private static int direction;
 	private static GearBox rightGearBox;
 	private static GearBox leftGearBox;
+	private static Solenoid PTO;
+	private static Solenoid gearChange;
 	
-	public static void init(GearBox right, GearBox left){
+	public static void init(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_){
 		rightGearBox = right;
 		leftGearBox = left;
-		direction = 1;
+		direction = -1;
+		PTO = PTO_;
+		gearChange = gearChange_;
 	}
 	
 	public static void changeDirection(){
@@ -98,5 +103,13 @@ public class Drive {
 	public static void stop() {
 		rightGearBox.set(0);
 		leftGearBox.set(0);
+	}
+	
+	public static void changeGear(){
+		PTO.set(!(PTO.get()));
+	}
+	
+	public static void changePTO(){
+		gearChange.set(!(gearChange.get()));
 	}
 }

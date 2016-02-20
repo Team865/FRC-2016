@@ -36,12 +36,6 @@ public class Warp7Robot extends SampleRobot {
 		if(operator.getBbutton()){
 			System.out.println(Shooter.getPosition());
 		}
-		
-		if(driver.getRightBumperbutton()){
-			piston.set(true);
-		}else{
-			piston.set(false);
-		}
 
 		if(operator.getRightBumperbutton()){
 			System.out.println("getAngle " + gyro.getAngle());
@@ -163,20 +157,16 @@ public class Warp7Robot extends SampleRobot {
 	
 	public static XboxController driver;   // set to ID 1 in DriverStation
 	public static XboxController operator; // set to ID 2 in DriverStation
-    Solenoid piston;
-    ADXRS453Gyro gyro;
+    public static ADXRS453Gyro gyro;
     DigitalInput photosensor;
-    public DigitalInput flyWheelSensor;
-    Encoder enc;
 	
 	private void initRobot(){
-    	Shooter.init(new CANTalon(Constants.SHOOTER_CAN_ID), enc = new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B));
+    	Shooter.init(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B));
     	Drive.init(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
-    			   new GearBox(Constants.LEFT_DRIVE_MOTOR_PINS, Constants.LEFT_DRIVE_MOTOR_TYPES));
-    	Intakes.init(new GearBox(new int[]{Constants.INTAKE_MOTOR}, new char[]{Constants.VICTOR}));
-    	
-    	piston = new Solenoid(Constants.PISTON);
-    	
+    			   new GearBox(Constants.LEFT_DRIVE_MOTOR_PINS, Constants.LEFT_DRIVE_MOTOR_TYPES),
+    			   new Solenoid(Constants.GEAR_CHANGE), new Solenoid(Constants.PTO));
+    	Intakes.init(new GearBox(Constants.INTAKE_MOTOR, Constants.INTAKE_MOTOR_TYPES));
+
     	photosensor = new DigitalInput(Constants.INTAKE_PHOTOSENSOR);
     	
     	gyro = new ADXRS453Gyro();

@@ -3,6 +3,7 @@ package ca.warp7.robot.hardware;
 import ca.warp7.robot.Constants;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SafePWM;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Victor;
 
@@ -11,6 +12,8 @@ public class GearBox{
 	private SafePWM[] motors;
 	private char[] motorTypes;
 	private Encoder encoder;
+	private Solenoid gearRatio;
+	private Solenoid PTO;
 	
 	public void set(double speed){
 		for(int i = 0; i < motorTypes.length; i++){
@@ -27,27 +30,16 @@ public class GearBox{
 	
 	
 	public GearBox(int[] pins, char[] motorTypes2){
-		if(pins.length == 3 || pins.length == 2 || pins.length == 1){
-			motorTypes = motorTypes2;
-			motors = new SafePWM[pins.length];
-			
-			for(int i = 0; i < motors.length; i++){
-				switch(motorTypes2[i]){
-				case Constants.TALON:
-					motors[i] = new Talon(pins[i]);
-					break;
-				case Constants.VICTOR:
-					motors[i] = new Victor(pins[i]);
-					break;
-				}
-			}
-		}else{
-			System.err.println("ThreeMotorGearBox initialized with " + pins.length + " motors instead of 3 or 2");
-		}
+		initMotors(pins, motorTypes2);
 		encoder = null;
 	}
 	
-	public GearBox(int[] pins, char[] motorTypes2, int[] encoderPins){
+	public GearBox(int[] pins, char[] motorTypes2, Encoder encoder, Solenoid gearRatio, Solenoid PTO){
+		initMotors(pins, motorTypes2);
+		this.encoder = encoder;
+	}
+	
+	private void initMotors(int[]pins, char[] motorTypes2){
 		if(pins.length == 3 || pins.length == 2 || pins.length == 1){
 			motorTypes = motorTypes2;
 			motors = new SafePWM[pins.length];
@@ -65,7 +57,6 @@ public class GearBox{
 		}else{
 			System.err.println("ThreeMotorGearBox initialized with " + pins.length + " motors instead of 3 or 2");
 		}
-		encoder = new Encoder(encoderPins[0], encoderPins[1]);
 	}
 	
 	public double getDistance(){
@@ -90,5 +81,13 @@ public class GearBox{
 	
 	public void setReverseDirection(boolean reverseDirection){
 		encoder.setReverseDirection(reverseDirection);
+	}
+	
+	public void changePTO(){
+		PTO.set(!(PTO.get()));
+	}
+	
+	public void changeGear(){
+		gearRatio.set(!(gearRatio.get()));
 	}
 }

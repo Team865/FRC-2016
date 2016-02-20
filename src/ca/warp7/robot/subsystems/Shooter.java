@@ -1,17 +1,14 @@
 package ca.warp7.robot.subsystems;
 
-import ca.warp7.robot.vision.ShooterHelper;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Encoder;
 
-public class Shooter {
-
-	public static double currentRPM;
-	public static int rotations;
-	
+public class Shooter {	
 	
 	private static CANTalon flyWheel;
 	private static Encoder encoder;
+	private static final double STARTING_SPEED = 0.7;
+	private static int numberOfChanges;
 	
 	/**
 	 * @param motor controller Should be a TalonSRX
@@ -19,28 +16,47 @@ public class Shooter {
 	public static void init(CANTalon motor, Encoder enc){
 		flyWheel = motor;
 		encoder = enc;
-		rotations = 0;
-		currentRPM = 0.0;
+		numberOfChanges = 0;
 	}
 	
 	public static double getPosition(){
-		return encoder.getRate();
+		return flyWheel.getEncVelocity();
 	}
 	
 	public static void fire(){
-		prepareToFire(5);
-		if(readyToFire()){
+		//TODO ARI  double wantedRPM = MATH;
+		double wantedRPM = 5;
+		prepareToFire(wantedRPM);
+		if(readyToFire(wantedRPM)){
 			Intakes.intake(false);
 		}
 	}
 	
-	private static boolean readyToFire() {
-		// TODO Do something with an encoder
+	private static boolean readyToFire(double wantedRPM) {
+		//TODO TEST double currentRPM = encoder.getRate() * CONVERSION;
+		//TODO TEST double error = ERROR;
+		/*TODO
+		if(currentRPM <= wantedRPM-error && currentRPM >= wantedRPM+error){
+			return true;
+		}else{
+			return false;
+		}
+		*/
 		return true;
 	}
 
-	public static void prepareToFire(double distance){
-		flyWheel.set(ShooterHelper.getDesiredRPM(distance));
+	private static void prepareToFire(double wantedRPM){
+		/*
+		if(!(readyToFire(wantedRPM))){
+			int multiplier = 1;
+			double currentRPM = encoder.getRate() * CONVERSION;
+			double RPM_Error = wantedRPM - currentRPM;
+			double interval = 0.005 * RPM_Error/Math.abs(RPM_Error);
+			flyWheel.set(flyWheel.get() + interval);
+			
+			if(flyWheel.get() == 0.0) flyWheel.set(0.7);
+		}
+		*/
 	}
 	
 	public static void set(double speed){
