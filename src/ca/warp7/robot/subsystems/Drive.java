@@ -16,7 +16,7 @@ public class Drive {
 	public static void init(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_){
 		rightGearBox = right;
 		leftGearBox = left;
-		direction = -1;
+		direction = 1;
 		PTO = PTO_;
 		gearChange = gearChange_;
 	}

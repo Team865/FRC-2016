@@ -15,12 +15,12 @@ public class Intakes {
 		adjustingArm = adjustingArm_;
 	}
 	
-	public void moveInitialArm(){
-		initialArm.set(!(initialArm.get()));
+	public static void moveInitialArm(boolean bool){
+		initialArm.set(bool);
 	}
 	
-	public void moveAdjustingArm(){
-		adjustingArm.set(!(adjustingArm.get()));
+	public static void moveAdjustingArm(boolean bool){
+		adjustingArm.set(bool);
 	}
 	
 	/**
@@ -43,9 +43,19 @@ public class Intakes {
 	
 	public static void stop(){
 		box.set(0);
+		initialArm.set(false);
+		adjustingArm.set(false);
 	}
 	
 	public static void set(double speed){
 		box.set(speed);
+	}
+
+	public static boolean adjustedArmRetracted() {
+		if(adjustingArm.get() == false){
+			return true;
+		}else{
+			return false;
+		}
 	}
 }

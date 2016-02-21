@@ -9,6 +9,7 @@ import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intakes;
 import ca.warp7.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class Warp7Robot extends SampleRobot {
     
     private double speed;
+    private double degrees;
     private boolean increased;
     private boolean changed;
     
@@ -29,18 +31,19 @@ public class Warp7Robot extends SampleRobot {
     	initRobot();
 
     	speed = 0.0;
+    	degrees = 0.0;
     	increased = false;
     }
 	
 	private void controls(){
-		if(operator.getBbutton()){
-			System.out.println(Shooter.getPosition());
+		if(driver.getAbutton()){
+			Intakes.moveAdjustingArm(false);
+		}else{
+			if(Intakes.adjustedArmRetracted()){
+				//TODO Intakes.moveAdjustingArm(true);
+			}
 		}
-
-		if(operator.getRightBumperbutton()){
-			System.out.println("getAngle " + gyro.getAngle());
-		}
-		
+				
 		if(driver.getXbutton()){
 			speed = 0.4;
 		}
@@ -55,6 +58,20 @@ public class Warp7Robot extends SampleRobot {
 		if(driver.getDPad() == 180){
 			if(!increased){
 				speed -= 0.01;
+				increased = true;
+			}
+		}
+		
+		if(driver.getDPad() == 90){
+			if(!increased){
+				degrees += 0.05;
+				increased = true;
+			}
+		}
+		
+		if(driver.getDPad() == 270){
+			if(!increased){
+				degrees -= 0.05;
 				increased = true;
 			}
 		}
@@ -81,13 +98,19 @@ public class Warp7Robot extends SampleRobot {
 		if(driver.getYbutton()) speed = 0.75;
 		
 		speed = Math.max(-1, Math.min(1, speed));
+		degrees = Math.max(0, Math.min(90, degrees));
 		
 		if(driver.getRightTrigger() <= 0.5) speed = 0.0;
+		if(driver.getStartButton()) degrees = 0.0;
 		
 		if(speed != 0){
 			System.out.println(speed);
 		}
+		if(degrees != 0){
+			System.out.println(degrees);
+		}
 		Shooter.set(speed);
+		Shooter.setHood(degrees);
 		
 		if(driver.getRightStickButton()){
 			if(!changed){
@@ -98,8 +121,21 @@ public class Warp7Robot extends SampleRobot {
 			changed = false;
 		}
 		
+		if(driver.getLeftStickButton()){
+			if(!changed){
+				Drive.changeGear();
+			}
+		}
 		
 		
+		
+		if(operator.getBbutton()){
+			System.out.println(Shooter.getPosition());
+		}
+
+		if(operator.getRightBumperbutton()){
+			System.out.println("getAngle " + gyro.getAngle());
+		}
 		
 		if(operator.getLeftBumperbutton()){
 			System.out.println(gyro.getStatus());
@@ -131,6 +167,8 @@ public class Warp7Robot extends SampleRobot {
 	
 	
 	public void operatorControl() {
+		//TODO the moving of the arm is only temperary remove this for comp
+		Intakes.moveInitialArm(true);
         while (isOperatorControl() && isEnabled()) {
         	controls();
         	Drive.cheesyDrive();
@@ -159,13 +197,21 @@ public class Warp7Robot extends SampleRobot {
 	public static XboxController operator; // set to ID 2 in DriverStation
     public static ADXRS453Gyro gyro;
     public static DigitalInput photosensor;
+    CameraServer server;
 	
 	private void initRobot(){
-    	Shooter.init(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B));
+		server = CameraServer.getInstance();
+        server.setQuality(50);
+        //the camera name (ex "cam0") can be found through the roborio web interface
+        server.startAutomaticCapture("cam1");
+		
+    	Shooter.init(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B),
+    			     new GearBox(Constants.FLY_WHEEL_PIN, Constants.FLY_WHEEL_MOTOR_TYPE));
     	Drive.init(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
     			   new GearBox(Constants.LEFT_DRIVE_MOTOR_PINS, Constants.LEFT_DRIVE_MOTOR_TYPES),
     			   new Solenoid(Constants.GEAR_CHANGE), new Solenoid(Constants.PTO));
-    	Intakes.init(new GearBox(Constants.INTAKE_MOTOR, Constants.INTAKE_MOTOR_TYPES), new Solenoid(Constants.INTAKE_PISTON_A), new Solenoid(Constants.INTAKE_PISTON_B));
+    	Intakes.init(new GearBox(Constants.INTAKE_MOTOR, Constants.INTAKE_MOTOR_TYPES), 
+    			   new Solenoid(Constants.INTAKE_PISTON_A), new Solenoid(Constants.INTAKE_PISTON_B));
 
     	photosensor = new DigitalInput(Constants.INTAKE_PHOTOSENSOR);
     	

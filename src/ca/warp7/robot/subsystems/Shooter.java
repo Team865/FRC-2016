@@ -1,22 +1,31 @@
 package ca.warp7.robot.subsystems;
 
+import ca.warp7.robot.hardware.GearBox;
+import ca.warp7.robot.subsystems.shooterComponents.Hood;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Encoder;
 
 public class Shooter {	
 	
-	private static CANTalon flyWheel;
+	private static Hood hood;
 	private static Encoder encoder;
+	private static GearBox flyWheel;
 	private static final double STARTING_SPEED = 0.7;
 	private static int numberOfChanges;
 	
 	/**
 	 * @param motor controller Should be a TalonSRX
 	 */
-	public static void init(CANTalon motor, Encoder enc){
+	public static void init(CANTalon hood_, Encoder enc, GearBox motor){
 		flyWheel = motor;
 		encoder = enc;
 		numberOfChanges = 0;
+		hood = new Hood(hood_);
+		
+		//hood.changeControlMode(TalonControlMode.Position);
+		//hood.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Absolute);
+		//hood.setPosition(0);
+		
 	}
 	
 	public static double getPosition(){
@@ -65,5 +74,13 @@ public class Shooter {
 	
 	public static void stop(){
 		flyWheel.set(0);
+	}
+	
+	public static void saftey(){
+		// TODO if the hood is past some saftey distance set the speed to 0
+	}
+	
+	public static void setHood(double degrees){
+		hood.set(degrees);
 	}
 }

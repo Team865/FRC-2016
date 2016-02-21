@@ -4,10 +4,8 @@ public class Constants {
 	//PWM Pins
 	public static final int[] LEFT_DRIVE_MOTOR_PINS = new int[] {0, 1, 2};
 	public static final int[] RIGHT_DRIVE_MOTOR_PINS = new int[]{3, 4, 5};
-	public static final int   FLY_WHEEL_PIN = 6;
-	public static final int[] LEFT_HOOD = new int[]{7};
-	public static final int[] RIGHT_HOOD = new int[]{8};
-	public static final int[] INTAKE_MOTOR = new int[]{9};
+	public static final int[] FLY_WHEEL_PIN = new int[]{6};
+	public static final int[] INTAKE_MOTOR = new int[]{7};
 	
 	//CAN ID's
 	public static final int SHOOTER_CAN_ID = 0;
@@ -38,4 +36,5 @@ public class Constants {
 	public static final char[] LEFT_DRIVE_MOTOR_TYPES = new char[]{VICTOR, VICTOR, VICTOR};
 	public static final char[] RIGHT_DRIVE_MOTOR_TYPES = new char[]{VICTOR, VICTOR, VICTOR};
 	public static final char[] INTAKE_MOTOR_TYPES = new char[]{VICTOR};
+	public static final char[] FLY_WHEEL_MOTOR_TYPE = new char[]{VICTOR};
 }
