@@ -108,8 +108,8 @@ public class Shooter {
         flyWheel.set(0);
     }
 
-    public void saftey() {
-        // TODO if the hood is past some saftey distance set the speed to 0
+    public void safety() {
+        // TODO if the hood is past some safety distance set the speed to 0
     }
 
     public void setHood(double degrees) {
