@@ -5,6 +5,7 @@ import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.subsystems.shooterComponents.Hood;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Shooter {	
 	
@@ -53,14 +54,16 @@ public class Shooter {
 	}
 
 	static double integral = 0.0;
-	static double preError = 0.0;
+	static double prevError = 0.0;
+	static double prevTime = 0;
 	public static void prepareToFire(double wantedRPM){		
 		double Kp = 0.01;
 		double Ki = 0.0;
 		double Kd = 0.0;
 		double setpoint = wantedRPM;
 		double PV = encoder.getRate() * -1;
-		Timer.
+		double currTime = Timer.getFPGATimestamp();
+		double Dt = currTime - prevTime;
 		/*
 		   * Pseudo code (source Wikipedia)
 		   * 
@@ -81,12 +84,14 @@ public class Shooter {
 		   // track error over time, scaled to the timer interval
 		  integral = integral + (error * Dt);
 		   // determine the amount of change from the last time checked
-		  double derivative = (error - preError) / Dt; 
+		  double derivative = (error - prevError) / Dt; 
 		   // calculate how much to drive the output in order to get to the 
 		   // desired setpoint. 
 		  double output = (Kp * error) + (Ki * integral) + (Kd * derivative);
 		   // remember the error for the next time around.
-		  preError = error; 
+		  prevError = error; 
+		  prevTime = currTime;
+		flyWheel.set(output);
 		/*
 		double currentRPM = encoder.getRate();
 		double RPM_Error = currentRPM - wantedRPM;
