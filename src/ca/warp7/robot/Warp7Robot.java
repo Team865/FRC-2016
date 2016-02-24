@@ -6,7 +6,7 @@ import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ChandlerDefault;
 import ca.warp7.robot.subsystems.Drive;
-import ca.warp7.robot.subsystems.Intakes;
+import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
@@ -31,6 +31,7 @@ public class Warp7Robot extends SampleRobot {
     private boolean changed4;
     private boolean changed5;
 	private Shooter shooter;
+	private Intake intake;
     public Warp7Robot() {
         count = 0;
         changed3 = false;
@@ -52,7 +53,7 @@ public class Warp7Robot extends SampleRobot {
 
         if (driver.getAbutton()) {
             if (!changed2) {
-                Intakes.moveAdjustingArm();
+                intake.toggleAdjustingArm();
                 changed2 = true;
             }
         } else {
@@ -97,16 +98,16 @@ public class Warp7Robot extends SampleRobot {
 
         if (driver.getLeftTrigger() >= 0.5) {
             if (driver.getRightBumperbutton()) {
-                Intakes.intake(false);
+                intake.intake(false);
             } else {
-                Intakes.intake(photosensor.get());
+                intake.intake(photosensor.get());
             }
         } else {
-            Intakes.stopIntake();
+            intake.stopIntake();
         }
 
         if (driver.getBbutton()) {
-            Intakes.outake();
+            intake.outake();
         }
 
         wantedRPM = Math.max(-6000, Math.min(6000, wantedRPM));
@@ -160,7 +161,7 @@ public class Warp7Robot extends SampleRobot {
         if (driver.getYbutton()) {
             if (!changed5) {
                 System.out.println("pressed");
-                Intakes.moveInitialArm();
+                intake.toggleInitialArm();
                 changed5 = true;
             }
         } else {
@@ -211,7 +212,7 @@ public class Warp7Robot extends SampleRobot {
         while (!isEnabled()) {
             shooter.stop();
             Drive.stop();
-            Intakes.stop();
+            intake.stop(); // TODO Investigate these, seem pointless
             cameraLoop();
             //System.out.println("Robot Disabled!!!!!");
         }
@@ -235,7 +236,7 @@ public class Warp7Robot extends SampleRobot {
         Drive.init(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
                 new GearBox(Constants.LEFT_DRIVE_MOTOR_PINS, Constants.LEFT_DRIVE_MOTOR_TYPES),
                 new Solenoid(Constants.GEAR_CHANGE), new Solenoid(Constants.PTO));
-        Intakes.init(new GearBox(Constants.INTAKE_MOTOR, Constants.INTAKE_MOTOR_TYPES),
+        intake = new Intake(new GearBox(Constants.INTAKE_MOTOR, Constants.INTAKE_MOTOR_TYPES),
                 new Solenoid(Constants.INTAKE_PISTON_A), new Solenoid(Constants.INTAKE_PISTON_B));
 
         photosensor = new DigitalInput(Constants.INTAKE_PHOTOSENSOR);

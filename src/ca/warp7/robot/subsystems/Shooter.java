@@ -38,14 +38,14 @@ public class Shooter {
     public double getSpeed() {
         return encoder.getRate();
     }
-
+/*
     public void fire() {
         double wantedRPM = Warp7Robot.wantedRPM * -1;
         if (readyToFire(wantedRPM)) {
-            Intakes.intake(false);
+            Intake.intake(false);
         }
     }
-
+*/ // TODOimpl this
     private boolean readyToFire(double wantedRPM) {
         double currentRPM = encoder.getRate();
         double error = 200;
