@@ -25,15 +25,12 @@ public class Warp7Robot extends SampleRobot {
     private boolean increased;
     private boolean changed;
 
-
-    //============================
-    //|| BECAUSE IT LOOKS NICER ||    <------------------- What he said...
-    //============================
     private boolean changed2;
     private int count;
     private boolean changed3;
     private boolean changed4;
     private boolean changed5;
+	private Shooter shooter;
     public Warp7Robot() {
         count = 0;
         changed3 = false;
@@ -49,9 +46,9 @@ public class Warp7Robot extends SampleRobot {
     }
 
     private void controls() {
-        Shooter.prepareToFire(wantedRPM * -1);
+        shooter.prepareToFire(wantedRPM * -1);
 
-        Shooter.setHood(-0.25);
+        shooter.setHood(-0.25);
 
         if (driver.getAbutton()) {
             if (!changed2) {
@@ -120,7 +117,7 @@ public class Warp7Robot extends SampleRobot {
 
         if (wantedRPM != 0 && count >= 10) {
             System.out.println("\n \n" + "Wanted rpm = " + wantedRPM);
-            System.out.println("Current rpm  = " + (Shooter.getPosition() * -1) + "\n");
+            System.out.println("Current rpm  = " + (shooter.getSpeed() * -1) + "\n");
             System.out.println("Hood Degrees = " + degrees);
         }
 
@@ -130,7 +127,7 @@ public class Warp7Robot extends SampleRobot {
         if (degrees != 0) {
             System.out.println(degrees);
         }
-        Shooter.setHood(degrees);
+        shooter.setHood(degrees);
 
         if (driver.getRightStickButton()) {
             if (!changed) {
@@ -194,12 +191,11 @@ public class Warp7Robot extends SampleRobot {
     }
 
     public void operatorControl() {
-        //TODO the moving of the arm is only temperary remove this for comp
         while (isOperatorControl() && isEnabled()) {
             cameraLoop();
             controls();
             Drive.cheesyDrive();
-            Timer.delay(0.005);        // wait for a motor update time
+            Timer.delay(0.005);
         }
     }
 
@@ -213,7 +209,7 @@ public class Warp7Robot extends SampleRobot {
 
     public void disabled() {
         while (!isEnabled()) {
-            Shooter.stop();
+            shooter.stop();
             Drive.stop();
             Intakes.stop();
             cameraLoop();
@@ -234,7 +230,7 @@ public class Warp7Robot extends SampleRobot {
         } catch (Exception e) {
         }
 
-        Shooter.init(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B),
+        shooter = new Shooter(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B),
                 new GearBox(Constants.FLY_WHEEL_PIN, Constants.FLY_WHEEL_MOTOR_TYPE));
         Drive.init(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
                 new GearBox(Constants.LEFT_DRIVE_MOTOR_PINS, Constants.LEFT_DRIVE_MOTOR_TYPES),

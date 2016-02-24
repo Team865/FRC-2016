@@ -8,50 +8,52 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class Shooter {
 
-    private static final double STARTING_SPEED = 0.7;
+    private final double STARTING_SPEED = 0.7;
     static double integral = 0.0;
     static double prevError = 0.0;
-    static double prevTime = 0;
-    private static CANTalon hood;
-    private static Encoder encoder;
-    private static GearBox flyWheel;
-    private static int numberOfChanges;
+    static double prevTime;
+    private CANTalon hood;
+    private Encoder encoder;
+    private GearBox flyWheel;
+    private int numberOfChanges;
 
     /**
      * @param motor controller Should be a TalonSRX
      */
-    public static void init(CANTalon hood_, Encoder enc, GearBox motor) {
+    public Shooter(CANTalon hood_, Encoder enc, GearBox motor) {
         flyWheel = motor;
         encoder = enc;
         numberOfChanges = 0;
         hood = hood_;
         encoder.setReverseDirection(true);
         encoder.setDistancePerPulse(3);
+        
+        prevTime = Timer.getFPGATimestamp();
         //hood.changeControlMode(TalonControlMode.Position);
         //hood.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Absolute);
         //hood.setPosition(0);
 
     }
 
-    public static double getPosition() {
+    public double getSpeed() {
         return encoder.getRate();
     }
 
-    public static void fire() {
+    public void fire() {
         double wantedRPM = Warp7Robot.wantedRPM * -1;
         if (readyToFire(wantedRPM)) {
             Intakes.intake(false);
         }
     }
 
-    private static boolean readyToFire(double wantedRPM) {
+    private boolean readyToFire(double wantedRPM) {
         double currentRPM = encoder.getRate();
         double error = 200;
 
         return currentRPM >= wantedRPM - error && currentRPM <= wantedRPM + error;
     }
 
-    public static void prepareToFire(double wantedRPM) {
+    public void prepareToFire(double wantedRPM) {
         double Kp = 0.01;
         double Ki = 0.0;
         double Kd = 0.0;
@@ -98,19 +100,19 @@ public class Shooter {
 		*/
     }
 
-    public static void set(double speed) {
+    public void set(double speed) {
         flyWheel.set(speed);
     }
 
-    public static void stop() {
+    public void stop() {
         flyWheel.set(0);
     }
 
-    public static void saftey() {
+    public void saftey() {
         // TODO if the hood is past some saftey distance set the speed to 0
     }
 
-    public static void setHood(double degrees) {
+    public void setHood(double degrees) {
         hood.set(degrees);
     }
 }
