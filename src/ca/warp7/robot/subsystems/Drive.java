@@ -19,6 +19,8 @@ public class Drive {
 		direction = 1;
 		PTO = PTO_;
 		gearChange = gearChange_;
+		PTO.set(false);
+		gearChange.set(false);
 	}
 	
 	public static void changeDirection(){
@@ -85,7 +87,8 @@ public class Drive {
         move(lPower, rPower);
     }
 
-	private static void move(double left, double right) {		
+	private static void move(double left, double right) {	
+		right *= 0.94;
 		rightGearBox.set(right*(-1));
 		leftGearBox.set((left));
 	}

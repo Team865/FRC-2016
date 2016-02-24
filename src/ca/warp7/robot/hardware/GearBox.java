@@ -14,6 +14,7 @@ public class GearBox{
 	private Encoder encoder;
 	private Solenoid gearRatio;
 	private Solenoid PTO;
+	private double setting;
 	
 	public void set(double speed){
 		for(int i = 0; i < motorTypes.length; i++){
@@ -26,6 +27,7 @@ public class GearBox{
 				break;
 			}
 		}
+		setting = speed;
 	}
 	
 	
@@ -57,6 +59,11 @@ public class GearBox{
 		}else{
 			System.err.println("ThreeMotorGearBox initialized with " + pins.length + " motors instead of 3 or 2");
 		}
+		setting = 0.0;
+	}
+	
+	public double get(){
+		return setting;
 	}
 	
 	public double getDistance(){

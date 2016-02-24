@@ -40,7 +40,7 @@ public class Hood extends IterativeRobot {
         /* set closed loop gains in slot0 */
         hood.setProfile(0);
         hood.setF(0.0);
-        hood.setP(0.1);
+        hood.setP(0.01);
         hood.setI(0.0); 
         hood.setD(0.0);    
         

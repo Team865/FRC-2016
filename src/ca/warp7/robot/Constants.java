@@ -15,11 +15,11 @@ public class Constants {
 	public static final int FLY_ENC_A = 1;
 	public static final int FLY_ENC_B = 2;
 	
-	//Solenoids
+	//Solenoids (manifold ports)
 	public static final int GEAR_CHANGE = 0;
 	public static final int PTO = 1;
-	public static final int INTAKE_PISTON_A = 2;
-	public static final int INTAKE_PISTON_B = 3;
+	public static final int INTAKE_PISTON_A = 3;
+	public static final int INTAKE_PISTON_B = 2;
 
 	// Robot dimensions and stuff
 	private static double TARGET_HEIGHT = 3;
