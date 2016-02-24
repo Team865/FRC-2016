@@ -1,6 +1,5 @@
 package ca.warp7.robot;
 
-import ca.warp7.robot.networking.DataPool;
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
@@ -9,8 +8,9 @@ import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ChandlerDefault;
+import ca.warp7.robot.networking.DataPool;
 import ca.warp7.robot.subsystems.Drive;
-import ca.warp7.robot.subsystems.Intakes;
+import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -23,6 +23,13 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Warp7Robot extends SampleRobot {
 
+    public static XboxController driver;   // set to ID 1 in DriverStation
+    public static XboxController operator; // set to ID 2 in DriverStation
+    public static ADXRS453Gyro gyro;
+    public static DigitalInput photosensor;
+    public static int wantedRPM;
+    int camera_session;
+    Image camera_frame;
     private double degrees;
     private boolean increased;
     private boolean changed;
@@ -31,6 +38,9 @@ public class Warp7Robot extends SampleRobot {
     private boolean changed3;
     private boolean changed4;
     private boolean changed5;
+	private Shooter shooter;
+	private Intake intake;
+	private Drive drive;
 
     private static String messageBuffer = "";
     private static String warningBuffer = "";
@@ -54,14 +64,14 @@ public class Warp7Robot extends SampleRobot {
         changed2 = false;
     }
 
-    private void controls(){
-        Shooter.prepareToFire(wantedRPM*-1);
+    private void controls() {
+        shooter.prepareToFire(wantedRPM * -1);
 
-        Shooter.setHood(-0.25);
+        shooter.setHood(-0.25);
 
-        if(driver.getAbutton()){
-            if(!changed2){
-                Intakes.moveAdjustingArm();
+        if (driver.getAbutton()) {
+            if (!changed2) {
+                intake.toggleAdjustingArm();
                 changed2 = true;
             }
         }else{
@@ -104,18 +114,18 @@ public class Warp7Robot extends SampleRobot {
             increased = false;
         }
 
-        if(driver.getLeftTrigger() >= 0.5){
-            if(driver.getRightBumperbutton()){
-                Intakes.intake(false);
-            }else{
-                Intakes.intake(photosensor.get());
+        if (driver.getLeftTrigger() >= 0.5) {
+            if (driver.getRightBumperbutton()) {
+                intake.intake(false);
+            } else {
+                intake.intake(photosensor.get());
             }
-        }else{
-            Intakes.stopIntake();
+        } else {
+            intake.stopIntake();
         }
 
-        if(driver.getBbutton()){
-            Intakes.outake();
+        if (driver.getBbutton()) {
+            intake.outake();
         }
 
         wantedRPM = Math.max(-6000, Math.min(6000, wantedRPM));
@@ -126,7 +136,7 @@ public class Warp7Robot extends SampleRobot {
 
         if(wantedRPM != 0 && count >= 10){
             System.out.println("\n \n" + "Wanted rpm = " + wantedRPM);
-            System.out.println("Current rpm  = " + (Shooter.getPosition()*-1) + "\n");
+            System.out.println("Current rpm  = " + (shooter.getSpeed() * -1) + "\n");
             System.out.println("Hood Degrees = " + degrees);
         }
 
@@ -136,11 +146,11 @@ public class Warp7Robot extends SampleRobot {
         if(degrees != 0){
             System.out.println(degrees);
         }
-        Shooter.setHood(degrees);
+        shooter.setHood(degrees);
 
-        if(driver.getRightStickButton()){
-            if(!changed){
-                Drive.changeDirection();
+        if (driver.getRightStickButton()) {
+            if (!changed) {
+                drive.changeDirection();
                 changed = true;
             }
         }else{
@@ -150,7 +160,7 @@ public class Warp7Robot extends SampleRobot {
         if(driver.getLeftStickButton()){
             if(!changed3){
                 System.out.println("pressed");
-                Drive.changeGear();
+                drive.changeGear();
                 changed3 = true;
             }
         }else{
@@ -159,7 +169,7 @@ public class Warp7Robot extends SampleRobot {
         if(driver.getXbutton()){
             if(!changed4){
                 System.out.println("pressed");
-                Drive.changePTO();
+                drive.changePTO();
                 changed4 = true;
             }
         }else{
@@ -169,7 +179,7 @@ public class Warp7Robot extends SampleRobot {
         if(driver.getYbutton()){
             if(!changed5){
                 System.out.println("pressed");
-                Intakes.moveInitialArm();
+                intake.toggleInitialArm();
                 changed5 = true;
             }
         }else{
@@ -214,12 +224,11 @@ public class Warp7Robot extends SampleRobot {
 
 
     public void operatorControl() {
-        //TODO the moving of the arm is only temperary remove this for comp
         while (isOperatorControl() && isEnabled()) {
             cameraLoop();
             controls();
-            Drive.cheesyDrive();
-            Timer.delay(0.005);		// wait for a motor update time
+            drive.cheesyDrive();
+            Timer.delay(0.005);
         }
     }
 
@@ -231,44 +240,37 @@ public class Warp7Robot extends SampleRobot {
         }
     }
 
-    public void disabled(){
-        while(!isEnabled()){
-            Shooter.stop();
-            Drive.stop();
-            Intakes.stop();
+   public void disabled() {
+        while (!isEnabled()) {
+            shooter.stop();
+            drive.stop();
+            intake.stop(); // TODO Investigate these, seem pointless
             cameraLoop();
             //System.out.println("Robot Disabled!!!!!");
         }
     }
 
-    public static XboxController driver;   // set to ID 1 in DriverStation
-    public static XboxController operator; // set to ID 2 in DriverStation
-    public static ADXRS453Gyro gyro;
-    public static DigitalInput photosensor;
-    public static int wantedRPM;
-    int session;
-    Image frame;
-
     private void initRobot(){
         wantedRPM = 0;
-        try{
-            frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+        try {
+            camera_frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 
             // the camera name (ex "cam0") can be found through the roborio web interface
-            session = NIVision.IMAQdxOpenCamera("cam1",
+            camera_session = NIVision.IMAQdxOpenCamera("cam1",
                     NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-            NIVision.IMAQdxConfigureGrab(session);
-            NIVision.IMAQdxStartAcquisition(session);
-        }catch(Exception e){}
+            NIVision.IMAQdxConfigureGrab(camera_session);
+            NIVision.IMAQdxStartAcquisition(camera_session);
+        } catch (Exception e) {
+        }
         visionTable = NetworkTable.getTable("vision");
         robotTable = NetworkTable.getTable("status");
 
-        Shooter.init(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B),
+        shooter = new Shooter(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B),
                 new GearBox(Constants.FLY_WHEEL_PIN, Constants.FLY_WHEEL_MOTOR_TYPE));
-        Drive.init(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
+        drive = new Drive(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
                 new GearBox(Constants.LEFT_DRIVE_MOTOR_PINS, Constants.LEFT_DRIVE_MOTOR_TYPES),
                 new Solenoid(Constants.GEAR_CHANGE), new Solenoid(Constants.PTO));
-        Intakes.init(new GearBox(Constants.INTAKE_MOTOR, Constants.INTAKE_MOTOR_TYPES),
+        intake = new Intake(new GearBox(Constants.INTAKE_MOTOR, Constants.INTAKE_MOTOR_TYPES),
                 new Solenoid(Constants.INTAKE_PISTON_A), new Solenoid(Constants.INTAKE_PISTON_B));
 
         photosensor = new DigitalInput(Constants.INTAKE_PHOTOSENSOR);
@@ -277,11 +279,11 @@ public class Warp7Robot extends SampleRobot {
         gyro.startThread();
     }
 
-    private void cameraLoop(){
-        try{
-            NIVision.IMAQdxGrab(session, frame, 1);
-            CameraServer.getInstance().setImage(frame);
-        }catch(Exception e){}
+    private void cameraLoop() {
+        try {
+            NIVision.IMAQdxGrab(camera_session, camera_frame, 1);
+            CameraServer.getInstance().setImage(camera_frame);
+        } catch (Exception e) {}
         if(updateRobotTables) {
             if(!messageBuffer.isEmpty()) robotTable.putString("messages", messageBuffer);
             if(!warningBuffer.isEmpty()) robotTable.putString("warnings", Timer.getFPGATimestamp() + ": " + warningBuffer);

@@ -3,13 +3,13 @@ package ca.warp7.robot.subsystems;
 import ca.warp7.robot.hardware.GearBox;
 import edu.wpi.first.wpilibj.Solenoid;
 
-public class Intakes {
-    private static final double SPEED = 1.0;
-    public static Solenoid initialArm;
-    public static Solenoid adjustingArm;
-    private static GearBox box;
+public class Intake {
+    private static double INTAKE_SPEED = 1.0;
+    public Solenoid initialArm;
+    public Solenoid adjustingArm;
+    private GearBox box;
 
-    public static void init(GearBox motor, Solenoid initialArm_, Solenoid adjustingArm_) {
+    public Intake(GearBox motor, Solenoid initialArm_, Solenoid adjustingArm_) {
         box = motor;
         initialArm = initialArm_;
         adjustingArm = adjustingArm_;
@@ -17,11 +17,11 @@ public class Intakes {
         adjustingArm.set(false);
     }
 
-    public static void moveInitialArm() {
+    public void toggleInitialArm() {
         initialArm.set(!initialArm.get());
     }
 
-    public static void moveAdjustingArm() {
+    public void toggleAdjustingArm() {
         adjustingArm.set(!adjustingArm.get());
     }
 
@@ -29,33 +29,33 @@ public class Intakes {
      * @param sensorReading This is the photo-sensor reading
      *                      if it is false it will run
      */
-    public static void intake(boolean sensorReading) {
+    public void intake(boolean sensorReading) {
         if (!sensorReading) {
-            box.set(-SPEED);
+            box.set(-INTAKE_SPEED);
         } else {
             box.set(0);
         }
     }
 
-    public static void outake() {
-        box.set(SPEED);
+    public void outake() {
+        box.set(INTAKE_SPEED);
     }
 
-    public static void stopIntake() {
-        box.set(0);
-    }
-
-    public static void stop() {
+    public void stop() {
         box.set(0);
         initialArm.set(false);
         adjustingArm.set(false);
     }
 
-    public static void set(double speed) {
+    public void set(double speed) {
         box.set(speed);
     }
 
-    public static boolean adjustedArmRetracted() {
+    public boolean adjustedArmRetracted() {
         return adjustingArm.get() == false;
     }
+
+	public void stopIntake() {
+		box.set(0);
+	}
 }
