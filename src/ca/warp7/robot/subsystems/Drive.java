@@ -13,7 +13,7 @@ public class Drive {
     private static Solenoid PTO;
     private static Solenoid gearChange;
 
-    public static void init(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_) {
+    public Drive(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_) {
         rightGearBox = right;
         leftGearBox = left;
         direction = 1;
@@ -23,11 +23,11 @@ public class Drive {
         gearChange.set(false);
     }
 
-    public static void changeDirection() {
+    public void changeDirection() {
         direction *= -1;
     }
 
-    public static void tankDrive() {
+    public void tankDrive() {
         double left = Warp7Robot.driver.getLeftY();
         double right = Warp7Robot.driver.getRightY();
 
@@ -40,7 +40,7 @@ public class Drive {
         move(left, right);
     }
 
-    public static void cheesyDrive() {
+    public void cheesyDrive() {
         double throttle = Warp7Robot.driver.getLeftY();
         double wheel = Warp7Robot.driver.getRightX();
 
@@ -87,13 +87,13 @@ public class Drive {
         move(lPower, rPower);
     }
 
-    private static void move(double left, double right) {
+    private void move(double left, double right) {
         right *= 0.94;
         rightGearBox.set(right * (-1));
         leftGearBox.set((left));
     }
 
-    private static double createDeadband(double num) {
+    private double createDeadband(double num) {
         if (0.13 >= Math.abs(num)) {
             num = 0;
         }
@@ -103,16 +103,16 @@ public class Drive {
         return num;
     }
 
-    public static void stop() {
+    public void stop() {
         rightGearBox.set(0);
         leftGearBox.set(0);
     }
 
-    public static void changeGear() {
+    public void changeGear() {
         PTO.set(!(PTO.get()));
     }
 
-    public static void changePTO() {
+    public void changePTO() {
         gearChange.set(!(gearChange.get()));
     }
 }

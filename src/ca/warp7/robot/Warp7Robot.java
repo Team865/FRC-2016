@@ -19,8 +19,8 @@ public class Warp7Robot extends SampleRobot {
     public static ADXRS453Gyro gyro;
     public static DigitalInput photosensor;
     public static int wantedRPM;
-    int session;
-    Image frame;
+    int camera_session;
+    Image camera_frame;
     private double degrees;
     private boolean increased;
     private boolean changed;
@@ -32,6 +32,7 @@ public class Warp7Robot extends SampleRobot {
     private boolean changed5;
 	private Shooter shooter;
 	private Intake intake;
+	private Drive drive;
     public Warp7Robot() {
         count = 0;
         changed3 = false;
@@ -132,7 +133,7 @@ public class Warp7Robot extends SampleRobot {
 
         if (driver.getRightStickButton()) {
             if (!changed) {
-                Drive.changeDirection();
+                drive.changeDirection();
                 changed = true;
             }
         } else {
@@ -142,7 +143,7 @@ public class Warp7Robot extends SampleRobot {
         if (driver.getLeftStickButton()) {
             if (!changed3) {
                 System.out.println("pressed");
-                Drive.changeGear();
+                drive.changeGear();
                 changed3 = true;
             }
         } else {
@@ -151,7 +152,7 @@ public class Warp7Robot extends SampleRobot {
         if (driver.getXbutton()) {
             if (!changed4) {
                 System.out.println("pressed");
-                Drive.changePTO();
+                drive.changePTO();
                 changed4 = true;
             }
         } else {
@@ -195,7 +196,7 @@ public class Warp7Robot extends SampleRobot {
         while (isOperatorControl() && isEnabled()) {
             cameraLoop();
             controls();
-            Drive.cheesyDrive();
+            drive.cheesyDrive();
             Timer.delay(0.005);
         }
     }
@@ -211,7 +212,7 @@ public class Warp7Robot extends SampleRobot {
     public void disabled() {
         while (!isEnabled()) {
             shooter.stop();
-            Drive.stop();
+            drive.stop();
             intake.stop(); // TODO Investigate these, seem pointless
             cameraLoop();
             //System.out.println("Robot Disabled!!!!!");
@@ -221,19 +222,19 @@ public class Warp7Robot extends SampleRobot {
     private void initRobot() {
         wantedRPM = 0;
         try {
-            frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+            camera_frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 
             // the camera name (ex "cam0") can be found through the roborio web interface
-            session = NIVision.IMAQdxOpenCamera("cam1",
+            camera_session = NIVision.IMAQdxOpenCamera("cam1",
                     NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-            NIVision.IMAQdxConfigureGrab(session);
-            NIVision.IMAQdxStartAcquisition(session);
+            NIVision.IMAQdxConfigureGrab(camera_session);
+            NIVision.IMAQdxStartAcquisition(camera_session);
         } catch (Exception e) {
         }
 
         shooter = new Shooter(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B),
                 new GearBox(Constants.FLY_WHEEL_PIN, Constants.FLY_WHEEL_MOTOR_TYPE));
-        Drive.init(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
+        drive = new Drive(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
                 new GearBox(Constants.LEFT_DRIVE_MOTOR_PINS, Constants.LEFT_DRIVE_MOTOR_TYPES),
                 new Solenoid(Constants.GEAR_CHANGE), new Solenoid(Constants.PTO));
         intake = new Intake(new GearBox(Constants.INTAKE_MOTOR, Constants.INTAKE_MOTOR_TYPES),
@@ -247,8 +248,8 @@ public class Warp7Robot extends SampleRobot {
 
     private void cameraLoop() {
         try {
-            NIVision.IMAQdxGrab(session, frame, 1);
-            CameraServer.getInstance().setImage(frame);
+            NIVision.IMAQdxGrab(camera_session, camera_frame, 1);
+            CameraServer.getInstance().setImage(camera_frame);
         } catch (Exception e) {
         }
     }
