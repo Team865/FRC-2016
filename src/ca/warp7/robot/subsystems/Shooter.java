@@ -1,6 +1,5 @@
 package ca.warp7.robot.subsystems;
 
-import ca.warp7.robot.Warp7Robot;
 import ca.warp7.robot.hardware.GearBox;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Encoder;
@@ -8,14 +7,12 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class Shooter {
 
-    private final double STARTING_SPEED = 0.7;
     static double integral = 0.0;
     static double prevError = 0.0;
     static double prevTime;
     private CANTalon hood;
     private Encoder encoder;
     private GearBox flyWheel;
-    private int numberOfChanges;
 
     /**
      * @param motor controller Should be a TalonSRX
@@ -23,7 +20,6 @@ public class Shooter {
     public Shooter(CANTalon hood_, Encoder enc, GearBox motor) {
         flyWheel = motor;
         encoder = enc;
-        numberOfChanges = 0;
         hood = hood_;
         encoder.setReverseDirection(true);
         encoder.setDistancePerPulse(3);
@@ -45,13 +41,13 @@ public class Shooter {
             Intake.intake(false);
         }
     }
-*/ // TODOimpl this
     private boolean readyToFire(double wantedRPM) {
         double currentRPM = encoder.getRate();
         double error = 200;
 
         return currentRPM >= wantedRPM - error && currentRPM <= wantedRPM + error;
     }
+*/ // TODOimpl this
 
     public void prepareToFire(double wantedRPM) {
         double Kp = 0.01;
