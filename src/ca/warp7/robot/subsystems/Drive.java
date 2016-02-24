@@ -2,30 +2,50 @@ package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.Warp7Robot;
 import ca.warp7.robot.hardware.GearBox;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class Drive {
 
 	//https://code.google.com/p/3647robotics/source/browse/WCDRobot/src/Robot/DriveTrain.java?r=63
+	private static int direction;
+	private static GearBox rightGearBox;
+	private static GearBox leftGearBox;
+	private static Solenoid PTO;
+	private static Solenoid gearChange;
 	
-	private static int direction = 1;
+	public static void init(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_){
+		rightGearBox = right;
+		leftGearBox = left;
+		direction = 1;
+		PTO = PTO_;
+		gearChange = gearChange_;
+		PTO.set(false);
+		gearChange.set(false);
+	}
 	
 	public static void changeDirection(){
 		direction *= -1;
 	}
 	
-	public static void tankDrive(GearBox rightGearBox, GearBox leftGearBox) {
+	public static void tankDrive() {
 		double left = Warp7Robot.driver.getLeftY();
 		double right = Warp7Robot.driver.getRightY();
+		
+		left *= direction;
+		right *= direction;
 		
 		left = createDeadband(left);
 		right = createDeadband(right);
 		
-		move(left, right, leftGearBox, rightGearBox);
+		move(left, right);
 	}
 	
-	public static void cheesyDrive(GearBox rightGearBox, GearBox leftGearBox) {
+	public static void cheesyDrive() {
         double throttle = Warp7Robot.driver.getLeftY();
         double wheel = Warp7Robot.driver.getRightX();
+        
+        throttle *= direction;
+        wheel *= direction;
         
         throttle = createDeadband(throttle);
         wheel = createDeadband(wheel);
@@ -33,6 +53,7 @@ public class Drive {
         boolean quickTurn = Warp7Robot.driver.getLeftBumperbutton();
         
         if(throttle < 0 && !quickTurn)wheel *= -1; // chandler's modification
+        else if(quickTurn && direction != -1)wheel *= -1; // my + chandler's modification
 		
 		double angular_power = 0.0;
         double overPower = 0.0;
@@ -41,7 +62,7 @@ public class Drive {
         double lPower = 0.0;
         if (quickTurn) {
             overPower = .25;
-            sensitivity = .75;
+            sensitivity = .30;//used to be 0.75
             angular_power = wheel;
         } else {
             overPower = 0.0;
@@ -63,13 +84,11 @@ public class Drive {
             lPower += overPower * (-1.0 - rPower);
             rPower = -1.0;
         }
-        move(lPower, rPower, leftGearBox, rightGearBox);
+        move(lPower, rPower);
     }
 
-	private static void move(double left, double right, GearBox leftGearBox, GearBox rightGearBox) {
-		right *= direction;
-		left *= direction;
-		
+	private static void move(double left, double right) {	
+		right *= 0.94;
 		rightGearBox.set(right*(-1));
 		leftGearBox.set((left));
 	}
@@ -82,5 +101,18 @@ public class Drive {
 		num = Math.pow(num, 3);
 		
 		return num;
+	}
+
+	public static void stop() {
+		rightGearBox.set(0);
+		leftGearBox.set(0);
+	}
+	
+	public static void changeGear(){
+		PTO.set(!(PTO.get()));
+	}
+	
+	public static void changePTO(){
+		gearChange.set(!(gearChange.get()));
 	}
 }
