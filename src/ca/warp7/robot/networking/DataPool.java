@@ -36,7 +36,7 @@ public class DataPool {
 
     public void logInt(String key, int i) { logData(key, new Integer(i)); }
     public void logBoolean(String key, boolean b) { logData(key, new Boolean(b)); }
-    public void logNumber(String key, double d) { logData(key, new Double(d)); }
+    public void logDouble(String key, double d) { logData(key, new Double(d)); }
 
 	public static void collectAllData() {
         if(allPools.isEmpty()) return;

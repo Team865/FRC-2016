@@ -1,6 +1,5 @@
 package ca.warp7.robot.hardware;
 
-import ca.warp7.robot.hardware.controlerSettings.XboxControllerCommands;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.communication.FRCNetworkCommunicationsLibrary;
@@ -35,7 +34,6 @@ public class XboxController extends GenericHID {
     private final int m_port;
     private final byte[] m_axes;
     private final byte[] m_buttons;
-    protected XboxControllerCommands bindings;
     private DriverStation m_ds;
     private int m_outputs;
     private short m_leftRumble;
@@ -47,10 +45,8 @@ public class XboxController extends GenericHID {
      * @param port The port on the driver station that the controller is plugged
      *             into.
      */
-    public XboxController(final int port, XboxControllerCommands commands) {
+    public XboxController(final int port) {
         this(port, AxisType.NumAxis.value, ButtonType.NumButton.value);
-
-        bindings = commands;
 
         m_axes[AxisType.LX.value] = LEFTSTICKY;
         m_axes[AxisType.LY.value] = LEFTSTICKX;
