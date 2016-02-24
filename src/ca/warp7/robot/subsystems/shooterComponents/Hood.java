@@ -6,20 +6,20 @@ import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 public class Hood extends IterativeRobot {
-	
-	//Used https://github.com/CrossTheRoadElec/FRC-Examples/blob/master/JAVA_PositionClosedLoop/src/org/usfirst/frc/team469/robot/Robot.java
-	
-	CANTalon hood;
-	StringBuilder sb;
-	int loops;
-	
-	public Hood(CANTalon hood) {
-		this.hood = hood;
-		sb = new StringBuilder();
-		loops = 0;
-		
+
+    //Used https://github.com/CrossTheRoadElec/FRC-Examples/blob/master/JAVA_PositionClosedLoop/src/org/usfirst/frc/team469/robot/Robot.java
+
+    CANTalon hood;
+    StringBuilder sb;
+    int loops;
+
+    public Hood(CANTalon hood) {
+        this.hood = hood;
+        sb = new StringBuilder();
+        loops = 0;
+
 		/* lets grab the 360 degree position of the MagEncoder's absolute position */
-		int absolutePosition = hood.getPulseWidthPosition() & 0xFFF; /* mask out the bottom12 bits, we don't care about the wrap arounds */
+        int absolutePosition = hood.getPulseWidthPosition() & 0xFFF; /* mask out the bottom12 bits, we don't care about the wrap arounds */
         /* use the low level API to set the quad encoder signal */
         hood.setEncPosition(absolutePosition);
         
@@ -41,14 +41,14 @@ public class Hood extends IterativeRobot {
         hood.setProfile(0);
         hood.setF(0.0);
         hood.setP(0.01);
-        hood.setI(0.0); 
-        hood.setD(0.0);    
-        
-    	hood.changeControlMode(TalonControlMode.Position);
-	}
-	
-	public void set(double degrees){
-    	double targetPositionRotations = degrees/360;
-    	hood.set(targetPositionRotations);
-	}
+        hood.setI(0.0);
+        hood.setD(0.0);
+
+        hood.changeControlMode(TalonControlMode.Position);
+    }
+
+    public void set(double degrees) {
+        double targetPositionRotations = degrees / 360;
+        hood.set(targetPositionRotations);
+    }
 }

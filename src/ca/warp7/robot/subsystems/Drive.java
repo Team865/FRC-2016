@@ -6,56 +6,56 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Drive {
 
-	//https://code.google.com/p/3647robotics/source/browse/WCDRobot/src/Robot/DriveTrain.java?r=63
-	private static int direction;
-	private static GearBox rightGearBox;
-	private static GearBox leftGearBox;
-	private static Solenoid PTO;
-	private static Solenoid gearChange;
-	
-	public static void init(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_){
-		rightGearBox = right;
-		leftGearBox = left;
-		direction = 1;
-		PTO = PTO_;
-		gearChange = gearChange_;
-		PTO.set(false);
-		gearChange.set(false);
-	}
-	
-	public static void changeDirection(){
-		direction *= -1;
-	}
-	
-	public static void tankDrive() {
-		double left = Warp7Robot.driver.getLeftY();
-		double right = Warp7Robot.driver.getRightY();
-		
-		left *= direction;
-		right *= direction;
-		
-		left = createDeadband(left);
-		right = createDeadband(right);
-		
-		move(left, right);
-	}
-	
-	public static void cheesyDrive() {
+    //https://code.google.com/p/3647robotics/source/browse/WCDRobot/src/Robot/DriveTrain.java?r=63
+    private static int direction;
+    private static GearBox rightGearBox;
+    private static GearBox leftGearBox;
+    private static Solenoid PTO;
+    private static Solenoid gearChange;
+
+    public static void init(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_) {
+        rightGearBox = right;
+        leftGearBox = left;
+        direction = 1;
+        PTO = PTO_;
+        gearChange = gearChange_;
+        PTO.set(false);
+        gearChange.set(false);
+    }
+
+    public static void changeDirection() {
+        direction *= -1;
+    }
+
+    public static void tankDrive() {
+        double left = Warp7Robot.driver.getLeftY();
+        double right = Warp7Robot.driver.getRightY();
+
+        left *= direction;
+        right *= direction;
+
+        left = createDeadband(left);
+        right = createDeadband(right);
+
+        move(left, right);
+    }
+
+    public static void cheesyDrive() {
         double throttle = Warp7Robot.driver.getLeftY();
         double wheel = Warp7Robot.driver.getRightX();
-        
+
         throttle *= direction;
         wheel *= direction;
-        
+
         throttle = createDeadband(throttle);
         wheel = createDeadband(wheel);
-        
+
         boolean quickTurn = Warp7Robot.driver.getLeftBumperbutton();
-        
-        if(throttle < 0 && !quickTurn)wheel *= -1; // chandler's modification
-        else if(quickTurn && direction != -1)wheel *= -1; // my + chandler's modification
-		
-		double angular_power = 0.0;
+
+        if (throttle < 0 && !quickTurn) wheel *= -1; // chandler's modification
+        else if (quickTurn && direction != -1) wheel *= -1; // my + chandler's modification
+
+        double angular_power = 0.0;
         double overPower = 0.0;
         double sensitivity = 1.5;
         double rPower = 0.0;
@@ -87,32 +87,32 @@ public class Drive {
         move(lPower, rPower);
     }
 
-	private static void move(double left, double right) {	
-		right *= 0.94;
-		rightGearBox.set(right*(-1));
-		leftGearBox.set((left));
-	}
-	
-	private static double createDeadband(double num){
-		if(0.13 >= Math.abs(num)){
-			num = 0;
-		}
-		
-		num = Math.pow(num, 3);
-		
-		return num;
-	}
+    private static void move(double left, double right) {
+        right *= 0.94;
+        rightGearBox.set(right * (-1));
+        leftGearBox.set((left));
+    }
 
-	public static void stop() {
-		rightGearBox.set(0);
-		leftGearBox.set(0);
-	}
-	
-	public static void changeGear(){
-		PTO.set(!(PTO.get()));
-	}
-	
-	public static void changePTO(){
-		gearChange.set(!(gearChange.get()));
-	}
+    private static double createDeadband(double num) {
+        if (0.13 >= Math.abs(num)) {
+            num = 0;
+        }
+
+        num = Math.pow(num, 3);
+
+        return num;
+    }
+
+    public static void stop() {
+        rightGearBox.set(0);
+        leftGearBox.set(0);
+    }
+
+    public static void changeGear() {
+        PTO.set(!(PTO.get()));
+    }
+
+    public static void changePTO() {
+        gearChange.set(!(gearChange.get()));
+    }
 }

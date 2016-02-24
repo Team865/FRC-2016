@@ -1,362 +1,356 @@
 package ca.warp7.robot.hardware;
 
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SPI.Port;
+import edu.wpi.first.wpilibj.Timer;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.BitSet;
 import java.util.TimerTask;
-
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.SPI.Port;
-import edu.wpi.first.wpilibj.Timer;
 
 /**
  * @author Kevin Harrilal (kevin@team2168.org)
  */
 public class ADXRS453Gyro {
 
-	static final int DATA_SIZE = 4; //4 bytes = 32 bits
-	static final byte PARITY_BIT = (byte) 0x01; //parity check on first bit
-	static final byte STATUS_MASK = (byte) 0x0C;
-	static final byte FIRST_BYTE_DATA_MASK = (byte)  0x03; //mask to find sensor data bits on first byte
-	static final byte THIRD_BYTE_DATA_MASK = (byte) 0xFC; //mask to find sensor data bits on third byte
-	static final byte READ_COMMAND = (byte) 0x20; //0010 0000
+    static final int DATA_SIZE = 4; //4 bytes = 32 bits
+    static final byte PARITY_BIT = (byte) 0x01; //parity check on first bit
+    static final byte STATUS_MASK = (byte) 0x0C;
+    static final byte FIRST_BYTE_DATA_MASK = (byte) 0x03; //mask to find sensor data bits on first byte
+    static final byte THIRD_BYTE_DATA_MASK = (byte) 0xFC; //mask to find sensor data bits on third byte
+    static final byte READ_COMMAND = (byte) 0x20; //0010 0000
 
-	//different register values available
-	static final byte ADXRS453_REG_RATE     =  (byte) 0x00;
-	static final byte ADXRS453_REG_TEM      =  (byte) 0x02;
-	static final byte ADXRS453_REG_LOCST    =  (byte) 0x04;
-	static final byte ADXRS453_REG_HICST    =  (byte) 0x06;
-	static final byte ADXRS453_REG_QUAD     =  (byte) 0x08;
-	static final byte ADXRS453_REG_FAULT    =  (byte) 0x0A;
-	static final byte ADXRS453_REG_PID      =  (byte) 0x0C;
-	static final byte ADXRS453_REG_SN_HIGH  =  (byte) 0x0E;
-	static final byte ADXRS453_REG_SN_LOW   =  (byte) 0x10;
+    //different register values available
+    static final byte ADXRS453_REG_RATE = (byte) 0x00;
+    static final byte ADXRS453_REG_TEM = (byte) 0x02;
+    static final byte ADXRS453_REG_LOCST = (byte) 0x04;
+    static final byte ADXRS453_REG_HICST = (byte) 0x06;
+    static final byte ADXRS453_REG_QUAD = (byte) 0x08;
+    static final byte ADXRS453_REG_FAULT = (byte) 0x0A;
+    static final byte ADXRS453_REG_PID = (byte) 0x0C;
+    static final byte ADXRS453_REG_SN_HIGH = (byte) 0x0E;
+    static final byte ADXRS453_REG_SN_LOW = (byte) 0x10;
+    private static double CALIBRATION_PERIOD = 10.0; //seconds
+    //angle integration
+    public volatile double currentRate;
+    public volatile double deltaTime;
+    public volatile double currentTime;
+    public volatile double driftRate;
+    public volatile double accumulatedRate;
+    public volatile double timeElapsed;
+    //debugging binary messages
+    String binRate;
+    String binMessage;
+    private volatile double lastRate;
+    private volatile double lastTime;
+    private volatile double angle;
+    //other gyro register data
+    private volatile int id;
+    private volatile double temp;
+    private volatile int status;
+    //calibration loop
+    private volatile boolean calibrate;
+    private volatile boolean stopCalibrating;
+    private volatile boolean firstLoop;
+    private volatile boolean calCompleted;
+    private SPI spi;
+    //thread executor
+    private java.util.Timer executor;
+    private long period;
 
-	//angle integration
-	public volatile double currentRate;
-	private volatile double lastRate;
-	public volatile double deltaTime;
-	public volatile double currentTime;
-	private volatile double lastTime;
-	private volatile double angle;
-	public volatile double driftRate;
-	public volatile double accumulatedRate;
+    public ADXRS453Gyro() {
+        //run at 333Hz loop
+        this.period = (long) 3;
 
-	//other gyro register data
-	private volatile int id;
-	private volatile double temp;
-	private volatile int status;
+        spi = new SPI(Port.kOnboardCS0);
+        spi.setClockRate(4000000); //4 MHz (rRIO max, gyro can go high)
+        spi.setClockActiveHigh();
+        spi.setChipSelectActiveLow();
+        spi.setMSBFirst();
 
-	//calibration loop
-	private volatile boolean calibrate;
-	private volatile boolean stopCalibrating;
-	private volatile boolean firstLoop;
-	public volatile double timeElapsed;
-	private volatile boolean calCompleted;
-	private static double CALIBRATION_PERIOD = 10.0; //seconds
+        currentRate = 0.0;
+        driftRate = 0.0;
 
-	private SPI spi;
+        lastTime = 0;
+        currentTime = 0;
+        lastRate = 0;
+        deltaTime = 0;
+        accumulatedRate = 0;
 
-	//debugging binary messages
-	String binRate;
-	String binMessage;
+        calibrate();
 
-	//thread executor
-	private java.util.Timer executor;
-	private long period;
+        temp = 0;
+        id = 0;
 
-	public  ADXRS453Gyro() {
-		//run at 333Hz loop
-		this.period = (long)3;
+        reset();
+    }
 
-		spi = new SPI(Port.kOnboardCS0);
-		spi.setClockRate(4000000); //4 MHz (rRIO max, gyro can go high)
-		spi.setClockActiveHigh();
-		spi.setChipSelectActiveLow();
-		spi.setMSBFirst();
+    public static String getBinaryFromByte(byte[] bytes) {
+        String temp = "";
+        for (byte b : bytes)
+            temp += Integer.toBinaryString(b & 255 | 256).substring(1) + " ";
 
-		currentRate = 0.0;
-		driftRate = 0.0;
+        return temp;
+    }
 
-		lastTime = 0;
-		currentTime = 0;
-		lastRate = 0;
-		deltaTime = 0;
-		accumulatedRate = 0;
+    public void startThread() {
+        this.executor = new java.util.Timer();
+        this.executor.schedule(new GyroUpdateTask(this), 0L, this.period);
+    }
 
-		calibrate();
+    public String getMessageBin() {
+        return binMessage;
+    }
 
-		temp = 0;
-		id = 0;
+    public String getRateBin() {
+        return binRate;
+    }
 
-		reset();
-	}
+    /**
+     * Called to begin the gyros calibration sequence.
+     * This should only be called during a time when the robot will be
+     * stationary for a duration of time (~10 sec). Robot motion during
+     * the calibration sequence will cause significant steady state drift.
+     */
+    public final void calibrate() {
+        calibrate = true;
+        firstLoop = true;
+        stopCalibrating = false;
+        calCompleted = false;
+    }
 
-	public void startThread() {
-		this.executor = new java.util.Timer();
-		this.executor.schedule(new GyroUpdateTask(this), 0L, this.period);
-	}
+    /**
+     * @return true if the calibration sequence is active.
+     */
+    public final boolean isCalibrating() {
+        return calibrate;
+    }
 
-	public String getMessageBin() {
-		return binMessage;
-	}
+    /**
+     * @return true if the this gyro has successfully completed the last calibration sequence.
+     */
+    public final boolean hasCompletedCalibration() {
+        return calCompleted;
+    }
 
-	public String getRateBin() {
-		return binRate;
-	}
+    /**
+     * Stop the calibration sequence prematurely.
+     * e.g. if the match is starting
+     */
+    public final void stopCalibrating() {
+        stopCalibrating = true;
+    }
 
-	/**
-	 * Called to begin the gyros calibration sequence.
-	 * This should only be called during a time when the robot will be
-	 * stationary for a duration of time (~10 sec). Robot motion during
-	 * the calibration sequence will cause significant steady state drift.
-	 */
-	public final void calibrate() {
-		calibrate = true;
-		firstLoop = true;
-		stopCalibrating = false;
-		calCompleted = false;
-	}
+    /**
+     * Zero the gyro heading.
+     */
+    public final void reset() {
+        angle = 0;
+    }
 
-	/**
-	 * @return true if the calibration sequence is active.
-	 */
-	public final boolean isCalibrating() {
-		return calibrate;
-	}
+    public double getRate() {
+        return currentRate;
+    }
 
-	/**
-	 * @return true if the this gyro has successfully completed the last calibration sequence.
-	 */
-	public final boolean hasCompletedCalibration() {
-		return calCompleted;
-	}
+    public int getStatus() {
+        return status;
+    }
 
-	/**
-	 * Stop the calibration sequence prematurely.
-	 * e.g. if the match is starting
-	 */
-	public final void stopCalibrating() {
-		stopCalibrating = true;
-	}
+    public double getAngle() {
+        return angle;
+    }
 
-	/**
-	 * Zero the gyro heading.
-	 */
-	public final void reset() {
-		angle = 0;
-	}
+    public double getPos() {
+        return getAngle();
+    }
 
-	public double getRate() {
-		return currentRate;
-	}
+    public double getDeltatime() {
+        return deltaTime;
+    }
 
-	public int getStatus() {
-		return status;
-	}
-	public double getAngle() {
-		return angle;
-	}
+    public int getID() {
+        return id;
+    }
 
-	public double getPos() {
-		return getAngle();
-	}
+    public double getTemp() {
+        return temp;
+    }
 
-	public double getDeltatime() {
-		return deltaTime;
-	}
+    public short getRegisterValue(byte registerAddress) {
+        byte[] command = new byte[DATA_SIZE];
+        byte[] data = new byte[DATA_SIZE];
+        command[0] = 0;
+        command[1] = 0;
+        command[2] = 0;
+        command[3] = 0;
+        data[0] = 0;
+        data[1] = 0;
+        data[2] = 0;
+        data[3] = 0;
 
-	public int getID() {
-		return id;
-	}
+        command[0] = (byte) ((0x01 << 7) | (registerAddress >> 7));
+        command[1] = (byte) (registerAddress << 1);
 
-	public double getTemp() {
-		return temp;
-	}
+        checkParity(command);
+        spi.write(command, DATA_SIZE);
+        spi.read(false, data, DATA_SIZE);
 
-	public short getRegisterValue(byte registerAddress) {
-		byte[] command = new byte[DATA_SIZE];
-		byte[] data = new byte[DATA_SIZE];
-		command[0] = 0;
-		command[1] = 0;
-		command[2] = 0;
-		command[3] = 0;
-		data[0] = 0;
-		data[1] = 0;
-		data[2] = 0;
-		data[3] = 0;
+        short registerValue = 0;
+        registerValue = (short) (((short) (data[1]) << 11) |
+                ((short) data[2] << 3) |
+                ((short) (data[3] >> 5)));
 
-		command[0] = (byte) ((0x01 << 7) | (registerAddress >> 7));
-		command[1] = (byte) (registerAddress << 1);
+        return registerValue;
+    }
 
-		checkParity(command);
-		spi.write(command,DATA_SIZE);
-		spi.read(false, data, DATA_SIZE);
+    ////////// PRIVATE FUNCTIONS ////////////////
 
-		short registerValue = 0;
-		registerValue = (short) (((short)(data[1]) << 11) |
-				((short)data[2] << 3) |
-				((short)(data[3] >> 5)));
+    private void checkParity(byte[] data) {
+        if (BitSet.valueOf(data).cardinality() % 2 == 0)
+            data[3] |= PARITY_BIT;
+    }
 
-		return registerValue;
-	}
+    /**
+     * @return gyro rate in deg/s
+     */
+    private double getSensorData() {
+        byte[] command = new byte[DATA_SIZE];
+        byte[] data = new byte[DATA_SIZE];
+        command[0] = READ_COMMAND;
+        command[1] = 0;
+        command[2] = 0;
+        command[3] = 0;
+        data[0] = 0;
+        data[1] = 0;
+        data[2] = 0;
+        data[3] = 0;
 
-	public static String getBinaryFromByte(byte[] bytes) {
-		String temp = "";;
-		for (byte b : bytes)
-			temp += Integer.toBinaryString(b & 255 | 256).substring(1) + " ";
+        checkParity(command);
+        spi.write(command, DATA_SIZE);
+        spi.read(false, data, DATA_SIZE);
 
-		return temp;
-	}
+        return sensorDataMask(data);
+    }
 
-	////////// PRIVATE FUNCTIONS ////////////////
+    private double sensorDataMask(byte[] data) {
+        //returns full binary from gyro for debugging
+        binMessage = getBinaryFromByte(data);
 
-	private void checkParity(byte[] data) {
-		if(BitSet.valueOf(data).cardinality() % 2 == 0)
-			data[3] |= PARITY_BIT;
-	}
+        //00 Invalid data for sensor data response 01 Valid sensor data
+        //01 Valid data
+        //10 Sensor self-test data
+        //11 Read/write response
+        status = (short) (data[0] & STATUS_MASK) >> 2;
 
-	/**
-	 *
-	 * @return gyro rate in deg/s
-	 */
-	private double getSensorData() {
-		byte[] command = new byte[DATA_SIZE];
-		byte[] data = new byte[DATA_SIZE];
-		command[0] = READ_COMMAND;
-		command[1] = 0;
-		command[2] = 0;
-		command[3] = 0;
-		data[0] = 0;
-		data[1] = 0;
-		data[2] = 0;
-		data[3] = 0;
+        //Pull out bytes 25-10 as data bytes for gyro rate
+        byte[] rateByte = new byte[2];
+        rateByte[0] = (byte) ((byte) ((data[1] >> 2) & 0x3F) | ((data[0] & FIRST_BYTE_DATA_MASK) << 6));
+        rateByte[1] = (byte) ((byte) ((data[1] << 6) & 0xC0) | (data[2] & THIRD_BYTE_DATA_MASK) >> 2 & 0x3F);
 
-		checkParity(command);
-		spi.write(command,DATA_SIZE);
-		spi.read(false, data, DATA_SIZE);
+        //convert to 2's compo
+        short value = ByteBuffer.wrap(rateByte).order(ByteOrder.BIG_ENDIAN).getShort();
 
-		return sensorDataMask(data);
-	}
+        //view 16 bits in data for debugging purposes
+        byte[] newB = new byte[2];
+        newB[0] = (byte) ((value >> 8) & 0xff);
+        newB[1] = (byte) (value);
+        binRate = getBinaryFromByte(newB);
 
-	private double sensorDataMask(byte[] data) {
-		//returns full binary from gyro for debugging
-		binMessage = getBinaryFromByte(data);
+        //data has 80 LSB
+        return value / 80.0;
+    }
 
-		//00 Invalid data for sensor data response 01 Valid sensor data
-		//01 Valid data
-		//10 Sensor self-test data
-		//11 Read/write response
-		status = (short)(data[0] & STATUS_MASK) >> 2;
+    private int GetID() {
+        short id = getRegisterValue(ADXRS453_REG_PID);
+        return id >> 8;
+    }
 
-		//Pull out bytes 25-10 as data bytes for gyro rate
-		byte[] rateByte = new byte[2];
-		rateByte[0] = (byte) ((byte) ((data[1] >> 2) & 0x3F) | ((data[0] & FIRST_BYTE_DATA_MASK) << 6));
-		rateByte[1] = (byte) ((byte) ((data[1] << 6) & 0xC0) | (data[2] & THIRD_BYTE_DATA_MASK) >> 2 & 0x3F);
+    private double GetTemperature() {
+        //TODO: reverify calc, not sure this works
+        short registerValue = 0;
+        short temperature = 0;
 
-		//convert to 2's compo
-		short value = ByteBuffer.wrap(rateByte).order(ByteOrder.BIG_ENDIAN).getShort();
+        registerValue = getRegisterValue(ADXRS453_REG_TEM);
+        registerValue = (short) ((registerValue >> 6) - 0x31F);
+        temperature = (short) (registerValue / 5);
 
-		//view 16 bits in data for debugging purposes
-		byte[] newB = new byte[2];
-		newB[0] = (byte)((value >> 8) & 0xff);
-		newB[1] = (byte)(value);
-		binRate =  getBinaryFromByte(newB);
+        return temperature;
+    }
 
-		//data has 80 LSB
-		return value / 80.0;
-	}
+    /**
+     * Periodically executed to update the gyro state data.
+     */
+    private void update() {
+        if (lastTime == 0) {
+            lastTime = Timer.getFPGATimestamp();
+        }
 
-	private int GetID() {
-		short id = getRegisterValue(ADXRS453_REG_PID);
-		return id >> 8;
-	}
+        currentRate = getSensorData();
+        currentTime = Timer.getFPGATimestamp();
+        deltaTime = currentTime - lastTime;
 
-	private double GetTemperature() {
-		//TODO: reverify calc, not sure this works
-		short registerValue = 0;
-		short  temperature   = 0;
+        //TODO: see if we can fix low-pass filter to stop drift
+        //low-pass filter
+        //remove until it can be further tested. Yields incorrect results
+        //if(Math.abs(currentRate) < 2)
+        //	currentRate = 0;
 
-		registerValue = getRegisterValue(ADXRS453_REG_TEM);
-		registerValue = (short) ( (registerValue >> 6) - 0x31F);
-		temperature = (short) (registerValue / 5);
-
-		return temperature;
-	}
-
-	/**
-	 * Periodically executed to update the gyro state data.
-	 */
-	private void update() {
-		if(lastTime == 0) {
-			lastTime = Timer.getFPGATimestamp();
-		}
-
-		currentRate =  getSensorData();
-		currentTime = Timer.getFPGATimestamp();
-		deltaTime = currentTime - lastTime;
-
-		//TODO: see if we can fix low-pass filter to stop drift
-		//low-pass filter
-		//remove until it can be further tested. Yields incorrect results
-		//if(Math.abs(currentRate) < 2)
-		//	currentRate = 0;
-
-		//TODO System.out.println("currentRate="+currentRate);
-		// TODO System.out.println("driftRate="+driftRate);
-		angle += (currentRate - driftRate) * deltaTime;
-		/*
+        //TODO System.out.println("currentRate="+currentRate);
+        // TODO System.out.println("driftRate="+driftRate);
+        angle += (currentRate - driftRate) * deltaTime;
+        /*
 		 * Periodically update our drift rate by normalizing out drift
 		 * while the robot is not moving.
 		 * This code is re-entrant and can be stopped at any time
 		 *   (e.g. if a match starts).
 		 */
-		if(calibrate) {
-			if(firstLoop) {
-				driftRate = 0.0;
-				accumulatedRate = 0.0;
-				timeElapsed = 0.0;
-				firstLoop = false;
-			}
+        if (calibrate) {
+            if (firstLoop) {
+                driftRate = 0.0;
+                accumulatedRate = 0.0;
+                timeElapsed = 0.0;
+                firstLoop = false;
+            }
 
-			timeElapsed += deltaTime;
-			accumulatedRate += currentRate * deltaTime;
-			driftRate = accumulatedRate / timeElapsed; //angle/S
+            timeElapsed += deltaTime;
+            accumulatedRate += currentRate * deltaTime;
+            driftRate = accumulatedRate / timeElapsed; //angle/S
 
-			if (timeElapsed >= CALIBRATION_PERIOD || stopCalibrating) {
-				//finish calibration sequence
-				calibrate = false;
-				reset();
+            if (timeElapsed >= CALIBRATION_PERIOD || stopCalibrating) {
+                //finish calibration sequence
+                calibrate = false;
+                reset();
 
-				calCompleted = true;
-				//TODO System.out.println("Accumulated Offset: " + driftRate
-				//TODO 		+ "\tDelta Time: " + timeElapsed);
-			}
-		}
+                calCompleted = true;
+                //TODO System.out.println("Accumulated Offset: " + driftRate
+                //TODO 		+ "\tDelta Time: " + timeElapsed);
+            }
+        }
 
-		lastRate = currentRate;
-		lastTime = currentTime;
+        lastRate = currentRate;
+        lastTime = currentTime;
 
-		//Get all other Gyro data here
-		temp = GetTemperature();
-		id = GetID();
-	}
+        //Get all other Gyro data here
+        temp = GetTemperature();
+        id = GetID();
+    }
 
-	private class GyroUpdateTask extends TimerTask {
-		private ADXRS453Gyro gyro;
+    private class GyroUpdateTask extends TimerTask {
+        private ADXRS453Gyro gyro;
 
-		private GyroUpdateTask(ADXRS453Gyro gyro) {
-			if (gyro == null) {
-				throw new NullPointerException("Gyro pointer null");
-			}
-			this.gyro = gyro;
-		}
+        private GyroUpdateTask(ADXRS453Gyro gyro) {
+            if (gyro == null) {
+                throw new NullPointerException("Gyro pointer null");
+            }
+            this.gyro = gyro;
+        }
 
-		/**
-		 * Called periodically in its own thread
-		 */
-		public void run() {
-			gyro.update();
-		}
-	}
+        /**
+         * Called periodically in its own thread
+         */
+        public void run() {
+            gyro.update();
+        }
+    }
 }
