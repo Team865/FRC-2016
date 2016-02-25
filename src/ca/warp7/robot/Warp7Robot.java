@@ -7,8 +7,10 @@ import ca.warp7.robot.autonomous.TestAutonomous;
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.hardware.XboxController;
-import ca.warp7.robot.hardware.controlerSettings.Admin;
+import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
+import ca.warp7.robot.hardware.controlerSettings.Default;
 import ca.warp7.robot.networking.DataPool;
+import ca.warp7.robot.subsystems.Climber;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
@@ -23,15 +25,17 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Warp7Robot extends SampleRobot {
 
-	public static XboxController driver;   // set to ID 1 in DriverStation
-    public static XboxController operator; // set to ID 2 in DriverStation
-    public static ADXRS453Gyro gyro;
-    public static DigitalInput photosensor;
+	private static XboxController driver;   // set to ID 1 in DriverStation
+    private static XboxController operator; // set to ID 2 in DriverStation
+    private static ADXRS453Gyro gyro;
+    private static DigitalInput photosensor;
+    private static ControllerSettings controls;
     int camera_session;
     Image camera_frame;
 	private Shooter shooter;
 	private Intake intake;
 	private Drive drive;
+	private Climber climber;
 
     private static String messageBuffer = "";
     private static String warningBuffer = "";
@@ -40,25 +44,20 @@ public class Warp7Robot extends SampleRobot {
     private static boolean updateRobotTables = false;
     private static NetworkTable robotTable;
     private static NetworkTable visionTable;
-    private static DataPool shooter_;
-    private static DataPool gyro_;
     
     public Warp7Robot(){
         driver = new XboxController(0);
         operator = new XboxController(1);
+        controls = new Default();
         initRobot();
-        Admin.init();
-    }
-
-    private void controls() {
-    	Admin.periodic(driver, operator, gyro, shooter, intake, drive, shooter_, gyro_, photosensor);
+        controls.init(drive);
     }
 
     public void operatorControl() {
         while (isOperatorControl() && isEnabled()) {
-            cameraLoop();
-            controls();
-            drive.cheesyDrive();
+            controls.periodic(driver, operator, gyro, shooter, intake, drive, photosensor, climber);
+            controls.drive(driver, operator);
+            allLoop();
             Timer.delay(0.005);
         }
     }
@@ -66,7 +65,7 @@ public class Warp7Robot extends SampleRobot {
     public void autonomous() {
         double distance = 0.0;
         while(isAutonomous() && !isOperatorControl() && isEnabled()){
-            cameraLoop();
+            allEnabledLoop();
             distance = TestAutonomous.sinAuto(distance);
         }
     }
@@ -75,12 +74,35 @@ public class Warp7Robot extends SampleRobot {
         while (!isEnabled()) {
             shooter.stop();
             drive.stop();
+            climber.stop();
             intake.stop(); // TODO Investigate these, seem pointless
-            cameraLoop();
+            allLoop();
             //System.out.println("Robot Disabled!!!!!");
         }
     }
 
+   private void allEnabledLoop(){
+   		shooter.periodic(controls.getWantedRPM());
+   }
+   
+   private void allLoop() {
+	   allEnabledLoop();
+	   
+       try {
+           NIVision.IMAQdxGrab(camera_session, camera_frame, 1);
+           CameraServer.getInstance().setImage(camera_frame);
+       } catch (Exception e) {}
+       if(updateRobotTables) {
+           if(!messageBuffer.isEmpty()) robotTable.putString("messages", messageBuffer);
+           if(!warningBuffer.isEmpty()) robotTable.putString("warnings", Timer.getFPGATimestamp() + ": " + warningBuffer);
+           robotTable.putNumber("mode", (double) robotMode);
+           updateRobotTables = false;
+           DataPool.collectAllData();
+       }
+       
+       controls.logs(shooter);
+   }
+   
     private void initRobot(){
         try {
             camera_frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
@@ -102,25 +124,13 @@ public class Warp7Robot extends SampleRobot {
                 new Solenoid(Constants.GEAR_CHANGE), new Solenoid(Constants.PTO));
         intake = new Intake(new GearBox(Constants.INTAKE_MOTOR, Constants.INTAKE_MOTOR_TYPES),
                 new Solenoid(Constants.INTAKE_PISTON_A), new Solenoid(Constants.INTAKE_PISTON_B));
-
+        climber = new Climber();
+        
+        
         photosensor = new DigitalInput(Constants.INTAKE_PHOTOSENSOR);
 
         gyro = new ADXRS453Gyro();
         gyro.startThread();
-    }
-
-    private void cameraLoop() {
-        try {
-            NIVision.IMAQdxGrab(camera_session, camera_frame, 1);
-            CameraServer.getInstance().setImage(camera_frame);
-        } catch (Exception e) {}
-        if(updateRobotTables) {
-            if(!messageBuffer.isEmpty()) robotTable.putString("messages", messageBuffer);
-            if(!warningBuffer.isEmpty()) robotTable.putString("warnings", Timer.getFPGATimestamp() + ": " + warningBuffer);
-            robotTable.putNumber("mode", (double) robotMode);
-            updateRobotTables = false;
-            DataPool.collectAllData();
-        }
     }
 
     public static void logMessage(String msg) {

@@ -1,6 +1,6 @@
 package ca.warp7.robot.subsystems;
 
-import ca.warp7.robot.Warp7Robot;
+import ca.warp7.robot.Constants;
 import ca.warp7.robot.hardware.GearBox;
 import edu.wpi.first.wpilibj.Solenoid;
 
@@ -26,11 +26,17 @@ public class Drive {
     public void changeDirection() {
         direction *= -1;
     }
+    
+    public void setDirection(int direction){
+    	if(direction == Constants.BATTERY){
+    		direction = 1;
+    	}
+    	if(direction == Constants.INTAKE){
+    		direction = -1;
+    	}
+    }
 
-    public void tankDrive() {
-        double left = Warp7Robot.driver.getLeftY();
-        double right = Warp7Robot.driver.getRightY();
-
+    public static void tankDrive(double left, double right) {
         left *= direction;
         right *= direction;
 
@@ -40,17 +46,15 @@ public class Drive {
         move(left, right);
     }
 
-    public void cheesyDrive() {
-        double throttle = Warp7Robot.driver.getLeftY();
-        double wheel = Warp7Robot.driver.getRightX();
+    public static void cheesyDrive(double left, double right, boolean quickTurn) {
+        double throttle = left;
+        double wheel = right;
 
         throttle *= direction;
         wheel *= direction;
 
         throttle = createDeadband(throttle);
         wheel = createDeadband(wheel);
-
-        boolean quickTurn = Warp7Robot.driver.getLeftBumperbutton();
 
         if (throttle < 0 && !quickTurn) wheel *= -1; // chandler's modification
         else if (quickTurn && direction != -1) wheel *= -1; // my + chandler's modification
@@ -87,13 +91,13 @@ public class Drive {
         move(lPower, rPower);
     }
 
-    private void move(double left, double right) {
+    private static void move(double left, double right) {
         right *= 0.94;
         rightGearBox.set(right * (-1));
         leftGearBox.set((left));
     }
 
-    private double createDeadband(double num) {
+    private static double createDeadband(double num) {
         if (0.13 >= Math.abs(num)) {
             num = 0;
         }

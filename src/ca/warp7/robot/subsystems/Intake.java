@@ -5,8 +5,8 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Intake {
     private static double INTAKE_SPEED = 1.0;
-    public Solenoid initialArm;
-    public Solenoid adjustingArm;
+    private Solenoid initialArm;
+    private Solenoid adjustingArm;
     private GearBox box;
 
     public Intake(GearBox motor, Solenoid initialArm_, Solenoid adjustingArm_) {

@@ -1,14 +1,16 @@
 package ca.warp7.robot.hardware.controlerSettings;
 
+import ca.warp7.robot.Constants;
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.networking.DataPool;
+import ca.warp7.robot.subsystems.Climber;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.DigitalInput;
 
-public class Admin {
+public class Admin extends ControllerSettings{
 
 	private static double degrees;
     private static boolean increased;
@@ -18,8 +20,10 @@ public class Admin {
     private static boolean changed4;
     private static boolean changed5;
     private static int wantedRPM;
+    private static DataPool shooter_;
     
-    public static void init(){
+    @Override
+    public void init(Drive drive){
     	degrees = 0.0;
     	increased = false;
     	changed = false;
@@ -28,10 +32,12 @@ public class Admin {
     	changed4 = false;
     	changed5 = false;
     	wantedRPM = 0;
+    	shooter_ = new DataPool("shooter");
+    	drive.setDirection(Constants.INTAKE);
     }
     
-	public static void periodic(XboxController driver, XboxController operator, ADXRS453Gyro gyro, Shooter shooter, Intake intake, Drive drive, DataPool shooter_, DataPool gyro_, DigitalInput photosensor){
-		shooter.periodic(wantedRPM);
+    @Override
+	public void periodic(XboxController driver, XboxController operator, ADXRS453Gyro gyro, Shooter shooter, Intake intake, Drive drive, DigitalInput photosensor, Climber climber){
         shooter.setHood(-0.25);
 
         
@@ -100,10 +106,6 @@ public class Admin {
 
         if(driver.getRightTrigger() <= 0.5) wantedRPM = 0;
         if(driver.getStartButton()) degrees = 0.0;
-        
-        shooter_.logDouble("Wanted RPM", wantedRPM);
-        shooter_.logDouble("Current RPM", (shooter.getSpeed() * -1));
-        shooter_.logDouble("Hood Degree", degrees);
       
         shooter.setHood(degrees);
 
@@ -142,13 +144,7 @@ public class Admin {
             changed5 = false;
         }
 
-
-
-
-
-        gyro_.logDouble("Angle ", gyro.getAngle());
-        shooter_.logInt("Status", gyro.getStatus());
-        shooter_.logBoolean("Calibrating?", gyro.isCalibrating());
+        //=========================================//
         
         if(operator.getStartButton()){
             gyro.calibrate();
@@ -157,5 +153,22 @@ public class Admin {
             gyro.stopCalibrating();
         }
 
+	}
+
+	@Override
+	public void drive(XboxController driver, XboxController operator) {
+		Drive.cheesyDrive(driver.getLeftY(), driver.getRightX(), driver.getLeftBumperbutton());
+	}
+
+	@Override
+	public void logs(Shooter shooter) {
+		shooter_.logDouble("Wanted RPM", wantedRPM);
+        shooter_.logDouble("Current RPM", (shooter.getSpeed() * -1));
+        shooter_.logDouble("Hood Degree", degrees);
+	}
+
+	@Override
+	public double getWantedRPM() {
+		return wantedRPM;
 	}
 }

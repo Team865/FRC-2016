@@ -1,5 +1,6 @@
 package ca.warp7.robot.subsystems;
 
+import ca.warp7.robot.Constants;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.subsystems.shooterComponents.FlyWheel;
 import edu.wpi.first.wpilibj.CANTalon;
@@ -9,6 +10,8 @@ public class Shooter {
 	
     private CANTalon hood;
     private FlyWheel flyWheel;
+    private boolean fireAccess;
+    private boolean hardStopShot;
 
     /**
      * @param motor controller Should be a TalonSRX
@@ -16,6 +19,8 @@ public class Shooter {
     public Shooter(CANTalon hood_, Encoder enc, GearBox motor) {
         flyWheel = new FlyWheel(motor, enc);
         hood = hood_;
+        fireAccess = false;
+        hardStopShot = false;
         
         //hood.changeControlMode(TalonControlMode.Position);
         //hood.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Absolute);
@@ -27,7 +32,13 @@ public class Shooter {
     }
     
     public void periodic(double wantedRPM){
-    	flyWheel.prepareToFire(wantedRPM);
+    	if(fireAccess){
+    		if(hardStopShot){
+    			flyWheel.prepareToFire(Constants.HARDSTOP_RPM);
+    		}else{
+    			flyWheel.prepareToFire(wantedRPM);
+    		}
+    	}
     }
     
     public void set(double speed) {
@@ -45,4 +56,16 @@ public class Shooter {
     public void setHood(double degrees) {
         hood.set(degrees);
     }
+
+	public void fireAccessGranted() {
+		fireAccess = true;
+	}
+
+	public void fireAccessDenied() {
+		fireAccess = false;
+	}
+
+	public void hardStop(boolean b) {
+		hardStopShot = b;
+	}
 }

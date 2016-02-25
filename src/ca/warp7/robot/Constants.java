@@ -20,16 +20,21 @@ public class Constants {
     public static final int PTO = 1;
     public static final int INTAKE_PISTON_A = 3;
     public static final int INTAKE_PISTON_B = 2;
+    
     //General References
     public static final char TALON = 't';
     public static final char VICTOR = 'v';
     public static final char GEAR_BOX = 'g';
+	public static final int BATTERY = 0;
+	public static final int INTAKE = 1;
+	public static final double HARDSTOP_RPM = 3800;
     public static final char[] LEFT_DRIVE_MOTOR_TYPES = new char[]{VICTOR, VICTOR, VICTOR};
     public static final char[] RIGHT_DRIVE_MOTOR_TYPES = new char[]{VICTOR, VICTOR, VICTOR};
     public static final char[] INTAKE_MOTOR_TYPES = new char[]{VICTOR};
     public static final char[] FLY_WHEEL_MOTOR_TYPE = new char[]{VICTOR};
-    public static double SHOOTER_ANGLE = 75;
+    
     // Robot dimensions and stuff
+    public static double SHOOTER_ANGLE = 75;    
     private static double TARGET_HEIGHT = 3;
     private static double ROBOT_HEIGHT = 2;
     public static double HEIGHT_DIFFERENCE = TARGET_HEIGHT - ROBOT_HEIGHT;
