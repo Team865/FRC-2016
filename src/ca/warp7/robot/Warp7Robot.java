@@ -3,7 +3,7 @@ package ca.warp7.robot;
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
-import ca.warp7.robot.autonomous.TestAutonomous;
+import ca.warp7.robot.autonomous.AutonomousProg;
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.hardware.XboxController;
@@ -36,6 +36,7 @@ public class Warp7Robot extends SampleRobot {
 	private Intake intake;
 	private Drive drive;
 	private Climber climber;
+	private AutonomousProg auto;
 
     private static String messageBuffer = "";
     private static String warningBuffer = "";
@@ -63,10 +64,10 @@ public class Warp7Robot extends SampleRobot {
     }
 
     public void autonomous() {
-        double distance = 0.0;
+    	auto = new AutonomousProg(drive, shooter, intake);
         while(isAutonomous() && !isOperatorControl() && isEnabled()){
+        	auto.periodic(drive, shooter, intake);
             allEnabledLoop();
-            distance = TestAutonomous.sinAuto(distance);
         }
     }
 
@@ -77,7 +78,6 @@ public class Warp7Robot extends SampleRobot {
             climber.stop();
             intake.stop(); // TODO Investigate these, seem pointless
             allLoop();
-            //System.out.println("Robot Disabled!!!!!");
         }
     }
 
