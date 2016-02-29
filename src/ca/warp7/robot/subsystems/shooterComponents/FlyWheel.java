@@ -11,9 +11,13 @@ public class FlyWheel {
     static double integral = 0.0;
     static double prevError = 0.0;
     static double prevTime = 0.0;
+    private static int count;
+    private boolean firing;
     
 	public FlyWheel(GearBox motor, Encoder enc) {
 		// TODO Auto-generated constructor stub
+		firing = false;
+		count = 0;
 		flyWheel = motor;
 		encoder = enc;
         encoder.setReverseDirection(true);
@@ -22,41 +26,37 @@ public class FlyWheel {
 	}
 	
 	public void prepareToFire(double wantedRPM) {
-        double Kp = 0.01;
-        double Ki = 0.0;
-        double Kd = 0.0;
-        double setpoint = wantedRPM;
-        double PV = encoder.getRate() * -1;
-        double currTime = Timer.getFPGATimestamp();
-        double Dt = currTime - prevTime;
-        /*
-		   * Pseudo code (source Wikipedia)
-		   * 
-		     previous_error = 0
-		     integral = 0 
-		   start:
-		     error = setpoint � PV [actual_position]
-		     integral = integral + error*dt
-		     derivative = (error - previous_error)/dt
-		     output = Kp*error + Ki*integral + Kd*derivative
-		     previous_error = error
-		     wait(dt)
-		     goto start
-		   */
-        // calculate the difference between
-        // the desired value and the actual value
-        double error = setpoint - PV;
-        // track error over time, scaled to the timer interval
-        integral = integral + (error * Dt);
-        // determine the amount of change from the last time checked
-        double derivative = (error - prevError) / Dt;
-        // calculate how much to drive the output in order to get to the
-        // desired setpoint.
-        double output = (Kp * error) + (Ki * integral) + (Kd * derivative);
-        // remember the error for the next time around.
-        prevError = error;
-        prevTime = currTime;
-        flyWheel.set(output);
+		double currentRPM = encoder.getRate();
+		double percent = flyWheel.get();
+	 	double RPM_Error = wantedRPM - currentRPM;
+	 	
+	 	if(wantedRPM == 0){
+			flyWheel.set(0.0);
+		}else{
+			if(!firing){
+				count++;
+				if(wantedRPM <= 4000 || count >= 8 && wantedRPM <= 5000 || count >= 11 && wantedRPM <= 6000){
+					//System.out.println(" Wanted RPM = " + wantedRPM);
+					//System.out.println("Current RPM = " + currentRPM);
+					System.out.println("         % is : " + percent*100);
+					count = 0;
+				
+					
+					double wantedError = 150;
+					double increase = 0.005;
+					
+					if(RPM_Error >= 1500)increase = 0.02;
+					
+				    if(currentRPM <= wantedRPM+wantedError && currentRPM >= wantedRPM-wantedError){
+				    }else{
+				    	double interval = increase * RPM_Error/Math.abs(RPM_Error);
+				   	 	double toChange = flyWheel.get() + interval;
+				   	 	toChange = Math.max(-1, Math.min(1, toChange));
+				    	flyWheel.set(toChange);
+			        }
+				}
+			}
+		}
 		/*
 		double currentRPM = encoder.getRate();
 		double RPM_Error = currentRPM - wantedRPM;
@@ -74,6 +74,14 @@ public class FlyWheel {
 
 	public double getRate() {
 		return encoder.getRate();
+	}
+	
+	public void firing(){
+		firing = true;
+	}
+	
+	public void notFiring(){
+		firing = false;
 	}
 	
 	

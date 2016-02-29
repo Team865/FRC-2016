@@ -20,4 +20,6 @@ public abstract class ControllerSettings {
 	abstract public void logs(Shooter shooter);
 
 	abstract public double getWantedRPM();
+
+	abstract public boolean isFiring();
 }

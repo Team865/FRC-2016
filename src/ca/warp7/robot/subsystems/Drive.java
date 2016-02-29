@@ -59,6 +59,8 @@ public class Drive {
         if (throttle < 0 && !quickTurn) wheel *= -1; // chandler's modification
         else if (quickTurn && direction != -1) wheel *= -1; // my + chandler's modification
 
+        if(!quickTurn) wheel = Math.max(-0.6, Math.min(0.6, wheel)); //  chandler's modification again
+        
         double angular_power = 0.0;
         double overPower = 0.0;
         double sensitivity = 1.5;

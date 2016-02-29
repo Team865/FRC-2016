@@ -21,10 +21,12 @@ public class Admin extends ControllerSettings{
     private static boolean changed5;
     private static int wantedRPM;
     private static DataPool shooter_;
+    private static boolean firing;
     
     @Override
     public void init(Drive drive){
     	degrees = 0.0;
+    	firing = false;
     	increased = false;
     	changed = false;
     	changed2 = false;
@@ -38,8 +40,9 @@ public class Admin extends ControllerSettings{
     
     @Override
 	public void periodic(XboxController driver, XboxController operator, ADXRS453Gyro gyro, Shooter shooter, Intake intake, Drive drive, DigitalInput photosensor, Climber climber){
-        shooter.setHood(-0.25);
-
+        //if(degrees ==0)shooter.setHood(0.15);
+        if(wantedRPM >= 1)shooter.fireAccessGranted();
+        else shooter.fireAccessDenied();
         
         
         if (driver.getAbutton()) {
@@ -54,7 +57,9 @@ public class Admin extends ControllerSettings{
         if(driver.getDPad() == 0){
             if(!increased){
                 wantedRPM += 200;
+                
                 if(wantedRPM <= 1000 && wantedRPM >= 0)wantedRPM = 1000;
+                System.out.println(wantedRPM);
                 increased = true;
             }
         }
@@ -62,23 +67,29 @@ public class Admin extends ControllerSettings{
         if(driver.getDPad() == 180){
             if(!increased){
                 wantedRPM -= 200;
+
                 if(wantedRPM >= -1000 && wantedRPM <= 0)wantedRPM = -1000;
+                System.out.println(wantedRPM);
                 increased = true;
             }
         }
 
         if(driver.getDPad() == 90){
             if(!increased){
-                degrees += 2;
-                //if(degrees <= 0.15)degrees = 0.15;
+                degrees += 0.05;
+                
+                if(degrees <= 0.15)degrees = 0.15;
+                System.out.println(degrees);
                 increased = true;
             }
         }
 
         if(driver.getDPad() == 270){
             if(!increased){
-                degrees -= 2;
-                //if(degrees >= -0.15)degrees = -0.15;
+                degrees -= 0.05;
+                
+                if(degrees >= -0.15)degrees = -0.15;
+                System.out.println(degrees);
                 increased = true;
             }
         }
@@ -90,7 +101,9 @@ public class Admin extends ControllerSettings{
         if (driver.getLeftTrigger() >= 0.5) {
             if (driver.getRightBumperbutton()) {
                 intake.intake(false);
+                firing = true;
             } else {
+            	firing = false;
                 intake.intake(photosensor.get());
             }
         } else {
@@ -102,9 +115,14 @@ public class Admin extends ControllerSettings{
         }
 
         wantedRPM = Math.max(-6000, Math.min(6000, wantedRPM));
-        degrees = Math.max(0, Math.min(90, degrees));
+        degrees = Math.max(-1, Math.min(1, degrees));
 
-        if(driver.getRightTrigger() <= 0.5) wantedRPM = 0;
+        if(driver.getRightTrigger() <= 0.5) {
+        	wantedRPM = 0;
+        	if(!driver.getRightBumperbutton()){
+        		firing = false;
+        	}
+        }
         if(driver.getStartButton()) degrees = 0.0;
       
         shooter.setHood(degrees);
@@ -170,5 +188,10 @@ public class Admin extends ControllerSettings{
 	@Override
 	public double getWantedRPM() {
 		return wantedRPM;
+	}
+
+	@Override
+	public boolean isFiring() {
+		return firing;
 	}
 }

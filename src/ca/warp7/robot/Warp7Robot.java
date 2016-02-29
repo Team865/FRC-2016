@@ -58,6 +58,7 @@ public class Warp7Robot extends SampleRobot {
         while (isOperatorControl() && isEnabled()) {
             controls.periodic(driver, operator, gyro, shooter, intake, drive, photosensor, climber);
             controls.drive(driver, operator);
+            allEnabledLoop();
             allLoop();
             Timer.delay(0.005);
         }
@@ -68,6 +69,7 @@ public class Warp7Robot extends SampleRobot {
         while(isAutonomous() && !isOperatorControl() && isEnabled()){
         	auto.periodic(drive, shooter, intake);
             allEnabledLoop();
+            allLoop();
         }
     }
 
@@ -82,12 +84,10 @@ public class Warp7Robot extends SampleRobot {
     }
 
    private void allEnabledLoop(){
-   		shooter.periodic(controls.getWantedRPM());
+   		shooter.periodic(controls.getWantedRPM(), controls.isFiring());
    }
    
    private void allLoop() {
-	   allEnabledLoop();
-	   
        try {
            NIVision.IMAQdxGrab(camera_session, camera_frame, 1);
            CameraServer.getInstance().setImage(camera_frame);

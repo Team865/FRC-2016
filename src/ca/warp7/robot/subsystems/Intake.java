@@ -1,6 +1,7 @@
 package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.hardware.GearBox;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Intake {
@@ -30,7 +31,8 @@ public class Intake {
      *                      if it is false it will run
      */
     public void intake(boolean sensorReading) {
-        if (!sensorReading) {
+    	//put ! before sensorReading to fix
+        if (sensorReading) {
             box.set(-INTAKE_SPEED);
         } else {
             box.set(0);

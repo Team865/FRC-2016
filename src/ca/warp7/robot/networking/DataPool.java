@@ -23,7 +23,10 @@ public class DataPool {
         boolean alreadyExists = false;
         int index = 0;
         for(String item : keys) {
-            if (item.equals(key)) alreadyExists = true;
+            if (item.equals(key)) {
+            	alreadyExists = true;
+            	break;
+            }
             index++;
         }
         if(alreadyExists) {

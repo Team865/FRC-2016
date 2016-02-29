@@ -12,12 +12,12 @@ public class Shooter {
     private FlyWheel flyWheel;
     private boolean fireAccess;
     private boolean hardStopShot;
-
+    
     /**
      * @param motor controller Should be a TalonSRX
      */
     public Shooter(CANTalon hood_, Encoder enc, GearBox motor) {
-        flyWheel = new FlyWheel(motor, enc);
+    	flyWheel = new FlyWheel(motor, enc);
         hood = hood_;
         fireAccess = false;
         hardStopShot = false;
@@ -31,13 +31,21 @@ public class Shooter {
         return flyWheel.getRate();
     }
     
-    public void periodic(double wantedRPM){
+    public void periodic(double wantedRPM, boolean firing){
+    	if(firing){
+    		flyWheel.firing();
+    	}else{
+    		flyWheel.notFiring();
+    	}
+    	
     	if(fireAccess){
     		if(hardStopShot){
     			flyWheel.prepareToFire(Constants.HARDSTOP_RPM);
     		}else{
     			flyWheel.prepareToFire(wantedRPM);
     		}
+    	}else{
+    		flyWheel.prepareToFire(0.0);
     	}
     }
     
