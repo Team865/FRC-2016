@@ -55,7 +55,8 @@ public class Default extends ControllerSettings{
     @Override
 	public void periodic(XboxController driver, XboxController operator, ADXRS453Gyro gyro, Shooter shooter,
 			Intake intake, Drive drive, DigitalInput photosensor, Climber climber){
-		if(driver.getAbutton()){
+		//Toggles the long piston
+    	if(driver.getAbutton()){
 			if(!changedA){
 				intake.toggleAdjustingArm();
 				changedA = true;
@@ -64,6 +65,7 @@ public class Default extends ControllerSettings{
 			if(changedA)changedA = false;
 		}
 		
+    	//holding left trigger intakes holding right trigger out-takes
 		if(driver.getRightTrigger() >= 0.5 || driver.getLeftTrigger() >= 0.5){
 			if(driver.getLeftTrigger() >= 0.5 && driver.getRightTrigger() < 0.5){
 					if(!firing){
@@ -91,16 +93,19 @@ public class Default extends ControllerSettings{
 			}
 		}
 		
-		
+		//hold to change gears for driving let go and it goes back
 		if(driver.getRightBumperbutton()){
 			if(!changedRB){
 				drive.changeGear();
 				changedRB = true;
 			}
 		}else{
-			if(changedRB)changedRB = false;
+			if(changedRB){
+				drive.changeGear();
+				changedRB = false;
+			}
 		}
-		
+		// press to toggle which direction is front
 		if(driver.getRightStickButton()){
 			if(!changedRS){
 				drive.changeDirection();
@@ -110,6 +115,7 @@ public class Default extends ControllerSettings{
 			if(changedRS)changedRS = false;
 		}
 		
+		// hold to allow for climb
 		if(driver.getStartButton()){
 			if(!changedStart){
 				climbAccessGranted = true;
@@ -128,6 +134,8 @@ public class Default extends ControllerSettings{
 	
 		//=============================================//
 		
+		// makes the intake button for chandler shooting and only allows for it when the rpm is within 150
+		// also it moves forward during this period and moves the hood against the hardstop
 		if(operator.getRightTrigger() >= 0.5){
 			if(!O_ChangedRT){
 			shooter.fireAccessGranted();
@@ -140,6 +148,7 @@ public class Default extends ControllerSettings{
 			}
 		}
 		
+		//hold to be doing hardstop mode
 		if(operator.getLeftTrigger() >= 0.5){
 			if(!O_ChangedLT){
 				shooter.hardStop(true);
@@ -152,10 +161,12 @@ public class Default extends ControllerSettings{
 			}
 		}
 		
+		//hold to allow rev up
 		if(operator.getRightBumperbutton() && shooter.atTargetRPM()){
 			if(!O_ChangedRB){
 				driver.setRumble(RumbleType.kLeftRumble, 1);
 				driver.setRumble(RumbleType.kRightRumble, 1);
+		//TODO remove the negative to switch hood direction
 				shooter.setHood(-0.15);
 				driveOverride = true;
 				firing = true;
@@ -172,7 +183,7 @@ public class Default extends ControllerSettings{
 			}
 		}
 		
-		
+		//ignore this for now
 		//TIME TO START THE END OF TEH ROBIT SO WE NED DA SAFTEY TO MAKE SURE NO IDIOT STARTS CLIMBING
 		if(operator.getLeftBumperbutton() && operator.getRightBumperbutton() && climbAccessGranted){
 			if(operator.getXbutton()){
