@@ -31,9 +31,14 @@ public class Shooter {
         return flyWheel.getRate();
     }
     
-    public void periodic(double wantedRPM, boolean firing){
+    public boolean atTargetRPM(){
+    	return flyWheel.atTargetRPM();
+    }
+    
+    public void periodic(double wantedRPM, boolean firing, Drive drive){
     	if(firing){
     		flyWheel.firing();
+    		drive.overrideMotors(0.2);
     	}else{
     		flyWheel.notFiring();
     	}

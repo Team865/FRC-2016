@@ -26,6 +26,7 @@ public class Default extends ControllerSettings{
     private static boolean O_ChangedRB;
     
     private static boolean climbAccessGranted;
+    private static boolean driveOverride;
     private static boolean firing;
     
     @Override
@@ -45,6 +46,7 @@ public class Default extends ControllerSettings{
     	O_ChangedRB = false;
     	
     	climbAccessGranted = false;
+    	driveOverride = false;
     	firing = false;
     	
     	drive.setDirection(Constants.BATTERY);
@@ -150,11 +152,12 @@ public class Default extends ControllerSettings{
 			}
 		}
 		
-		if(operator.getRightBumperbutton()){
+		if(operator.getRightBumperbutton() && shooter.atTargetRPM()){
 			if(!O_ChangedRB){
 				driver.setRumble(RumbleType.kLeftRumble, 1);
 				driver.setRumble(RumbleType.kRightRumble, 1);
 				shooter.setHood(-0.15);
+				driveOverride = true;
 				firing = true;
 				O_ChangedRB = true;
 			}
@@ -163,6 +166,7 @@ public class Default extends ControllerSettings{
 				shooter.setHood(0);
 				driver.setRumble(RumbleType.kLeftRumble, 0);
 				driver.setRumble(RumbleType.kRightRumble, 0);
+				driveOverride = false;
 				firing = false;
 				O_ChangedRB = false;
 			}
@@ -197,7 +201,9 @@ public class Default extends ControllerSettings{
 
 	@Override
 	public void drive(XboxController driver, XboxController operator) {
-		Drive.cheesyDrive(driver.getLeftY(), driver.getRightX(), driver.getLeftBumperbutton());
+			if(!driveOverride){
+				Drive.cheesyDrive(driver.getLeftY(), driver.getRightX(), driver.getLeftBumperbutton());
+			}
 		}
 
 	@Override

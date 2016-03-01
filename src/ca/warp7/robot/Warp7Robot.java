@@ -51,10 +51,10 @@ public class Warp7Robot extends SampleRobot {
         operator = new XboxController(1);
         controls = new Default();
         initRobot();
-        controls.init(drive);
     }
 
     public void operatorControl() {
+    	controls.init(drive);
         while (isOperatorControl() && isEnabled()) {
             controls.periodic(driver, operator, gyro, shooter, intake, drive, photosensor, climber);
             controls.drive(driver, operator);
@@ -84,7 +84,7 @@ public class Warp7Robot extends SampleRobot {
     }
 
    private void allEnabledLoop(){
-   		shooter.periodic(controls.getWantedRPM(), controls.isFiring());
+   		shooter.periodic(controls.getWantedRPM(), controls.isFiring(), drive);
    }
    
    private void allLoop() {

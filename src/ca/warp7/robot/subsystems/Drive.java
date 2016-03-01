@@ -34,6 +34,7 @@ public class Drive {
     	if(direction == Constants.INTAKE){
     		direction = -1;
     	}
+    	System.out.println(direction);
     }
 
     public static void tankDrive(double left, double right) {
@@ -94,8 +95,8 @@ public class Drive {
     }
 
     private static void move(double left, double right) {
-        right *= 0.94;
-        rightGearBox.set(right * (-1));
+        //right *= 0.94;
+    	rightGearBox.set(right * (-1));
         leftGearBox.set((left));
     }
 
@@ -121,4 +122,8 @@ public class Drive {
     public void changePTO() {
         gearChange.set(!(gearChange.get()));
     }
+
+	public void overrideMotors(double d) {
+		move(d, d);
+	}
 }
