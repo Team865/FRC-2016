@@ -24,9 +24,11 @@ public class Default extends ControllerSettings{
     private static boolean O_ChangedY;
     private static boolean O_ChangedB;
     private static boolean O_ChangedRB;
+    private static boolean O_ChangedA;
+    private static boolean O_ChangedLB;
     
     private static boolean climbAccessGranted;
-    private static boolean driveOverride;
+    private static double hoodSpeed;
     private static boolean firing;
     
     @Override
@@ -44,9 +46,11 @@ public class Default extends ControllerSettings{
     	O_ChangedRT = false;
     	O_ChangedLT = false;
     	O_ChangedRB = false;
+    	O_ChangedA = false;
+    	O_ChangedLB = false;
     	
     	climbAccessGranted = false;
-    	driveOverride = false;
+    	hoodSpeed = 0.0;
     	firing = false;
     	
     	drive.setDirection(Constants.BATTERY);
@@ -166,9 +170,6 @@ public class Default extends ControllerSettings{
 			if(!O_ChangedRB){
 				driver.setRumble(RumbleType.kLeftRumble, 1);
 				driver.setRumble(RumbleType.kRightRumble, 1);
-		//TODO remove the negative to switch hood direction
-				shooter.setHood(-0.15);
-				driveOverride = true;
 				firing = true;
 				O_ChangedRB = true;
 			}
@@ -177,7 +178,6 @@ public class Default extends ControllerSettings{
 				shooter.setHood(0);
 				driver.setRumble(RumbleType.kLeftRumble, 0);
 				driver.setRumble(RumbleType.kRightRumble, 0);
-				driveOverride = false;
 				firing = false;
 				O_ChangedRB = false;
 			}
@@ -207,14 +207,33 @@ public class Default extends ControllerSettings{
 				}
 			}
 		}
+		
+		hoodSpeed = 0.2;
+		
+		if(operator.getAbutton()){
+			hoodSpeed = -0.2;
+		}
+		
+		if(operator.getLeftBumperbutton()){
+			hoodSpeed = -0.2;
+			if(!O_ChangedLB){
+				intake.raisePortculus(true);
+				O_ChangedLB = true;
+			}
+		}else{
+			if(O_ChangedLB){
+				intake.raisePortculus(false);
+				O_ChangedLB = false;
+			}
+		}
+		
+		shooter.setHood(hoodSpeed);
 	}
 
 
 	@Override
 	public void drive(XboxController driver, XboxController operator) {
-			if(!driveOverride){
-				Drive.cheesyDrive(driver.getLeftY(), driver.getRightX(), driver.getLeftBumperbutton());
-			}
+			Drive.cheesyDrive(driver.getLeftY(), driver.getRightX(), driver.getLeftBumperbutton());
 		}
 
 	@Override

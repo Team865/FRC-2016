@@ -18,6 +18,10 @@ public class Intake {
         adjustingArm.set(false);
     }
 
+    public void reset(){
+    	initialArm.set(true);
+    }
+    
     public void toggleInitialArm() {
         initialArm.set(!initialArm.get());
     }
@@ -59,5 +63,10 @@ public class Intake {
 
 	public void stopIntake() {
 		box.set(0);
+	}
+
+	public void raisePortculus(boolean b) {
+		adjustingArm.set(!b);
+		initialArm.set(!b);
 	}
 }

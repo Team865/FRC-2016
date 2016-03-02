@@ -55,6 +55,7 @@ public class Warp7Robot extends SampleRobot {
 
     public void operatorControl() {
     	controls.init(drive);
+    	intake.reset();
         while (isOperatorControl() && isEnabled()) {
             controls.periodic(driver, operator, gyro, shooter, intake, drive, photosensor, climber);
             controls.drive(driver, operator);

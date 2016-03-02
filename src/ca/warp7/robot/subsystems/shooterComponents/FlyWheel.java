@@ -36,28 +36,16 @@ public class FlyWheel {
 			flyWheel.set(0.0);
 		}else{
 			if(!firing){
-				count++;
-				if(wantedRPM <= 4000 || count >= 8 && wantedRPM <= 5000 || count >= 11 && wantedRPM <= 6000){
-					//System.out.println(" Wanted RPM = " + wantedRPM);
-					//if(percent == 1)System.out.println("Current RPM = " + currentRPM);
-					System.out.println("Current RPM = " + currentRPM);
-					System.out.println("         % is : " + percent*100);
-					count = 0;
+	
+					if(currentRPM < wantedRPM)flyWheel.set(1.0);
+					if(currentRPM > wantedRPM)flyWheel.set(0.0);
 				
-					
-					double wantedError = 150;
-					double increase = 0.005;
-					
-					if(RPM_Error >= 1500)increase = 0.02;
+					double wantedError = 100;
 					
 				    if(currentRPM <= wantedRPM+wantedError && currentRPM >= wantedRPM-wantedError){
 				    	atTargetRPM = true;
 				    }else{
 				    	atTargetRPM = false;
-				    	double interval = increase * RPM_Error/Math.abs(RPM_Error);
-				   	 	double toChange = flyWheel.get() + interval;
-				   	 	toChange = Math.max(-1, Math.min(1, toChange));
-				    	flyWheel.set(toChange);
 			        }
 				}
 			}
@@ -71,7 +59,6 @@ public class FlyWheel {
 		if(flyWheel.get() == 0.0 && wantedRPM != 0) flyWheel.set(0.7);
 		if(wantedRPM == 0)flyWheel.set(0.0);
 		*/
-    }
 	
 	public boolean atTargetRPM(){
 		return atTargetRPM;
