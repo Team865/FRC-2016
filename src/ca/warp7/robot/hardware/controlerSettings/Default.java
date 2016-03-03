@@ -8,6 +8,7 @@ import ca.warp7.robot.subsystems.Climber;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Default extends ControllerSettings{
@@ -24,8 +25,8 @@ public class Default extends ControllerSettings{
     private static boolean O_ChangedY;
     private static boolean O_ChangedB;
     private static boolean O_ChangedRB;
-    private static boolean O_ChangedA;
     private static boolean O_ChangedLB;
+    private static boolean O_ChangedBack;
     
     private static boolean climbAccessGranted;
     private static double hoodSpeed;
@@ -46,8 +47,8 @@ public class Default extends ControllerSettings{
     	O_ChangedRT = false;
     	O_ChangedLT = false;
     	O_ChangedRB = false;
-    	O_ChangedA = false;
     	O_ChangedLB = false;
+    	O_ChangedBack = false;
     	
     	climbAccessGranted = false;
     	hoodSpeed = 0.0;
@@ -58,7 +59,7 @@ public class Default extends ControllerSettings{
     
     @Override
 	public void periodic(XboxController driver, XboxController operator, ADXRS453Gyro gyro, Shooter shooter,
-			Intake intake, Drive drive, DigitalInput photosensor, Climber climber){
+			Intake intake, Drive drive, DigitalInput photosensor, Climber climber, Compressor compressor){
 		//Toggles the long piston
     	if(driver.getAbutton()){
 			if(!changedA){
@@ -175,7 +176,6 @@ public class Default extends ControllerSettings{
 			}
 		}else{
 			if(O_ChangedRB){
-				shooter.setHood(0);
 				driver.setRumble(RumbleType.kLeftRumble, 0);
 				driver.setRumble(RumbleType.kRightRumble, 0);
 				firing = false;
@@ -208,14 +208,14 @@ public class Default extends ControllerSettings{
 			}
 		}
 		
-		hoodSpeed = 0.2;
+		hoodSpeed = 0.3;
 		
 		if(operator.getAbutton()){
-			hoodSpeed = -0.2;
+			hoodSpeed = -0.3;
 		}
 		
 		if(operator.getLeftBumperbutton()){
-			hoodSpeed = -0.2;
+			hoodSpeed = -0.3;
 			if(!O_ChangedLB){
 				intake.raisePortculus(true);
 				O_ChangedLB = true;
@@ -228,7 +228,16 @@ public class Default extends ControllerSettings{
 		}
 		
 		shooter.setHood(hoodSpeed);
-	}
+	
+		if(operator.getBackButton()){
+			if(!O_ChangedBack){
+				compressor.setClosedLoopControl(!compressor.getClosedLoopControl());
+				O_ChangedBack = true;
+			}
+		}else{
+			if(O_ChangedBack)O_ChangedBack = false;
+		}
+    }
 
 
 	@Override

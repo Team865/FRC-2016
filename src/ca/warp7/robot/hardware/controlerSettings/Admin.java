@@ -8,6 +8,7 @@ import ca.warp7.robot.subsystems.Climber;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Admin extends ControllerSettings{
@@ -39,7 +40,7 @@ public class Admin extends ControllerSettings{
     }
     
     @Override
-	public void periodic(XboxController driver, XboxController operator, ADXRS453Gyro gyro, Shooter shooter, Intake intake, Drive drive, DigitalInput photosensor, Climber climber){
+	public void periodic(XboxController driver, XboxController operator, ADXRS453Gyro gyro, Shooter shooter, Intake intake, Drive drive, DigitalInput photosensor, Climber climber, Compressor compressor){
         //if(degrees ==0)shooter.setHood(0.15);
         if(wantedRPM >= 1)shooter.fireAccessGranted();
         else shooter.fireAccessDenied();

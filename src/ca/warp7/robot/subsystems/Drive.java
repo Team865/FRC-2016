@@ -2,6 +2,7 @@ package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.Constants;
 import ca.warp7.robot.hardware.GearBox;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Drive {
@@ -13,7 +14,7 @@ public class Drive {
     private static Solenoid PTO;
     private static Solenoid gearChange;
 
-    public Drive(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_) {
+    public Drive(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_, Compressor comp) {
         rightGearBox = right;
         leftGearBox = left;
         direction = 1;
@@ -27,14 +28,8 @@ public class Drive {
         direction *= -1;
     }
     
-    public void setDirection(int direction){
-    	if(direction == Constants.BATTERY){
-    		direction = 1;
-    	}
-    	if(direction == Constants.INTAKE){
-    		direction = -1;
-    	}
-    	System.out.println(direction);
+    public void setDirection(int direction_){
+    	direction = direction_;
     }
 
     public static void tankDrive(double left, double right) {
@@ -96,6 +91,7 @@ public class Drive {
 
     private static void move(double left, double right) {
         //right *= 0.94;
+    	
     	rightGearBox.set(right * (-1));
         leftGearBox.set((left));
     }

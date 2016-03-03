@@ -1,6 +1,7 @@
 package ca.warp7.robot.subsystems.shooterComponents;
 
 import ca.warp7.robot.hardware.GearBox;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -35,19 +36,19 @@ public class FlyWheel {
 	 	if(wantedRPM == 0){
 			flyWheel.set(0.0);
 		}else{
-			if(!firing){
-	
+			//if(!firing){
+					System.out.println(currentRPM);
 					if(currentRPM < wantedRPM)flyWheel.set(1.0);
 					if(currentRPM > wantedRPM)flyWheel.set(0.0);
 				
-					double wantedError = 100;
+					double wantedError = 350;
 					
 				    if(currentRPM <= wantedRPM+wantedError && currentRPM >= wantedRPM-wantedError){
 				    	atTargetRPM = true;
 				    }else{
 				    	atTargetRPM = false;
 			        }
-				}
+			//	}
 			}
 		}
 		/*

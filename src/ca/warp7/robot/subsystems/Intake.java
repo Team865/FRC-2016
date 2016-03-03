@@ -69,4 +69,9 @@ public class Intake {
 		adjustingArm.set(!b);
 		initialArm.set(!b);
 	}
+
+	public void lowerAdjustingArm() {
+		adjustingArm.set(true);
+		initialArm.set(true);
+	}
 }

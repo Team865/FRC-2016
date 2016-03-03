@@ -11,16 +11,20 @@ public class AutonomousProg {
 	
 	public AutonomousProg(Drive drive, Shooter shooter, Intake intake) {
 		count = 0;
-		drive.setDirection(Constants.BATTERY);
+		
+		intake.lowerAdjustingArm();
 		//intake.adjustedArmRetracted();
 	}
 
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
-		if(count <= 2000){
+		if(count <= 1500){
 			count++;
+			//GOES INTAKES FORWARD
 			drive.overrideMotors(1.0);
+			shooter.setHood(-0.5);
 		}else{
 			drive.overrideMotors(0);
+			shooter.setHood(0.3);
 		}
 		
 		/*TODO

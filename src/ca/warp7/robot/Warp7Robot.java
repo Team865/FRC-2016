@@ -16,6 +16,7 @@ import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -30,6 +31,7 @@ public class Warp7Robot extends SampleRobot {
     private static ADXRS453Gyro gyro;
     private static DigitalInput photosensor;
     private static ControllerSettings controls;
+    private static Compressor compressor;
     int camera_session;
     Image camera_frame;
 	private Shooter shooter;
@@ -56,8 +58,9 @@ public class Warp7Robot extends SampleRobot {
     public void operatorControl() {
     	controls.init(drive);
     	intake.reset();
+    	compressor.setClosedLoopControl(false);
         while (isOperatorControl() && isEnabled()) {
-            controls.periodic(driver, operator, gyro, shooter, intake, drive, photosensor, climber);
+            controls.periodic(driver, operator, gyro, shooter, intake, drive, photosensor, climber, compressor);
             controls.drive(driver, operator);
             allEnabledLoop();
             allLoop();
@@ -118,11 +121,14 @@ public class Warp7Robot extends SampleRobot {
         visionTable = NetworkTable.getTable("vision");
         robotTable = NetworkTable.getTable("status");
 
+        compressor = new Compressor(Constants.COMPRESSOR_PIN);
+        compressor.setClosedLoopControl(true);
+        
         shooter = new Shooter(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B),
                 new GearBox(Constants.FLY_WHEEL_PIN, Constants.FLY_WHEEL_MOTOR_TYPE));
         drive = new Drive(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
                 new GearBox(Constants.LEFT_DRIVE_MOTOR_PINS, Constants.LEFT_DRIVE_MOTOR_TYPES),
-                new Solenoid(Constants.GEAR_CHANGE), new Solenoid(Constants.PTO));
+                new Solenoid(Constants.GEAR_CHANGE), new Solenoid(Constants.PTO), compressor);
         intake = new Intake(new GearBox(Constants.INTAKE_MOTOR, Constants.INTAKE_MOTOR_TYPES),
                 new Solenoid(Constants.INTAKE_PISTON_A), new Solenoid(Constants.INTAKE_PISTON_B));
         climber = new Climber();

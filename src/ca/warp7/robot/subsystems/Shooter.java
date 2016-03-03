@@ -4,6 +4,7 @@ import ca.warp7.robot.Constants;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.subsystems.shooterComponents.FlyWheel;
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Encoder;
 
 public class Shooter {
@@ -38,7 +39,6 @@ public class Shooter {
     public void periodic(double wantedRPM, boolean firing, Drive drive){
     	if(firing){
     		flyWheel.firing();
-    		drive.overrideMotors(0.2);
     	}else{
     		flyWheel.notFiring();
     	}
