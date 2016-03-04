@@ -1,7 +1,6 @@
 package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.hardware.GearBox;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Intake {
@@ -68,10 +67,5 @@ public class Intake {
 	public void raisePortculus(boolean b) {
 		adjustingArm.set(!b);
 		initialArm.set(!b);
-	}
-
-	public void lowerAdjustingArm() {
-		adjustingArm.set(true);
-		initialArm.set(true);
 	}
 }

@@ -3,6 +3,8 @@ package ca.warp7.robot;
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
+import ca.warp7.robot.autonomous.Auto2;
+import ca.warp7.robot.autonomous.AutonomousBase;
 import ca.warp7.robot.autonomous.AutonomousProg;
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
@@ -23,6 +25,7 @@ import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 public class Warp7Robot extends SampleRobot {
 
@@ -38,8 +41,10 @@ public class Warp7Robot extends SampleRobot {
 	private Intake intake;
 	private Drive drive;
 	private Climber climber;
-	private AutonomousProg auto;
+	private AutonomousBase auto;
+	private SendableChooser autoChooser;
 
+	
     private static String messageBuffer = "";
     private static String warningBuffer = "";
     private static int robotMode = 0;
@@ -69,7 +74,7 @@ public class Warp7Robot extends SampleRobot {
     }
 
     public void autonomous() {
-    	auto = new AutonomousProg(drive, shooter, intake);
+    	auto = (AutonomousBase) autoChooser.getSelected();
         while(isAutonomous() && !isOperatorControl() && isEnabled()){
         	auto.periodic(drive, shooter, intake);
             allEnabledLoop();
@@ -123,7 +128,7 @@ public class Warp7Robot extends SampleRobot {
 
         compressor = new Compressor(Constants.COMPRESSOR_PIN);
         compressor.setClosedLoopControl(true);
-        
+    
         shooter = new Shooter(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B),
                 new GearBox(Constants.FLY_WHEEL_PIN, Constants.FLY_WHEEL_MOTOR_TYPE));
         drive = new Drive(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
@@ -138,6 +143,11 @@ public class Warp7Robot extends SampleRobot {
 
         gyro = new ADXRS453Gyro();
         gyro.startThread();
+    
+        autoChooser = new SendableChooser();
+
+    	autoChooser.addDefault("Intake forward", new AutonomousProg(drive, shooter, intake));
+    	autoChooser.addObject("Battery First", new Auto2(drive, shooter, intake));
     }
 
     public static void logMessage(String msg) {

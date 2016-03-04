@@ -4,14 +4,14 @@ import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 
-public class AutonomousProg extends AutonomousBase{
+public class Auto2 {
 
 	private int count;
 	
-	public AutonomousProg(Drive drive, Shooter shooter, Intake intake) {
+	public Auto2(Drive drive, Shooter shooter, Intake intake) {
 		count = 0;
 		
-		intake.raisePortculus(false);
+		intake.raisePortculus(true);
 		//intake.adjustedArmRetracted();
 	}
 
@@ -19,8 +19,7 @@ public class AutonomousProg extends AutonomousBase{
 		if(count <= 1500){
 			count++;
 			//GOES INTAKES FORWARD
-			drive.overrideMotors(1.0);
-			shooter.setHood(-0.5);
+			drive.overrideMotors(-1.0);
 		}else{
 			drive.overrideMotors(0);
 			shooter.setHood(0.3);

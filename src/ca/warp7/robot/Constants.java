@@ -30,6 +30,8 @@ public class Constants {
     public static final char GEAR_BOX = 'g';
 	public static final int BATTERY = -1;
 	public static final int INTAKE = 1;
+	public static final boolean LOW_GEAR = false;
+	public static final boolean HIGH_GEAR = true;
 	public static final double HARDSTOP_RPM = 4500;
     public static final char[] LEFT_DRIVE_MOTOR_TYPES = new char[]{VICTOR, VICTOR, VICTOR};
     public static final char[] RIGHT_DRIVE_MOTOR_TYPES = new char[]{VICTOR, VICTOR, VICTOR};

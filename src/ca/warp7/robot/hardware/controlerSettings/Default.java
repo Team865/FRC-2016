@@ -54,6 +54,8 @@ public class Default extends ControllerSettings{
     	hoodSpeed = 0.0;
     	firing = false;
     	
+    	drive.setGear(Constants.HIGH_GEAR);
+    	
     	drive.setDirection(Constants.BATTERY);
     }
     

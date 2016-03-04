@@ -1,6 +1,5 @@
 package ca.warp7.robot.subsystems;
 
-import ca.warp7.robot.Constants;
 import ca.warp7.robot.hardware.GearBox;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -26,6 +25,10 @@ public class Drive {
 
     public void changeDirection() {
         direction *= -1;
+    }
+    
+    public void setGear(boolean gear){
+    	gearChange.set(gear);
     }
     
     public void setDirection(int direction_){
