@@ -3,15 +3,16 @@ package ca.warp7.robot;
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
-import ca.warp7.robot.autonomous.Auto2;
+import ca.warp7.robot.autonomous.BatteryFirst;
 import ca.warp7.robot.autonomous.AutonomousBase;
-import ca.warp7.robot.autonomous.AutonomousProg;
+import ca.warp7.robot.autonomous.IntakeFirst;
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
 import ca.warp7.robot.hardware.controlerSettings.Default;
 import ca.warp7.robot.networking.DataPool;
+import ca.warp7.robot.networking.GUITableListener;
 import ca.warp7.robot.subsystems.Climber;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
@@ -25,7 +26,6 @@ import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 public class Warp7Robot extends SampleRobot {
 
@@ -42,9 +42,9 @@ public class Warp7Robot extends SampleRobot {
 	private Drive drive;
 	private Climber climber;
 	private AutonomousBase auto;
-	private SendableChooser autoChooser;
-
 	
+	
+	private static NetworkTable autonTable;
     private static String messageBuffer = "";
     private static String warningBuffer = "";
     private static int robotMode = 0;
@@ -52,6 +52,8 @@ public class Warp7Robot extends SampleRobot {
     private static boolean updateRobotTables = false;
     private static NetworkTable robotTable;
     private static NetworkTable visionTable;
+    public static double autonID;
+    
     
     public Warp7Robot(){
         driver = new XboxController(0);
@@ -74,7 +76,10 @@ public class Warp7Robot extends SampleRobot {
     }
 
     public void autonomous() {
-    	auto = (AutonomousBase) autoChooser.getSelected();
+    	//auto = new IntakeFirst(drive, shooter, intake);
+    	auto = new BatteryFirst(drive, shooter, intake);
+    	
+    	
         while(isAutonomous() && !isOperatorControl() && isEnabled()){
         	auto.periodic(drive, shooter, intake);
             allEnabledLoop();
@@ -89,6 +94,7 @@ public class Warp7Robot extends SampleRobot {
             climber.stop();
             intake.stop(); // TODO Investigate these, seem pointless
             allLoop();
+            Timer.delay(0.005);
         }
     }
 
@@ -123,6 +129,9 @@ public class Warp7Robot extends SampleRobot {
             NIVision.IMAQdxStartAcquisition(camera_session);
         } catch (Exception e) {
         }
+        autonTable = NetworkTable.getTable("autonSelect");
+        autonID = 0;
+        autonTable.addTableListener(new GUITableListener());
         visionTable = NetworkTable.getTable("vision");
         robotTable = NetworkTable.getTable("status");
 
@@ -143,11 +152,7 @@ public class Warp7Robot extends SampleRobot {
 
         gyro = new ADXRS453Gyro();
         gyro.startThread();
-    
-        autoChooser = new SendableChooser();
 
-    	autoChooser.addDefault("Intake forward", new AutonomousProg(drive, shooter, intake));
-    	autoChooser.addObject("Battery First", new Auto2(drive, shooter, intake));
     }
 
     public static void logMessage(String msg) {

@@ -28,7 +28,7 @@ public class Drive {
     }
     
     public void setGear(boolean gear){
-    	gearChange.set(gear);
+    	PTO.set(gear); // TODO gear pto swap
     }
     
     public void setDirection(int direction_){
@@ -59,6 +59,7 @@ public class Drive {
         else if (quickTurn && direction != -1) wheel *= -1; // my + chandler's modification
 
         if(!quickTurn) wheel = Math.max(-0.6, Math.min(0.6, wheel)); //  chandler's modification again
+        if(!gearChange.get()) throttle = Math.max(-1, Math.min(1, throttle)); // limit power
         
         double angular_power = 0.0;
         double overPower = 0.0;
@@ -94,7 +95,7 @@ public class Drive {
 
     private static void move(double left, double right) {
         //right *= 0.94;
-    	
+    	right *= 0.94;
     	rightGearBox.set(right * (-1));
         leftGearBox.set((left));
     }

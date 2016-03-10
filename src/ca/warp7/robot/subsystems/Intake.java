@@ -68,4 +68,8 @@ public class Intake {
 		adjustingArm.set(!b);
 		initialArm.set(!b);
 	}
+
+	public void intakeSlower(boolean b) {
+		box.set(-INTAKE_SPEED);
+	}
 }

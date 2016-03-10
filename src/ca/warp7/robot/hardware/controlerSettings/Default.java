@@ -53,9 +53,7 @@ public class Default extends ControllerSettings{
     	climbAccessGranted = false;
     	hoodSpeed = 0.0;
     	firing = false;
-    	
-    	drive.setGear(Constants.HIGH_GEAR);
-    	
+    	    	
     	drive.setDirection(Constants.BATTERY);
     }
     
@@ -80,7 +78,7 @@ public class Default extends ControllerSettings{
 						changedLT = true;
 						changedRT = false;
 					}else{
-						intake.intake(true);
+						intake.intakeSlower(true);
 						changedLT = true;
 						changedRT = false;
 					}
@@ -101,17 +99,11 @@ public class Default extends ControllerSettings{
 		}
 		
 		//hold to change gears for driving let go and it goes back
-		if(driver.getRightBumperbutton()){
-			if(!changedRB){
-				drive.changeGear();
-				changedRB = true;
-			}
-		}else{
-			if(changedRB){
-				drive.changeGear();
-				changedRB = false;
-			}
-		}
+	
+		drive.setGear(driver.getRightBumperbutton());
+		
+		
+		
 		// press to toggle which direction is front
 		if(driver.getRightStickButton()){
 			if(!changedRS){
@@ -210,14 +202,14 @@ public class Default extends ControllerSettings{
 			}
 		}
 		
-		hoodSpeed = 0.3;
+		hoodSpeed = 0.4;
 		
 		if(operator.getAbutton()){
-			hoodSpeed = -0.3;
+			hoodSpeed = -0.4;
 		}
 		
 		if(operator.getLeftBumperbutton()){
-			hoodSpeed = -0.3;
+			hoodSpeed = -0.4;
 			if(!O_ChangedLB){
 				intake.raisePortculus(true);
 				O_ChangedLB = true;

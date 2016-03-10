@@ -15,6 +15,7 @@ public class FlyWheel {
     private static int count;
     private boolean firing;
     private boolean atTargetRPM;
+    private EncoderThread encoderThread;
     
 	public FlyWheel(GearBox motor, Encoder enc) {
 		// TODO Auto-generated constructor stub
@@ -26,9 +27,13 @@ public class FlyWheel {
         encoder.setDistancePerPulse(3);
         prevTime = Timer.getFPGATimestamp();
         atTargetRPM = false;
+        encoderThread = new EncoderThread(enc, motor);
+        Thread t = new Thread(encoderThread);
+        t.start();
 	}
 	
 	public void prepareToFire(double wantedRPM) {
+		/*
 		double currentRPM = encoder.getRate();
 		double percent = flyWheel.get();
 	 	double RPM_Error = wantedRPM - currentRPM;
@@ -50,7 +55,18 @@ public class FlyWheel {
 			        }
 			//	}
 			}
-		}
+		} */
+		encoderThread.wantedRPM = (float) wantedRPM;
+		double currentRPM = encoderThread.currentRPM;
+		double wantedError = 350;
+		
+	    if(currentRPM <= wantedRPM+wantedError && currentRPM >= wantedRPM-wantedError){
+	    	atTargetRPM = true;
+	    }else{
+	    	atTargetRPM = false;
+        }
+	    System.out.println(currentRPM);
+	}
 		/*
 		double currentRPM = encoder.getRate();
 		double RPM_Error = currentRPM - wantedRPM;
@@ -64,10 +80,10 @@ public class FlyWheel {
 	public boolean atTargetRPM(){
 		return atTargetRPM;
 	}
-
-	public void set(double speed) {
-		flyWheel.set(speed);
-	}
+//
+//	public void set(double speed) {
+//		flyWheel.set(speed);
+//	}
 
 	public double getRate() {
 		return encoder.getRate();

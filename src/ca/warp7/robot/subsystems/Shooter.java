@@ -54,11 +54,11 @@ public class Shooter {
     }
     
     public void set(double speed) {
-        flyWheel.set(speed);
+        //flyWheel.set(speed);
     }
 
     public void stop() {
-        flyWheel.set(0);
+        //flyWheel.set(0);
     }
 
     public void safety() {
