@@ -53,6 +53,8 @@ public class Warp7Robot extends SampleRobot {
     private static NetworkTable robotTable;
     private static NetworkTable visionTable;
     public static double autonID;
+    public static double autonDistance;
+    public static double autonAngle;
     
     
     public Warp7Robot(){
@@ -131,8 +133,11 @@ public class Warp7Robot extends SampleRobot {
         }
         autonTable = NetworkTable.getTable("autonSelect");
         autonID = 0;
+        autonDistance = 0;
+        autonAngle = 0;
         autonTable.addTableListener(new GUITableListener());
         visionTable = NetworkTable.getTable("vision");
+        visionTable.addTableListener(new GUITableListener());
         robotTable = NetworkTable.getTable("status");
 
         compressor = new Compressor(Constants.COMPRESSOR_PIN);
