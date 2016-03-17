@@ -13,6 +13,14 @@ public class GUITableListener implements ITableListener {
 			double i = Double.parseDouble(arg2.toString());
 			System.out.println("set auton to ID " + i);
 			Warp7Robot.autonID = i;
+		} else if(arg1.equals("distance")) {
+			double i = Double.parseDouble(arg2.toString());
+			 System.out.println("got new distance of " + i);
+			 Warp7Robot.autonDistance = i;
+		} else if(arg1.equals("azimuth")) {
+			 double i = Double.parseDouble(arg2.toString());
+			 System.out.println("got new angle of " + i);
+			 Warp7Robot.autonAngle = i;
 		}
 	}
 

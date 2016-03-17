@@ -1,13 +1,14 @@
 package ca.warp7.robot.subsystems.shooterComponents;
 
 import ca.warp7.robot.hardware.GearBox;
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 
 public class FlyWheel {
 
-	private GearBox flyWheel;
+	private CANTalon flyWheel;
     private Encoder encoder;
     static double integral = 0.0;
     static double prevError = 0.0;
@@ -17,7 +18,7 @@ public class FlyWheel {
     private boolean atTargetRPM;
     private EncoderThread encoderThread;
     
-	public FlyWheel(GearBox motor, Encoder enc) {
+	public FlyWheel(CANTalon motor, Encoder enc) {
 		// TODO Auto-generated constructor stub
 		firing = false;
 		count = 0;
@@ -80,7 +81,6 @@ public class FlyWheel {
 	public boolean atTargetRPM(){
 		return atTargetRPM;
 	}
-//
 //	public void set(double speed) {
 //		flyWheel.set(speed);
 //	}

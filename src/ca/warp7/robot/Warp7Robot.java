@@ -53,7 +53,8 @@ public class Warp7Robot extends SampleRobot {
     private static NetworkTable robotTable;
     private static NetworkTable visionTable;
     public static double autonID;
-    
+    public static double autonDistance;
+    public static double autonAngle;
     
     public Warp7Robot(){
         driver = new XboxController(0);
@@ -123,7 +124,7 @@ public class Warp7Robot extends SampleRobot {
             camera_frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 
             // the camera name (ex "cam0") can be found through the roborio web interface
-            camera_session = NIVision.IMAQdxOpenCamera("cam1",
+            camera_session = NIVision.IMAQdxOpenCamera("cam0",
                     NIVision.IMAQdxCameraControlMode.CameraControlModeController);
             NIVision.IMAQdxConfigureGrab(camera_session);
             NIVision.IMAQdxStartAcquisition(camera_session);
@@ -131,8 +132,12 @@ public class Warp7Robot extends SampleRobot {
         }
         autonTable = NetworkTable.getTable("autonSelect");
         autonID = 0;
+        autonDistance = 0;
+        autonAngle = 0;
+        
         autonTable.addTableListener(new GUITableListener());
         visionTable = NetworkTable.getTable("vision");
+        visionTable.addTableListener(new GUITableListener());
         robotTable = NetworkTable.getTable("status");
 
         compressor = new Compressor(Constants.COMPRESSOR_PIN);

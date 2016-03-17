@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Encoder;
 
 public class Shooter {
 	
-    private CANTalon hood;
+    private GearBox hood;
     private FlyWheel flyWheel;
     private boolean fireAccess;
     private boolean hardStopShot;
@@ -17,8 +17,8 @@ public class Shooter {
      * @param motor controller Should be a TalonSRX
      */
     public Shooter(CANTalon hood_, Encoder enc, GearBox motor) {
-    	flyWheel = new FlyWheel(motor, enc);
-        hood = hood_;
+    	flyWheel = new FlyWheel(hood_, enc);
+        hood = motor;
         fireAccess = false;
         hardStopShot = false;
         
