@@ -6,7 +6,6 @@ import com.ni.vision.NIVision.Image;
 import ca.warp7.robot.autonomous.BatteryFirst;
 import ca.warp7.robot.autonomous.AutonomousBase;
 import ca.warp7.robot.autonomous.IntakeFirst;
-import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
@@ -55,6 +54,7 @@ public class Warp7Robot extends SampleRobot {
     public static double autonID;
     public static double autonDistance;
     public static double autonAngle;
+    private int counter;
     
     public Warp7Robot(){
         driver = new XboxController(0);
@@ -104,6 +104,7 @@ public class Warp7Robot extends SampleRobot {
    }
    
    private void allLoop() {
+	   if(counter++ >= 10) {
        try {
            NIVision.IMAQdxGrab(camera_session, camera_frame, 1);
            CameraServer.getInstance().setImage(camera_frame);
@@ -117,6 +118,9 @@ public class Warp7Robot extends SampleRobot {
        }
        
        controls.logs(shooter);
+       counter = 0;
+       System.out.println("Gyro: " + drive.getRotation());
+	   }
    }
    
     private void initRobot(){
