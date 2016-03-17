@@ -4,7 +4,7 @@ public class Constants {
     //PWM Pins
     public static final int[] LEFT_DRIVE_MOTOR_PINS = new int[]{0, 1, 2};
     public static final int[] RIGHT_DRIVE_MOTOR_PINS = new int[]{3, 4, 5};
-    public static final int[] FLY_WHEEL_PIN = new int[]{6};
+    public static final int FLY_WHEEL_PIN = 6;
     public static final int[] INTAKE_MOTOR = new int[]{7};
 
     //CAN ID's

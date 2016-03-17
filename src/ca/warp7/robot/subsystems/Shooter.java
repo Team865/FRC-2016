@@ -5,10 +5,11 @@ import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.subsystems.shooterComponents.FlyWheel;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Victor;
 
 public class Shooter {
 	
-    private GearBox hood;
+    private Victor hood;
     private FlyWheel flyWheel;
     private boolean fireAccess;
     private boolean hardStopShot;
@@ -16,7 +17,7 @@ public class Shooter {
     /**
      * @param motor controller Should be a TalonSRX
      */
-    public Shooter(CANTalon hood_, Encoder enc, GearBox motor) {
+    public Shooter(CANTalon hood_, Encoder enc, Victor motor) {
     	flyWheel = new FlyWheel(hood_, enc);
         hood = motor;
         fireAccess = false;

@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Warp7Robot extends SampleRobot {
@@ -144,7 +145,7 @@ public class Warp7Robot extends SampleRobot {
         compressor.setClosedLoopControl(true);
     
         shooter = new Shooter(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B),
-                new GearBox(Constants.FLY_WHEEL_PIN, Constants.FLY_WHEEL_MOTOR_TYPE));
+                new Victor(Constants.FLY_WHEEL_PIN));
         drive = new Drive(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
                 new GearBox(Constants.LEFT_DRIVE_MOTOR_PINS, Constants.LEFT_DRIVE_MOTOR_TYPES),
                 new Solenoid(Constants.GEAR_CHANGE), new Solenoid(Constants.PTO), compressor);
