@@ -32,7 +32,6 @@ public class Warp7Robot extends SampleRobot {
 
 	private static XboxController driver;   // set to ID 1 in DriverStation
     private static XboxController operator; // set to ID 2 in DriverStation
-    private static ADXRS453Gyro gyro;
     private static DigitalInput photosensor;
     private static ControllerSettings controls;
     private static Compressor compressor;
@@ -69,7 +68,7 @@ public class Warp7Robot extends SampleRobot {
     	intake.reset();
     	compressor.setClosedLoopControl(false);
         while (isOperatorControl() && isEnabled()) {
-            controls.periodic(driver, operator, gyro, shooter, intake, drive, photosensor, climber, compressor);
+            controls.periodic(driver, operator, shooter, intake, drive, photosensor, climber, compressor);
             controls.drive(driver, operator);
             allEnabledLoop();
             allLoop();
@@ -155,9 +154,6 @@ public class Warp7Robot extends SampleRobot {
         
         
         photosensor = new DigitalInput(Constants.INTAKE_PHOTOSENSOR);
-
-        gyro = new ADXRS453Gyro();
-        gyro.startThread();
 
     }
 

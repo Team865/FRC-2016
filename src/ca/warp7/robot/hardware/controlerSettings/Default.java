@@ -58,7 +58,7 @@ public class Default extends ControllerSettings{
     }
     
     @Override
-	public void periodic(XboxController driver, XboxController operator, ADXRS453Gyro gyro, Shooter shooter,
+	public void periodic(XboxController driver, XboxController operator, Shooter shooter,
 			Intake intake, Drive drive, DigitalInput photosensor, Climber climber, Compressor compressor){
 		//Toggles the long piston
     	if(driver.getAbutton()){

@@ -40,7 +40,7 @@ public class Admin extends ControllerSettings{
     }
     
     @Override
-	public void periodic(XboxController driver, XboxController operator, ADXRS453Gyro gyro, Shooter shooter, Intake intake, Drive drive, DigitalInput photosensor, Climber climber, Compressor compressor){
+	public void periodic(XboxController driver, XboxController operator, Shooter shooter, Intake intake, Drive drive, DigitalInput photosensor, Climber climber, Compressor compressor){
         //if(degrees ==0)shooter.setHood(0.15);
         if(wantedRPM >= 1)shooter.fireAccessGranted();
         else shooter.fireAccessDenied();
@@ -162,16 +162,6 @@ public class Admin extends ControllerSettings{
         }else{
             changed5 = false;
         }
-
-        //=========================================//
-        
-        if(operator.getStartButton()){
-            gyro.calibrate();
-        }
-        if(operator.getBackButton()){
-            gyro.stopCalibrating();
-        }
-
 	}
 
 	@Override

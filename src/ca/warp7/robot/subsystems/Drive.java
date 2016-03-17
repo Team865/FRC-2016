@@ -1,5 +1,6 @@
 package ca.warp7.robot.subsystems;
 
+import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -12,6 +13,7 @@ public class Drive {
     private static GearBox leftGearBox;
     private static Solenoid PTO;
     private static Solenoid gearChange;
+    private ADXRS453Gyro gyro;
 
     public Drive(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_, Compressor comp) {
         rightGearBox = right;
@@ -21,6 +23,8 @@ public class Drive {
         gearChange = gearChange_;
         PTO.set(false);
         gearChange.set(false);
+        gyro = new ADXRS453Gyro();
+        gyro.startThread();
     }
 
     public void changeDirection() {
@@ -95,7 +99,7 @@ public class Drive {
 
     private static void move(double left, double right) {
         //right *= 0.94;
-    	right *= 0.94;
+    	//right *= 0.94;
     	rightGearBox.set(right * (-1));
         leftGearBox.set((left));
     }
@@ -125,5 +129,14 @@ public class Drive {
 
 	public void overrideMotors(double d) {
 		move(d, d);
+	}
+	
+	public void anglePID(double goalAngle) {
+		double error = (goalAngle - getRotation());
+		double power = error * 0.1;
+		move(power, -power);
+	}
+	public double getRotation() {
+		return gyro.getAngle();
 	}
 }
