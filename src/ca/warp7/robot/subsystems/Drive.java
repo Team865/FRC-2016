@@ -2,6 +2,7 @@ package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
+import ca.warp7.robot.networking.DataPool;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Solenoid;
 
@@ -14,6 +15,7 @@ public class Drive {
     private static Solenoid PTO;
     private static Solenoid gearChange;
     private ADXRS453Gyro gyro;
+	private DataPool pool;
 
     public Drive(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_, Compressor comp) {
         rightGearBox = right;
@@ -25,6 +27,7 @@ public class Drive {
         gearChange.set(false);
         gyro = new ADXRS453Gyro();
         gyro.startThread();
+        pool = new DataPool("Drive");
     }
 
     public void changeDirection() {
@@ -138,5 +141,9 @@ public class Drive {
 	}
 	public double getRotation() {
 		return gyro.getAngle();
+	}
+
+	public void slowPeriodic() {
+		pool.logDouble("gyro angle", getRotation());
 	}
 }

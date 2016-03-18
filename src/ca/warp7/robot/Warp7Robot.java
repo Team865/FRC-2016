@@ -114,13 +114,14 @@ public class Warp7Robot extends SampleRobot {
            if(!warningBuffer.isEmpty()) robotTable.putString("warnings", Timer.getFPGATimestamp() + ": " + warningBuffer);
            robotTable.putNumber("mode", (double) robotMode);
            updateRobotTables = false;
-           DataPool.collectAllData();
        }
        
        controls.logs(shooter);
        counter = 0;
-       System.out.println("Gyro: " + drive.getRotation());
-	   }
+       shooter.slowPeriodic();
+       drive.slowPeriodic();
+       DataPool.collectAllData();
+  	   }
    }
    
     private void initRobot(){
@@ -147,8 +148,8 @@ public class Warp7Robot extends SampleRobot {
         compressor = new Compressor(Constants.COMPRESSOR_PIN);
         compressor.setClosedLoopControl(true);
     
-        shooter = new Shooter(new CANTalon(Constants.SHOOTER_CAN_ID), new Encoder(Constants.FLY_ENC_A, Constants.FLY_ENC_B),
-                new Victor(Constants.FLY_WHEEL_PIN));
+        shooter = new Shooter(new CANTalon(Constants.SHOOTER_CAN_ID),
+                new Victor(Constants.HOOD_PIN));
         drive = new Drive(new GearBox(Constants.RIGHT_DRIVE_MOTOR_PINS, Constants.RIGHT_DRIVE_MOTOR_TYPES),
                 new GearBox(Constants.LEFT_DRIVE_MOTOR_PINS, Constants.LEFT_DRIVE_MOTOR_TYPES),
                 new Solenoid(Constants.GEAR_CHANGE), new Solenoid(Constants.PTO), compressor);

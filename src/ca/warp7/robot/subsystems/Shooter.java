@@ -2,6 +2,7 @@ package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.Constants;
 import ca.warp7.robot.hardware.GearBox;
+import ca.warp7.robot.networking.DataPool;
 import ca.warp7.robot.subsystems.shooterComponents.FlyWheel;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Encoder;
@@ -17,8 +18,8 @@ public class Shooter {
     /**
      * @param motor controller Should be a TalonSRX
      */
-    public Shooter(CANTalon hood_, Encoder enc, Victor motor) {
-    	flyWheel = new FlyWheel(hood_, enc);
+    public Shooter(CANTalon flyWheelMotor, Victor motor) {
+    	flyWheel = new FlyWheel(flyWheelMotor);
         hood = motor;
         fireAccess = false;
         hardStopShot = false;
@@ -29,7 +30,7 @@ public class Shooter {
     }
 
     public double getSpeed() {
-        return flyWheel.getRate();
+        return flyWheel.getSpeed();
     }
     
     public boolean atTargetRPM(){
@@ -37,21 +38,17 @@ public class Shooter {
     }
     
     public void periodic(double wantedRPM, boolean firing, Drive drive){
-    	if(firing){
-    		flyWheel.firing();
-    	}else{
-    		flyWheel.notFiring();
-    	}
     	
     	if(fireAccess){
     		if(hardStopShot){
-    			flyWheel.prepareToFire(Constants.HARDSTOP_RPM);
+    			flyWheel.spinUp(Constants.HARDSTOP_RPM);
     		}else{
-    			flyWheel.prepareToFire(wantedRPM);
+    			flyWheel.spinUp(wantedRPM);
     		}
     	}else{
-    		flyWheel.prepareToFire(0.0);
+    		flyWheel.spinUp(0.0);
     	}
+    	
     }
     
     public void set(double speed) {
@@ -80,5 +77,9 @@ public class Shooter {
 
 	public void hardStop(boolean b) {
 		hardStopShot = b;
+	}
+	
+	public void slowPeriodic() {
+		flyWheel.slowPeriodic();
 	}
 }
