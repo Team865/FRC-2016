@@ -202,14 +202,14 @@ public class Default extends ControllerSettings{
 			}
 		}
 		
-		hoodSpeed = 0.15;
+		hoodSpeed = 0.2;
 		
 		if(operator.getAbutton()){
-			hoodSpeed = -0.15;
+			hoodSpeed = -0.2;
 		}
 		
 		if(operator.getLeftBumperbutton()){
-			hoodSpeed = -0.15;
+			hoodSpeed = -0.2;
 			if(!O_ChangedLB){
 				intake.raisePortculus(true);
 				O_ChangedLB = true;
@@ -221,7 +221,7 @@ public class Default extends ControllerSettings{
 			}
 		}
 		
-		//shooter.setHood(hoodSpeed);
+		shooter.setHood(hoodSpeed);
 	
 		if(operator.getBackButton()){
 			if(!O_ChangedBack){
