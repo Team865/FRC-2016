@@ -42,8 +42,6 @@ public class Admin extends ControllerSettings{
     @Override
 	public void periodic(XboxController driver, XboxController operator, Shooter shooter, Intake intake, Drive drive, DigitalInput photosensor, Climber climber, Compressor compressor){
         //if(degrees ==0)shooter.setHood(0.15);
-        if(wantedRPM >= 1)shooter.fireAccessGranted();
-        else shooter.fireAccessDenied();
         
         
         if (driver.getAbutton()) {
@@ -162,12 +160,10 @@ public class Admin extends ControllerSettings{
         }else{
             changed5 = false;
         }
+		drive.cheesyDrive(driver.getLeftY(), driver.getRightX(), driver.getLeftBumperbutton());
+
 	}
 
-	@Override
-	public void drive(XboxController driver, XboxController operator) {
-		Drive.cheesyDrive(driver.getLeftY(), driver.getRightX(), driver.getLeftBumperbutton());
-	}
 
 	@Override
 	public void logs(Shooter shooter) {

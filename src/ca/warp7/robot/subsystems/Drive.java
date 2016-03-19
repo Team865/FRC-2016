@@ -1,5 +1,6 @@
 package ca.warp7.robot.subsystems;
 
+import ca.warp7.robot.Util;
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.networking.DataPool;
@@ -8,142 +9,192 @@ import edu.wpi.first.wpilibj.Solenoid;
 
 public class Drive {
 
-    //https://code.google.com/p/3647robotics/source/browse/WCDRobot/src/Robot/DriveTrain.java?r=63
-    private static int direction;
-    private static GearBox rightGearBox;
-    private static GearBox leftGearBox;
-    private static Solenoid PTO;
-    private static Solenoid gearChange;
-    private ADXRS453Gyro gyro;
+	// https://code.google.com/p/3647robotics/source/browse/WCDRobot/src/Robot/DriveTrain.java?r=63
+	private static int direction;
+	private static GearBox rightGearBox;
+	private static GearBox leftGearBox;
+	private static Solenoid PTO;
+	private static Solenoid gearChange;
+	private ADXRS453Gyro gyro;
 	private DataPool pool;
 
-    public Drive(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_, Compressor comp) {
-        rightGearBox = right;
-        leftGearBox = left;
-        direction = 1;
-        PTO = PTO_;
-        gearChange = gearChange_;
-        PTO.set(false);
-        gearChange.set(false);
-        gyro = new ADXRS453Gyro();
-        gyro.startThread();
-        pool = new DataPool("Drive");
-    }
+	double quickstop_accumulator = 0f;
+	double old_wheel = 0f;
+	double sensitivity = .9f;
 
-    public void changeDirection() {
-        direction *= -1;
-    }
-    
-    public void setGear(boolean gear){
-    	PTO.set(gear); // TODO gear pto swap
-    }
-    
-    public void setDirection(int direction_){
-    	direction = direction_;
-    }
+	public Drive(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_, Compressor comp) {
+		rightGearBox = right;
+		leftGearBox = left;
+		direction = 1;
+		PTO = PTO_;
+		gearChange = gearChange_;
+		PTO.set(false);
+		gearChange.set(false);
+		gyro = new ADXRS453Gyro();
+		gyro.startThread();
+		pool = new DataPool("Drive");
+	}
 
-    public static void tankDrive(double left, double right) {
-        left *= direction;
-        right *= direction;
+	public void changeDirection() {
+		direction *= -1;
+	}
 
-        left = createDeadband(left);
-        right = createDeadband(right);
+	public void setGear(boolean gear) {
+		PTO.set(gear); // TODO gear pto swap
+	}
 
-        move(left, right);
-    }
+	public void setDirection(int direction_) {
+		direction = direction_;
+	}
 
-    public static void cheesyDrive(double left, double right, boolean quickTurn) {
-        double throttle = left;
-        double wheel = right;
+	public void tankDrive(double left, double right) {
+		left *= direction;
+		right *= direction;
 
-        throttle *= direction;
-        wheel *= direction;
+		left = createDeadband(left);
+		right = createDeadband(right);
 
-        throttle = createDeadband(throttle);
-        wheel = createDeadband(wheel);
+		move(left, right);
+	}
 
-        if (throttle < 0 && !quickTurn) wheel *= -1; // chandler's modification
-        else if (quickTurn && direction != -1) wheel *= -1; // my + chandler's modification
+	public void cheesyDrive(double wheel, double throttle, boolean quickturn) {
+		/*
+		 * Poofs! :param wheel: The speed that the robot should turn in the X
+		 * direction. 1 is right [-1.0..1.0] :param throttle: The speed that the
+		 * robot should drive in the Y direction. -1 is forward. [-1.0..1.0]
+		 * :param quickturn: If the robot should drive arcade-drive style
+		 */
 
-        if(!quickTurn) wheel = Math.max(-0.6, Math.min(0.6, wheel)); //  chandler's modification again
-        if(!gearChange.get()) throttle = Math.max(-1, Math.min(1, throttle)); // limit power
-        
-        double angular_power = 0.0;
-        double overPower = 0.0;
-        double sensitivity = 1.5;
-        double rPower = 0.0;
-        double lPower = 0.0;
-        if (quickTurn) {
-            overPower = .25;
-            sensitivity = .30;//used to be 0.75
-            angular_power = wheel;
-        } else {
-            overPower = 0.0;
-            angular_power = Math.abs(throttle) * wheel * sensitivity;
-        }
-        rPower = lPower = throttle;
-        lPower += angular_power;
-        rPower -= angular_power;
-        if (lPower > 1.0) {
-            rPower -= overPower * (lPower - 1.0);
-            lPower = 1.0;
-        } else if (rPower > 1.0) {
-            lPower -= overPower * (rPower - 1.0);
-            rPower = 1.0;
-        } else if (lPower < -1.0) {
-            rPower += overPower * (-1.0 - lPower);
-            lPower = -1.0;
-        } else if (rPower < -1.0) {
-            lPower += overPower * (-1.0 - rPower);
-            rPower = -1.0;
-        }
-        move(lPower, rPower);
-    }
+		throttle *= direction;
+		wheel *= -direction;
+		double right_pwm;
+		double left_pwm;
+		double neg_inertia_scalar;
+		double neg_inertia = wheel - old_wheel;
+		old_wheel = wheel;
+		wheel = sin_scale(wheel, 0.8f, 3); // TODO implement this gyy
 
-    private static void move(double left, double right) {
-        //right *= 0.94;
-    	//right *= 0.94;
-    	rightGearBox.set(right * (-1));
-        leftGearBox.set((left));
-    }
+		if (wheel * neg_inertia > 0) {
+			neg_inertia_scalar = 2.5f;
+		} else {
+			if (Math.abs(wheel) > .65) {
+				neg_inertia_scalar = 5;
+			} else {
+				neg_inertia_scalar = 3;
+			}
+		}
 
-    private static double createDeadband(double num) {
-        if (0.13 >= Math.abs(num)) {
-            num = 0;
-        }
+		double neg_inertia_accumulator = neg_inertia * neg_inertia_scalar;
 
-        num = Math.pow(num, 3);
+		wheel += neg_inertia_accumulator;
 
-        return num;
-    }
+		double over_power, angular_power;
+		if (quickturn) {
+			if (Math.abs(throttle) < 0.2) {
+				double alpha = .1f;
+				quickstop_accumulator = (1 - alpha) * quickstop_accumulator + alpha * Util.limit(wheel, 1.0) * 5;
+			}
+			over_power = 1;
+			angular_power = -wheel * direction * .85;
+		} else {
+			over_power = 0;
+			angular_power = throttle * wheel * sensitivity - quickstop_accumulator;
+			quickstop_accumulator = wrap_accumulator(quickstop_accumulator);
+		}
+		right_pwm = left_pwm = throttle;
 
-    public void stop() {
-        rightGearBox.set(0);
-        leftGearBox.set(0);
-    }
+		left_pwm += angular_power;
+		right_pwm -= angular_power;
 
-    public void changeGear() {
-        PTO.set(!(PTO.get()));
-    }
+		if (left_pwm > 1) {
+			right_pwm -= over_power * (left_pwm - 1);
+			left_pwm = 1;
+		} else if (right_pwm > 1) {
+			left_pwm -= over_power * (right_pwm - 1);
+			right_pwm = 1;
+		} else if (left_pwm < -1) {
+			right_pwm += over_power * (-1 - left_pwm);
+			left_pwm = -1;
+		} else if (right_pwm < -1) {
+			left_pwm += over_power * (-1 - right_pwm);
+			right_pwm = -1;
+		}
+		// SET MOTORS to left_pwm and right_pwm
+		move(left_pwm, right_pwm);
+	}
 
-    public void changePTO() {
-        gearChange.set(!(gearChange.get()));
-    }
+	public void move(double left, double right) {
+		// right *= 0.94;
+		right *= 0.94;
+		rightGearBox.set(right * (-1));
+		leftGearBox.set((left));
+	}
+
+	private static double createDeadband(double num) {
+		if (0.13 >= Math.abs(num)) {
+			num = 0;
+		}
+
+		num = Math.pow(num, 3);
+
+		return num;
+	}
+
+	public void stop() {
+		rightGearBox.set(0);
+		leftGearBox.set(0);
+	}
+
+	public void changeGear() {
+		PTO.set(!(PTO.get()));
+	}
+
+	public void changePTO() {
+		gearChange.set(!(gearChange.get()));
+	}
 
 	public void overrideMotors(double d) {
 		move(d, d);
 	}
-	
+
 	public void anglePID(double goalAngle) {
 		double error = (goalAngle - getRotation());
 		double power = error * 0.1;
 		move(power, -power);
 	}
+
 	public double getRotation() {
 		return gyro.getAngle();
 	}
 
 	public void slowPeriodic() {
 		pool.logDouble("gyro angle", getRotation());
+	}
+
+	static double sin_scale(double val, double non_linearity, int passes) {
+		/*
+		 * recursive sin scaling! :D
+		 * 
+		 * :param val: input :param non_linearity: :param passes: how many times
+		 * to recurse :return: scaled val
+		 */
+		double scaled = Math.sin(Math.PI / 2 * non_linearity * val) / Math.sin(Math.PI / 2 * non_linearity);
+		if (passes == 1) {
+			return scaled;
+		} else {
+			return sin_scale(scaled, non_linearity, passes - 1);
+		}
+
+	}
+
+	static double wrap_accumulator(double acc) {
+		if (acc > 1) {
+			acc -= 1;
+		} else if (acc < -1) {
+			acc += 1;
+		} else {
+			acc = 0;
+		}
+		return acc;
 	}
 }

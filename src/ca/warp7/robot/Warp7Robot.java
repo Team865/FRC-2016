@@ -6,6 +6,7 @@ import com.ni.vision.NIVision.Image;
 import ca.warp7.robot.autonomous.BatteryFirst;
 import ca.warp7.robot.autonomous.AutonomousBase;
 import ca.warp7.robot.autonomous.IntakeFirst;
+import ca.warp7.robot.autonomous.SpybotHardstop;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
@@ -55,13 +56,6 @@ public class Warp7Robot extends SampleRobot {
     public static double autonDistance;
     public static double autonAngle;
     private int counter;
-    
-    public Warp7Robot(){
-        driver = new XboxController(0);
-        operator = new XboxController(1);
-        controls = new Default();
-        initRobot();
-    }
 
     public void operatorControl() {
     	controls.init(drive);
@@ -69,7 +63,6 @@ public class Warp7Robot extends SampleRobot {
     	compressor.setClosedLoopControl(false);
         while (isOperatorControl() && isEnabled()) {
             controls.periodic(driver, operator, shooter, intake, drive, photosensor, climber, compressor);
-            controls.drive(driver, operator);
             allEnabledLoop();
             allLoop();
             Timer.delay(0.005);
@@ -79,12 +72,13 @@ public class Warp7Robot extends SampleRobot {
     public void autonomous() {
     	//auto = new IntakeFirst(drive, shooter, intake);
     	auto = new BatteryFirst(drive, shooter, intake);
-    	
+    	//auto = new SpybotHardstop(drive, shooter, intake);
     	
         while(isAutonomous() && !isOperatorControl() && isEnabled()){
         	auto.periodic(drive, shooter, intake);
             allEnabledLoop();
             allLoop();
+            Timer.delay(0.005);
         }
     }
 
@@ -101,6 +95,7 @@ public class Warp7Robot extends SampleRobot {
 
    private void allEnabledLoop(){
    		shooter.periodic(controls.getWantedRPM(), controls.isFiring(), drive);
+   		intake.periodic();
    }
    
    private void allLoop() {
@@ -124,7 +119,11 @@ public class Warp7Robot extends SampleRobot {
   	   }
    }
    
-    private void initRobot(){
+    public void robotInit(){
+
+        driver = new XboxController(0);
+        operator = new XboxController(1);
+        controls = new Default();
         try {
             camera_frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 

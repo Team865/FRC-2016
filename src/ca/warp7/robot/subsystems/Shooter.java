@@ -12,17 +12,13 @@ public class Shooter {
 	
     private Victor hood;
     private FlyWheel flyWheel;
-    private boolean fireAccess;
-    private boolean hardStopShot;
     
     /**
-     * @param motor controller Should be a TalonSRX
+     * @param motor controller
      */
     public Shooter(CANTalon flyWheelMotor, Victor motor) {
     	flyWheel = new FlyWheel(flyWheelMotor);
         hood = motor;
-        fireAccess = false;
-        hardStopShot = false;
         
         //hood.changeControlMode(TalonControlMode.Position);
         //hood.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Absolute);
@@ -38,17 +34,7 @@ public class Shooter {
     }
     
     public void periodic(double wantedRPM, boolean firing, Drive drive){
-    	
-    	if(fireAccess){
-    		if(hardStopShot){
-    			flyWheel.spinUp(Constants.HARDSTOP_RPM);
-    		}else{
-    			flyWheel.spinUp(wantedRPM);
-    		}
-    	}else{
-    		flyWheel.spinUp(0.0);
-    	}
-    	
+    	// wew
     }
     
     public void set(double speed) {
@@ -56,7 +42,7 @@ public class Shooter {
     }
 
     public void stop() {
-        //flyWheel.set(0);
+        flyWheel.coast();
     }
 
     public void safety() {
@@ -66,20 +52,11 @@ public class Shooter {
     public void setHood(double degrees) {
         hood.set(degrees);
     }
-
-	public void fireAccessGranted() {
-		fireAccess = true;
-	}
-
-	public void fireAccessDenied() {
-		fireAccess = false;
-	}
-
-	public void hardStop(boolean b) {
-		hardStopShot = b;
-	}
-	
+    
 	public void slowPeriodic() {
 		flyWheel.slowPeriodic();
+	}
+	public void spinUp() {
+		flyWheel.spinUp(Constants.HARDSTOP_RPM);
 	}
 }

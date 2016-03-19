@@ -8,6 +8,7 @@ public class Intake {
     private Solenoid initialArm;
     private Solenoid adjustingArm;
     private GearBox box;
+    int goCounter = 0;
 
     public Intake(GearBox motor, Solenoid initialArm_, Solenoid adjustingArm_) {
         box = motor;
@@ -68,8 +69,14 @@ public class Intake {
 		adjustingArm.set(!b);
 		initialArm.set(!b);
 	}
+	public void periodic() {
+		if(goCounter > 0) {
+			box.set(-INTAKE_SPEED);
+			goCounter--;
+		}
+	}
 
-	public void intakeSlower(boolean b) {
-		box.set(-INTAKE_SPEED);
+	public void fireBall() {
+		goCounter = 100;
 	}
 }

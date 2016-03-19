@@ -13,16 +13,14 @@ public class BatteryFirst extends AutonomousBase{
 	public BatteryFirst(Drive drive, Shooter shooter, Intake intake) {
 		count = 0;
 		intake.raisePortculus(true);
-		drive.setGear(true);
+		//drive.setGear(true);
 		//intake.adjustedArmRetracted();
-		Timer.delay(7);
 	}
 
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
-		if(count <= 750){
+		if(count <= 400){
 			count++;
-			//GOES INTAKES FORWARD
-			drive.overrideMotors(-1.0);
+			drive.move(0.8, 0.9);
 		}else{
 			drive.overrideMotors(0);
 			shooter.setHood(0.3);
