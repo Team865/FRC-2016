@@ -9,53 +9,55 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Victor;
 
 public class Shooter {
-	
-    private Victor hood;
-    private FlyWheel flyWheel;
-    
-    /**
-     * @param motor controller
-     */
-    public Shooter(CANTalon flyWheelMotor, Victor motor) {
-    	flyWheel = new FlyWheel(flyWheelMotor);
-        hood = motor;
-        
-        //hood.changeControlMode(TalonControlMode.Position);
-        //hood.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Absolute);
-        //hood.setPosition(0);
-    }
 
-    public double getSpeed() {
-        return flyWheel.getSpeed();
-    }
-    
-    public boolean atTargetRPM(){
-    	return flyWheel.atTargetRPM();
-    }
-    
-    public void periodic(double wantedRPM, boolean firing, Drive drive){
-    	// wew
-    }
-    
-    public void set(double speed) {
-        //flyWheel.set(speed);
-    }
+	private Victor hood;
+	private FlyWheel flyWheel;
 
-    public void stop() {
-        flyWheel.coast();
-    }
+	/**
+	 * @param motor
+	 *            controller
+	 */
+	public Shooter(CANTalon flyWheelMotor, Victor motor) {
+		flyWheel = new FlyWheel(flyWheelMotor);
+		hood = motor;
 
-    public void safety() {
-        // TODO if the hood is past some safety distance set the speed to 0
-    }
+		// hood.changeControlMode(TalonControlMode.Position);
+		// hood.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Absolute);
+		// hood.setPosition(0);
+	}
 
-    public void setHood(double degrees) {
-        hood.set(degrees);
-    }
-    
+	public double getSpeed() {
+		return flyWheel.getSpeed();
+	}
+
+	public boolean atTargetRPM() {
+		return flyWheel.atTargetRPM();
+	}
+
+	public void periodic(double wantedRPM, boolean firing, Drive drive) {
+		// wew
+	}
+
+	public void set(double speed) {
+		// flyWheel.set(speed);
+	}
+
+	public void stop() {
+		flyWheel.coast();
+	}
+
+	public void safety() {
+		// TODO if the hood is past some safety distance set the speed to 0
+	}
+
+	public void setHood(double degrees) {
+		hood.set(degrees);
+	}
+
 	public void slowPeriodic() {
 		flyWheel.slowPeriodic();
 	}
+
 	public void spinUp() {
 		flyWheel.spinUp(Constants.HARDSTOP_RPM);
 	}

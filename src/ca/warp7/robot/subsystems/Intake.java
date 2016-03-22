@@ -4,62 +4,62 @@ import ca.warp7.robot.hardware.GearBox;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Intake {
-    private static double INTAKE_SPEED = 1.0;
-    private Solenoid initialArm;
-    private Solenoid adjustingArm;
-    private GearBox box;
-    int goCounter = 0;
+	private static double INTAKE_SPEED = 1.0;
+	private Solenoid initialArm;
+	private Solenoid adjustingArm;
+	private GearBox box;
+	int goCounter = 0;
 
-    public Intake(GearBox motor, Solenoid initialArm_, Solenoid adjustingArm_) {
-        box = motor;
-        initialArm = initialArm_;
-        adjustingArm = adjustingArm_;
-        initialArm.set(false);
-        adjustingArm.set(false);
-    }
+	public Intake(GearBox motor, Solenoid initialArm_, Solenoid adjustingArm_) {
+		box = motor;
+		initialArm = initialArm_;
+		adjustingArm = adjustingArm_;
+		initialArm.set(false);
+		adjustingArm.set(false);
+	}
 
-    public void reset(){
-    	initialArm.set(true);
-    }
-    
-    public void toggleInitialArm() {
-        initialArm.set(!initialArm.get());
-    }
+	public void reset() {
+		initialArm.set(true);
+	}
 
-    public void toggleAdjustingArm() {
-        adjustingArm.set(!adjustingArm.get());
-    }
+	public void toggleInitialArm() {
+		initialArm.set(!initialArm.get());
+	}
 
-    /**
-     * @param sensorReading This is the photo-sensor reading
-     *                      if it is false it will run
-     */
-    public void intake(boolean sensorReading) {
-    	//put ! before sensorReading to fix
-        if (sensorReading) {
-            box.set(-INTAKE_SPEED);
-        } else {
-            box.set(0);
-        }
-    }
+	public void toggleAdjustingArm() {
+		adjustingArm.set(!adjustingArm.get());
+	}
 
-    public void outake() {
-        box.set(INTAKE_SPEED);
-    }
+	/**
+	 * @param sensorReading
+	 *            This is the photo-sensor reading if it is false it will run
+	 */
+	public void intake(boolean sensorReading) {
+		// put ! before sensorReading to fix
+		if (sensorReading) {
+			box.set(-INTAKE_SPEED);
+		} else {
+			box.set(0);
+		}
+	}
 
-    public void stop() {
-        box.set(0);
-        initialArm.set(false);
-        adjustingArm.set(false);
-    }
+	public void outake() {
+		box.set(INTAKE_SPEED);
+	}
 
-    public void set(double speed) {
-        box.set(speed);
-    }
+	public void stop() {
+		box.set(0);
+		initialArm.set(false);
+		adjustingArm.set(false);
+	}
 
-    public boolean adjustedArmRetracted() {
-        return adjustingArm.get() == false;
-    }
+	public void set(double speed) {
+		box.set(speed);
+	}
+
+	public boolean adjustedArmRetracted() {
+		return adjustingArm.get() == false;
+	}
 
 	public void stopIntake() {
 		box.set(0);
@@ -69,8 +69,9 @@ public class Intake {
 		adjustingArm.set(!b);
 		initialArm.set(!b);
 	}
+
 	public void periodic() {
-		if(goCounter > 0) {
+		if (goCounter > 0) {
 			box.set(-INTAKE_SPEED);
 			goCounter--;
 		}

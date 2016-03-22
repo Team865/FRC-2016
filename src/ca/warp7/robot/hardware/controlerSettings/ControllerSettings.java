@@ -13,8 +13,8 @@ public abstract class ControllerSettings {
 
 	abstract public void init(Drive drive);
 
-	abstract public void periodic(XboxController driver, XboxController operator, Shooter shooter,
-			Intake intake, Drive drive, DigitalInput photosensor, Climber climber, Compressor compressor);
+	abstract public void periodic(XboxController driver, XboxController operator, Shooter shooter, Intake intake,
+			Drive drive, DigitalInput photosensor, Climber climber, Compressor compressor);
 
 	abstract public void logs(Shooter shooter);
 

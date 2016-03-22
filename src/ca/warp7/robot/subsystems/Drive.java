@@ -4,7 +4,12 @@ import ca.warp7.robot.Util;
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.networking.DataPool;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Solenoid;
 
 public class Drive {
@@ -15,12 +20,36 @@ public class Drive {
 	private static GearBox leftGearBox;
 	private static Solenoid PTO;
 	private static Solenoid gearChange;
-	private ADXRS453Gyro gyro;
+	private ADXRS450_Gyro gyro;
 	private DataPool pool;
 
 	double quickstop_accumulator = 0f;
 	double old_wheel = 0f;
 	double sensitivity = .9f;
+	//public PIDController pid = new PIDController(2, 0.5, 0.03125, new PIDSource() {
+	public PIDController pid = new PIDController(0.04, 0.00004, 0.065, new PIDSource() {
+
+		@Override
+		public void setPIDSourceType(PIDSourceType pidSource) {
+			gyro.setPIDSourceType(pidSource);
+		}
+
+		@Override
+		public PIDSourceType getPIDSourceType() {
+			return gyro.getPIDSourceType();
+		}
+
+		@Override
+		public double pidGet() {
+			return Util.correct_angle(gyro.getAngle());
+		}
+		
+	}, new PIDOutput(){
+		@Override
+		public void pidWrite(double output) {
+			move(-output, output);
+		}
+	});
 
 	public Drive(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_, Compressor comp) {
 		rightGearBox = right;
@@ -30,9 +59,9 @@ public class Drive {
 		gearChange = gearChange_;
 		PTO.set(false);
 		gearChange.set(false);
-		gyro = new ADXRS453Gyro();
-		gyro.startThread();
+		gyro = new ADXRS450_Gyro();
 		pool = new DataPool("Drive");
+		pid.setAbsoluteTolerance(1);
 	}
 
 	public void changeDirection() {
@@ -155,12 +184,6 @@ public class Drive {
 
 	public void overrideMotors(double d) {
 		move(d, d);
-	}
-
-	public void anglePID(double goalAngle) {
-		double error = (goalAngle - getRotation());
-		double power = error * 0.1;
-		move(power, -power);
 	}
 
 	public double getRotation() {

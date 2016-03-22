@@ -10,7 +10,7 @@ public class FlyWheel {
 
 	private CANTalon _talon;
 	private DataPool pool;
-    
+
 	public FlyWheel(CANTalon motor) {
 		// TODO Auto-generated constructor stub
 		_talon = motor;
@@ -24,25 +24,24 @@ public class FlyWheel {
 		_talon.setP(30);
 		_talon.setI(0);
 		_talon.setD(0);
-		
-        pool = new DataPool("FlyWheel");
+
+		pool = new DataPool("FlyWheel");
 	}
-	
+
 	public void spinUp(double targetSpeed) {
 		_talon.enable();
 		_talon.set(targetSpeed);
 	}
-	
 
 	public void slowPeriodic() {
 		pool.logDouble("Flywheel Speed", _talon.getSpeed());
 		pool.logBoolean("readyToFire", atTargetRPM());
 	}
-	
+
 	public double getSpeed() {
 		return _talon.getSpeed();
 	}
-	
+
 	public boolean atTargetRPM() {
 		return Math.abs(_talon.getSpeed() - _talon.getSetpoint()) < 50;
 	}
