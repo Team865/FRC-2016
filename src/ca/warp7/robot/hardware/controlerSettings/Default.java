@@ -221,7 +221,7 @@ public class Default extends ControllerSettings{
 			}
 		}
 		
-		//shooter.setHood(hoodSpeed);
+		shooter.setHood(hoodSpeed);
 	
 		if(operator.getBackButton()){
 			if(!O_ChangedBack){

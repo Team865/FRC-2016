@@ -6,7 +6,7 @@ public class DefenceModules {
 	 * Used to cross this defense from the base of it 
 	 * assuming you are aligned
 	 */
-	protected void lowbar(){
+	public static void lowbar(){
 		
 	}
 	
@@ -14,7 +14,7 @@ public class DefenceModules {
 	 * Used to cross this defense from the base of it 
 	 * assuming you are aligned
 	 */
-	protected void chival(){
+	public static void chival(){
 		
 	}
 	
@@ -22,7 +22,7 @@ public class DefenceModules {
 	 * Used to cross this defense from the base of it 
 	 * assuming you are aligned
 	 */
-	protected void portculus(){
+	public static void portculus(){
 		
 	}
 	
@@ -30,7 +30,7 @@ public class DefenceModules {
 	 * Used to cross this defense from the base of it 
 	 * assuming you are aligned
 	 */
-	protected void roughTerrain(){
+	public static void roughTerrain(){
 		
 	}
 	
@@ -38,7 +38,7 @@ public class DefenceModules {
 	 * Used to cross this defense from the base of it 
 	 * assuming you are aligned
 	 */
-	protected void ramparts(){
+	public static void ramparts(){
 		
 	}
 	
@@ -46,7 +46,7 @@ public class DefenceModules {
 	 * Used to cross this defense from the base of it 
 	 * assuming you are aligned
 	 */
-	protected void moat(){
+	public static void moat(){
 		
 	}
 	
@@ -54,7 +54,7 @@ public class DefenceModules {
 	 * Used to cross this defense from the base of it 
 	 * assuming you are aligned
 	 */
-	protected void rockWall(){
+	public static void rockWall(){
 		
 	}
 }

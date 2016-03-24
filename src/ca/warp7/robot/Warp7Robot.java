@@ -3,9 +3,8 @@ package ca.warp7.robot;
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
-import ca.warp7.robot.autonomous.BatteryFirst;
 import ca.warp7.robot.autonomous.AutonomousBase;
-import ca.warp7.robot.autonomous.IntakeFirst;
+import ca.warp7.robot.autonomous.BatteryFirst;
 import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.hardware.XboxController;
@@ -70,6 +69,7 @@ public class Warp7Robot extends SampleRobot {
         while (isOperatorControl() && isEnabled()) {
             controls.periodic(driver, operator, gyro, shooter, intake, drive, photosensor, climber, compressor);
             controls.drive(driver, operator);
+            shooter.periodic(controls.getWantedRPM(), controls.isFiring(), drive);
             allEnabledLoop();
             allLoop();
             Timer.delay(0.005);
@@ -77,12 +77,14 @@ public class Warp7Robot extends SampleRobot {
     }
 
     public void autonomous() {
-    	//auto = new IntakeFirst(drive, shooter, intake);
+    	//auto = new ModularAuto(drive, shooter, intakes);
+    	//auto = new IntakeFirst(drive, shooter, intakes);
     	auto = new BatteryFirst(drive, shooter, intake);
     	
     	
         while(isAutonomous() && !isOperatorControl() && isEnabled()){
         	auto.periodic(drive, shooter, intake);
+        	shooter.periodic(auto.getWantedRPM(), auto.isFiring(), drive);
             allEnabledLoop();
             allLoop();
         }
@@ -100,7 +102,7 @@ public class Warp7Robot extends SampleRobot {
     }
 
    private void allEnabledLoop(){
-   		shooter.periodic(controls.getWantedRPM(), controls.isFiring(), drive);
+   		// runs whenever the robot is enabled regardless of mode
    }
    
    private void allLoop() {

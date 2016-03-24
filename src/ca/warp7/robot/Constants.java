@@ -37,6 +37,7 @@ public class Constants {
     public static final char[] RIGHT_DRIVE_MOTOR_TYPES = new char[]{VICTOR, VICTOR, VICTOR};
     public static final char[] INTAKE_MOTOR_TYPES = new char[]{VICTOR};
     public static final char[] FLY_WHEEL_MOTOR_TYPE = new char[]{VICTOR};
+	public static final double DISTANCE_TO_DEFENCE_BASE = 123; // made in mm
     
     // Robot dimensions and stuff
     public static double SHOOTER_ANGLE = 75;    
