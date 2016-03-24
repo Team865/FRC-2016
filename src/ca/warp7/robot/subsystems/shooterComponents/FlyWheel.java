@@ -22,7 +22,7 @@ public class FlyWheel {
 		_talon.setF(1.478);
 		_talon.setP(15);
 		_talon.setI(0);
-		_talon.setD(0);
+		_talon.setD(0.1);
 		
 		
 		/*
