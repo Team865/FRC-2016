@@ -1,116 +1,53 @@
 package ca.warp7.robot.subsystems.shooterComponents;
 
-import ca.warp7.robot.hardware.GearBox;
+import ca.warp7.robot.networking.DataPool;
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
+import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 
 public class FlyWheel {
 
-	private CANTalon flyWheel;
-    private Encoder encoder;
-    static double integral = 0.0;
-    static double prevError = 0.0;
-    static double prevTime = 0.0;
-    private static int count;
-    private boolean firing;
-    private boolean atTargetRPM;
-    private EncoderThread encoderThread;
-    
-	public FlyWheel(CANTalon motor, Encoder enc) {
+	private CANTalon _talon;
+	private DataPool pool;
+
+	public FlyWheel(CANTalon motor) {
 		// TODO Auto-generated constructor stub
-		firing = false;
-		count = 0;
-		flyWheel = motor;
-		encoder = enc;
-        encoder.setReverseDirection(true);
-        encoder.setDistancePerPulse(3);
-        prevTime = Timer.getFPGATimestamp();
-        atTargetRPM = false;
-        encoderThread = new EncoderThread(enc, motor);
-        Thread t = new Thread(encoderThread);
-        t.start();
-	}
-	
-	public void prepareToFire(double wantedRPM) {
-		/*
-		double currentRPM = encoder.getRate();
-		double percent = flyWheel.get();
-	 	double RPM_Error = wantedRPM - currentRPM;
-	 	
-	 	if(wantedRPM == 0){
-			flyWheel.set(0.0);
-		}else{
-			//if(!firing){
-					System.out.println(currentRPM);
-					if(currentRPM < wantedRPM)flyWheel.set(1.0);
-					if(currentRPM > wantedRPM)flyWheel.set(0.0);
-				
-					double wantedError = 350;
-					
-				    if(currentRPM <= wantedRPM+wantedError && currentRPM >= wantedRPM-wantedError){
-				    	atTargetRPM = true;
-				    }else{
-				    	atTargetRPM = false;
-			        }
-			//	}
-			}
-		} */
-		encoderThread.wantedRPM = (float) wantedRPM;
-		double currentRPM = encoderThread.currentRPM;
-		double wantedError = 350;
-		
-	    if(currentRPM <= wantedRPM+wantedError && currentRPM >= wantedRPM-wantedError){
-	    	atTargetRPM = true;
-	    }else{
-	    	atTargetRPM = false;
-        }
-	    System.out.println(currentRPM);
-	}
-		/*
-		double currentRPM = encoder.getRate();
-		double RPM_Error = currentRPM - wantedRPM;
-		double interval = 0.005 * RPM_Error/Math.abs(RPM_Error);
-		flyWheel.set(flyWheel.get() + interval);
-		
-		if(flyWheel.get() == 0.0 && wantedRPM != 0) flyWheel.set(0.7);
-		if(wantedRPM == 0)flyWheel.set(0.0);
-		*/
-	
-	public boolean atTargetRPM(){
-		return atTargetRPM;
-	}
-//	public void set(double speed) {
-//		flyWheel.set(speed);
-//	}
+		_talon = motor;
+		_talon.configEncoderCodesPerRev(20);
+		_talon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
+		_talon.configNominalOutputVoltage(+0.0f, -0.0f);
+		_talon.configPeakOutputVoltage(+12.0f, -12.0f);
+		_talon.changeControlMode(TalonControlMode.Speed);
+		_talon.setProfile(0);
+		_talon.setF(1.345);
+		_talon.setP(30);
+		_talon.setI(0);
+		_talon.setD(0);
 
-	public double getRate() {
-		return encoder.getRate();
+		pool = new DataPool("FlyWheel");
 	}
-	
-	public void firing(){
-		firing = true;
-	}
-	
-	public void notFiring(){
-		firing = false;
-	}
-	
-	
-	/*
-    public void fire() {
-        double wantedRPM = Warp7Robot.wantedRPM * -1;
-        if (readyToFire(wantedRPM)) {
-            Intake.intake(false);
-        }
-    }
-    private boolean readyToFire(double wantedRPM) {
-        double currentRPM = encoder.getRate();
-        double error = 200;
 
-        return currentRPM >= wantedRPM - error && currentRPM <= wantedRPM + error;
-    }
-*/ // TODOimpl this
+	public void spinUp(double targetSpeed) {
+		_talon.enable();
+		_talon.set(targetSpeed);
+	}
+
+	public void slowPeriodic() {
+		pool.logDouble("Flywheel Speed", _talon.getSpeed());
+		pool.logBoolean("readyToFire", atTargetRPM());
+	}
+
+	public double getSpeed() {
+		return _talon.getSpeed();
+	}
+
+	public boolean atTargetRPM() {
+		return Math.abs(_talon.getSpeed() - _talon.getSetpoint()) < 50;
+	}
+
+	public void coast() {
+		_talon.disable();
+		_talon.set(0);
+	}
 
 }
