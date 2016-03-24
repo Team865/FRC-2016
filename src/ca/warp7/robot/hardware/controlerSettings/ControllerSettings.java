@@ -1,6 +1,5 @@
 package ca.warp7.robot.hardware.controlerSettings;
 
-import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.subsystems.Climber;
 import ca.warp7.robot.subsystems.Drive;
@@ -15,10 +14,4 @@ public abstract class ControllerSettings {
 
 	abstract public void periodic(XboxController driver, XboxController operator, Shooter shooter, Intake intake,
 			Drive drive, DigitalInput photosensor, Climber climber, Compressor compressor);
-
-	abstract public void logs(Shooter shooter);
-
-	abstract public double getWantedRPM();
-
-	abstract public boolean isFiring();
 }

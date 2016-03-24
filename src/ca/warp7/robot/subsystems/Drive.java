@@ -1,7 +1,6 @@
 package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.Util;
-import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.networking.DataPool;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
@@ -26,7 +25,8 @@ public class Drive {
 	double quickstop_accumulator = 0f;
 	double old_wheel = 0f;
 	double sensitivity = .9f;
-	//public PIDController pid = new PIDController(2, 0.5, 0.03125, new PIDSource() {
+	// public PIDController pid = new PIDController(2, 0.5, 0.03125, new
+	// PIDSource() {
 	public PIDController pid = new PIDController(0.04, 0.00004, 0.065, new PIDSource() {
 
 		@Override
@@ -43,8 +43,8 @@ public class Drive {
 		public double pidGet() {
 			return Util.correct_angle(gyro.getAngle());
 		}
-		
-	}, new PIDOutput(){
+
+	}, new PIDOutput() {
 		@Override
 		public void pidWrite(double output) {
 			move(-output, output);
@@ -95,7 +95,7 @@ public class Drive {
 		 */
 
 		throttle *= direction;
-		wheel *= -direction;
+		wheel *= direction;
 		double right_pwm;
 		double left_pwm;
 		double neg_inertia_scalar;

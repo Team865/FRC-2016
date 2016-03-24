@@ -1,10 +1,8 @@
 package ca.warp7.robot.autonomous;
 
-import ca.warp7.robot.Constants;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
-import edu.wpi.first.wpilibj.Timer;
 
 public class SpybotHardstop extends AutonomousBase {
 
@@ -22,7 +20,11 @@ public class SpybotHardstop extends AutonomousBase {
 		shooter.setHood(0.3);
 		if (count <= 250) {
 			count++;
-			drive.overrideMotors(-1.0);
+			if (count <= 175) {
+				drive.overrideMotors(-1.0);
+			} else {
+				drive.overrideMotors(-0.6);
+			}
 		} else {
 			drive.overrideMotors(0);
 			if (shooter.atTargetRPM()) {

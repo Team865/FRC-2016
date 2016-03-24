@@ -1,9 +1,9 @@
 package ca.warp7.robot.networking;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.tables.ITable;
-
-import java.util.ArrayList;
 
 public class DataPool {
 	private static NetworkTable table = NetworkTable.getTable("data");

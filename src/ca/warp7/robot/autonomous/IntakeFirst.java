@@ -1,10 +1,8 @@
 package ca.warp7.robot.autonomous;
 
-import ca.warp7.robot.Constants;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
-import edu.wpi.first.wpilibj.Timer;
 
 public class IntakeFirst extends AutonomousBase {
 
@@ -13,17 +11,14 @@ public class IntakeFirst extends AutonomousBase {
 	public IntakeFirst(Drive drive, Shooter shooter, Intake intake) {
 		count = 0;
 		intake.raisePortculus(false);
-		drive.setGear(true);
+		// drive.setGear(true);
 		// intake.adjustedArmRetracted();
-		Timer.delay(7);
 	}
 
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
-		if (count <= 750) {
+		if (count <= 400) {
 			count++;
-			// GOES INTAKES FORWARD
-			drive.overrideMotors(1.0);
-			shooter.setHood(-0.5);
+			drive.move(-0.8, -0.9);
 		} else {
 			drive.overrideMotors(0);
 			shooter.setHood(0.3);

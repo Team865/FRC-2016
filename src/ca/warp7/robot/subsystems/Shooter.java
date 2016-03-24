@@ -1,11 +1,8 @@
 package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.Constants;
-import ca.warp7.robot.hardware.GearBox;
-import ca.warp7.robot.networking.DataPool;
 import ca.warp7.robot.subsystems.shooterComponents.FlyWheel;
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Victor;
 
 public class Shooter {
@@ -34,7 +31,7 @@ public class Shooter {
 		return flyWheel.atTargetRPM();
 	}
 
-	public void periodic(double wantedRPM, boolean firing, Drive drive) {
+	public void periodic() {
 		// wew
 	}
 

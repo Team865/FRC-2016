@@ -1,7 +1,6 @@
 package ca.warp7.robot.hardware.controlerSettings;
 
 import ca.warp7.robot.Constants;
-import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.networking.DataPool;
 import ca.warp7.robot.subsystems.Climber;
@@ -167,22 +166,5 @@ public class Admin extends ControllerSettings {
 		}
 		drive.cheesyDrive(driver.getLeftY(), driver.getRightX(), driver.getLeftBumperbutton());
 
-	}
-
-	@Override
-	public void logs(Shooter shooter) {
-		shooter_.logDouble("Wanted RPM", wantedRPM);
-		shooter_.logDouble("Current RPM", (shooter.getSpeed() * -1));
-		shooter_.logDouble("Hood Degree", degrees);
-	}
-
-	@Override
-	public double getWantedRPM() {
-		return wantedRPM;
-	}
-
-	@Override
-	public boolean isFiring() {
-		return firing;
 	}
 }

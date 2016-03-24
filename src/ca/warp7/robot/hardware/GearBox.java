@@ -1,7 +1,11 @@
 package ca.warp7.robot.hardware;
 
 import ca.warp7.robot.Constants;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.SafePWM;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Victor;
 
 public class GearBox {
 

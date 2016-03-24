@@ -2,7 +2,6 @@ package ca.warp7.robot.subsystems.shooterComponents;
 
 import ca.warp7.robot.networking.DataPool;
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 

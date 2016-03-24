@@ -1,7 +1,8 @@
 package ca.warp7.robot.networking;
 
 import ca.warp7.robot.Warp7Robot;
-import edu.wpi.first.wpilibj.tables.*;
+import edu.wpi.first.wpilibj.tables.ITable;
+import edu.wpi.first.wpilibj.tables.ITableListener;
 
 public class GUITableListener implements ITableListener {
 

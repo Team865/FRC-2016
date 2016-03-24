@@ -1,10 +1,8 @@
 package ca.warp7.robot.autonomous;
 
-import ca.warp7.robot.Constants;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
-import edu.wpi.first.wpilibj.Timer;
 
 public class BatteryFirst extends AutonomousBase {
 

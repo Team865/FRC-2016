@@ -25,8 +25,8 @@ public class Hood extends IterativeRobot {
 		 */
 		int absolutePosition = hood.getPulseWidthPosition()
 				& 0xFFF; /*
-							 * mask out the bottom12 bits, we don't care about the
-							 * wrap arounds
+							 * mask out the bottom12 bits, we don't care about
+							 * the wrap arounds
 							 */
 		/* use the low level API to set the quad encoder signal */
 		hood.setEncPosition(absolutePosition);

@@ -2,7 +2,6 @@ package ca.warp7.robot.hardware.controlerSettings;
 
 import ca.warp7.robot.Constants;
 import ca.warp7.robot.Util;
-import ca.warp7.robot.hardware.ADXRS453Gyro;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.XboxController.RumbleType;
 import ca.warp7.robot.subsystems.Climber;
@@ -91,8 +90,9 @@ public class Default extends ControllerSettings {
 		} else {
 			intake.stopIntake();
 		}
+		
 		if (operator.getAbutton()) {
-			hoodSpeed = -0.2; // a to up
+			hoodSpeed = -0.2; // a to down
 		}
 
 		if (operator.getLeftBumperbutton()) {
@@ -118,23 +118,6 @@ public class Default extends ControllerSettings {
 			if (O_ChangedBack)
 				O_ChangedBack = false;
 		}
-		drive.cheesyDrive(-driver.getRightX(), throttle, driver.getLeftBumperbutton());
-	}
-
-	@Override
-	public void logs(Shooter shooter) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public double getWantedRPM() {
-		// TODO do something along the lines of mathy
-		return 0.0;
-	}
-
-	@Override
-	public boolean isFiring() {
-		return firing;
+		drive.cheesyDrive(driver.getRightX(), throttle, driver.getLeftBumperbutton());
 	}
 }
