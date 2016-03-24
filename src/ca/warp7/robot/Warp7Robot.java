@@ -1,5 +1,20 @@
 package ca.warp7.robot;
 
+import static ca.warp7.robot.Constants.COMPRESSOR_PIN;
+import static ca.warp7.robot.Constants.GEAR_CHANGE;
+import static ca.warp7.robot.Constants.HOOD_PIN;
+import static ca.warp7.robot.Constants.INTAKE_MOTOR;
+import static ca.warp7.robot.Constants.INTAKE_MOTOR_TYPES;
+import static ca.warp7.robot.Constants.INTAKE_PHOTOSENSOR;
+import static ca.warp7.robot.Constants.INTAKE_PISTON_A;
+import static ca.warp7.robot.Constants.INTAKE_PISTON_B;
+import static ca.warp7.robot.Constants.LEFT_DRIVE_MOTOR_PINS;
+import static ca.warp7.robot.Constants.LEFT_DRIVE_MOTOR_TYPES;
+import static ca.warp7.robot.Constants.PTO;
+import static ca.warp7.robot.Constants.RIGHT_DRIVE_MOTOR_PINS;
+import static ca.warp7.robot.Constants.RIGHT_DRIVE_MOTOR_TYPES;
+import static ca.warp7.robot.Constants.SHOOTER_CAN_ID;
+
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
@@ -19,25 +34,26 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import static ca.warp7.robot.Constants.*;
 public class Warp7Robot extends SampleRobot {
 
-	private static XboxController driver; // set to ID 1 in DriverStation
-	private static XboxController operator; // set to ID 2 in DriverStation
-	private static DigitalInput photosensor;
-	private static ControllerSettings controls;
-	private static Compressor compressor;
+	public static XboxController driver; // set to ID 1 in DriverStation
+	public static XboxController operator; // set to ID 2 in DriverStation
+	public static DigitalInput photosensor;
+	public static ControllerSettings controls;
+	public static Compressor compressor;
+	public static PowerDistributionPanel pdp;
 	int camera_session;
 	Image camera_frame;
-	private Shooter shooter;
-	private Intake intake;
-	private Drive drive;
-	private Climber climber;
+	public static Shooter shooter;
+	public static Intake intake;
+	public static Drive drive;
+	public static Climber climber;
 	private AutonomousBase auto;
 
 	private static NetworkTable autonTable;
@@ -52,13 +68,56 @@ public class Warp7Robot extends SampleRobot {
 	public static double autonDistance;
 	public static double autonAngle;
 	private int counter;
+	private DataPool _pool;
 
+	public void robotInit() {
+		System.out.println("hello i am robit");
+		_pool = new DataPool("Robot");
+		driver = new XboxController(0);
+		operator = new XboxController(1);
+		controls = new Default();
+		try {
+			camera_frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
+
+			// the camera name (ex "cam0") can be found through the roborio web
+			// interface
+			camera_session = NIVision.IMAQdxOpenCamera("cam0",
+					NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+			NIVision.IMAQdxConfigureGrab(camera_session);
+			NIVision.IMAQdxStartAcquisition(camera_session);
+		} catch (Exception e) {
+		}
+		autonTable = NetworkTable.getTable("autonSelect");
+		autonID = 0;
+		autonDistance = 0;
+		autonAngle = 0;
+
+		autonTable.addTableListener(new GUITableListener());
+		visionTable = NetworkTable.getTable("vision");
+		visionTable.addTableListener(new GUITableListener());
+		robotTable = NetworkTable.getTable("status");
+
+		compressor = new Compressor(COMPRESSOR_PIN);
+		compressor.setClosedLoopControl(true);
+
+		shooter = new Shooter(new CANTalon(SHOOTER_CAN_ID), new Victor(HOOD_PIN));
+		drive = new Drive(new GearBox(RIGHT_DRIVE_MOTOR_PINS, RIGHT_DRIVE_MOTOR_TYPES),
+				new GearBox(LEFT_DRIVE_MOTOR_PINS, LEFT_DRIVE_MOTOR_TYPES),
+				new Solenoid(GEAR_CHANGE), new Solenoid(PTO), compressor);
+		intake = new Intake(new GearBox(INTAKE_MOTOR, INTAKE_MOTOR_TYPES),
+				new Solenoid(INTAKE_PISTON_A), new Solenoid(INTAKE_PISTON_B));
+		climber = new Climber();
+
+		photosensor = new DigitalInput(INTAKE_PHOTOSENSOR);
+		pdp = new PowerDistributionPanel();
+
+	}
 	public void operatorControl() {
-		controls.init(drive);
+		controls.init();
 		intake.reset();
 		compressor.setClosedLoopControl(false);
 		while (isOperatorControl() && isEnabled()) {
-			controls.periodic(driver, operator, shooter, intake, drive, photosensor, climber, compressor);
+			controls.periodic();
 			allEnabledLoop();
 			allLoop();
 			Timer.delay(0.005);
@@ -114,49 +173,9 @@ public class Warp7Robot extends SampleRobot {
 			counter = 0;
 			shooter.slowPeriodic();
 			drive.slowPeriodic();
+			_pool.logBoolean("photosensor", photosensor.get());
 			DataPool.collectAllData();
 		}
-	}
-
-	public void robotInit() {
-
-		driver = new XboxController(0);
-		operator = new XboxController(1);
-		controls = new Default();
-		try {
-			camera_frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
-
-			// the camera name (ex "cam0") can be found through the roborio web
-			// interface
-			camera_session = NIVision.IMAQdxOpenCamera("cam0",
-					NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-			NIVision.IMAQdxConfigureGrab(camera_session);
-			NIVision.IMAQdxStartAcquisition(camera_session);
-		} catch (Exception e) {
-		}
-		autonTable = NetworkTable.getTable("autonSelect");
-		autonID = 0;
-		autonDistance = 0;
-		autonAngle = 0;
-
-		autonTable.addTableListener(new GUITableListener());
-		visionTable = NetworkTable.getTable("vision");
-		visionTable.addTableListener(new GUITableListener());
-		robotTable = NetworkTable.getTable("status");
-
-		compressor = new Compressor(COMPRESSOR_PIN);
-		compressor.setClosedLoopControl(true);
-
-		shooter = new Shooter(new CANTalon(SHOOTER_CAN_ID), new Victor(HOOD_PIN));
-		drive = new Drive(new GearBox(RIGHT_DRIVE_MOTOR_PINS, RIGHT_DRIVE_MOTOR_TYPES),
-				new GearBox(LEFT_DRIVE_MOTOR_PINS, LEFT_DRIVE_MOTOR_TYPES),
-				new Solenoid(GEAR_CHANGE), new Solenoid(PTO), compressor);
-		intake = new Intake(new GearBox(INTAKE_MOTOR, INTAKE_MOTOR_TYPES),
-				new Solenoid(INTAKE_PISTON_A), new Solenoid(INTAKE_PISTON_B));
-		climber = new Climber();
-
-		photosensor = new DigitalInput(INTAKE_PHOTOSENSOR);
-
 	}
 
 	public static void logMessage(String msg) {

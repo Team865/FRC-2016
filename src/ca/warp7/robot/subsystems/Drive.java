@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Solenoid;
 
+import static ca.warp7.robot.Warp7Robot.pdp;
+
 public class Drive {
 
 	// https://code.google.com/p/3647robotics/source/browse/WCDRobot/src/Robot/DriveTrain.java?r=63
@@ -54,7 +56,7 @@ public class Drive {
 	public Drive(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_, Compressor comp) {
 		rightGearBox = right;
 		leftGearBox = left;
-		direction = 1;
+		direction = -1;
 		PTO = PTO_;
 		gearChange = gearChange_;
 		PTO.set(false);
@@ -80,8 +82,8 @@ public class Drive {
 		left *= direction;
 		right *= direction;
 
-		left = createDeadband(left);
-		right = createDeadband(right);
+		left = Util.deadband(left);
+		right = Util.deadband(right);
 
 		move(left, right);
 	}
@@ -93,23 +95,22 @@ public class Drive {
 		 * robot should drive in the Y direction. -1 is forward. [-1.0..1.0]
 		 * :param quickturn: If the robot should drive arcade-drive style
 		 */
-
-		throttle *= direction;
-		wheel *= direction;
+		throttle = Util.deadband(throttle * direction);
+		wheel = Util.deadband(wheel * direction);
 		double right_pwm;
 		double left_pwm;
 		double neg_inertia_scalar;
 		double neg_inertia = wheel - old_wheel;
 		old_wheel = wheel;
-		wheel = sin_scale(wheel, 0.8f, 3); // TODO implement this gyy
+		wheel = Util.sinScale(wheel, 0.8f, 3);
 
 		if (wheel * neg_inertia > 0) {
 			neg_inertia_scalar = 2.5f;
 		} else {
 			if (Math.abs(wheel) > .65) {
-				neg_inertia_scalar = 5;
+				neg_inertia_scalar = 6;
 			} else {
-				neg_inertia_scalar = 3;
+				neg_inertia_scalar = 4;
 			}
 		}
 
@@ -128,7 +129,7 @@ public class Drive {
 		} else {
 			over_power = 0;
 			angular_power = throttle * wheel * sensitivity - quickstop_accumulator;
-			quickstop_accumulator = wrap_accumulator(quickstop_accumulator);
+			quickstop_accumulator = Util.wrap_accumulator(quickstop_accumulator);
 		}
 		right_pwm = left_pwm = throttle;
 
@@ -153,21 +154,22 @@ public class Drive {
 	}
 
 	public void move(double left, double right) {
-		// right *= 0.94;
 		right *= 0.94;
+
+		/*
+		double currentVoltage = pdp.getVoltage();
+		double speedLimit = 1;
+		if(currentVoltage <= 8.5){
+			speedLimit = 0.6;
+		}
+		
+		right = Math.max(-speedLimit, Math.min(speedLimit, right));
+		left = Math.max(-speedLimit, Math.min(speedLimit, left));
+		*/
+		
 		rightGearBox.set(right * (-1));
 		leftGearBox.set((left));
-	}
-
-	private static double createDeadband(double num) {
-		if (0.13 >= Math.abs(num)) {
-			num = 0;
 		}
-
-		num = Math.pow(num, 3);
-
-		return num;
-	}
 
 	public void stop() {
 		rightGearBox.set(0);
@@ -192,32 +194,5 @@ public class Drive {
 
 	public void slowPeriodic() {
 		pool.logDouble("gyro angle", getRotation());
-	}
-
-	static double sin_scale(double val, double non_linearity, int passes) {
-		/*
-		 * recursive sin scaling! :D
-		 * 
-		 * :param val: input :param non_linearity: :param passes: how many times
-		 * to recurse :return: scaled val
-		 */
-		double scaled = Math.sin(Math.PI / 2 * non_linearity * val) / Math.sin(Math.PI / 2 * non_linearity);
-		if (passes == 1) {
-			return scaled;
-		} else {
-			return sin_scale(scaled, non_linearity, passes - 1);
-		}
-
-	}
-
-	static double wrap_accumulator(double acc) {
-		if (acc > 1) {
-			acc -= 1;
-		} else if (acc < -1) {
-			acc += 1;
-		} else {
-			acc = 0;
-		}
-		return acc;
 	}
 }

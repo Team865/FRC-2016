@@ -1,15 +1,15 @@
 package ca.warp7.robot.hardware.controlerSettings;
 
+import static ca.warp7.robot.Warp7Robot.compressor;
+import static ca.warp7.robot.Warp7Robot.drive;
+import static ca.warp7.robot.Warp7Robot.driver;
+import static ca.warp7.robot.Warp7Robot.intake;
+import static ca.warp7.robot.Warp7Robot.operator;
+import static ca.warp7.robot.Warp7Robot.photosensor;
+import static ca.warp7.robot.Warp7Robot.shooter;
+
 import ca.warp7.robot.Constants;
-import ca.warp7.robot.Util;
-import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.XboxController.RumbleType;
-import ca.warp7.robot.subsystems.Climber;
-import ca.warp7.robot.subsystems.Drive;
-import ca.warp7.robot.subsystems.Intake;
-import ca.warp7.robot.subsystems.Shooter;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Default extends ControllerSettings {
 	private static boolean changedA;
@@ -21,7 +21,7 @@ public class Default extends ControllerSettings {
 	private static boolean firing;
 
 	@Override
-	public void init(Drive drive) {
+	public void init() {
 		changedA = false;
 		changedRS = false;
 		O_ChangedLB = false;
@@ -34,9 +34,7 @@ public class Default extends ControllerSettings {
 	}
 
 	@Override
-	public void periodic(XboxController driver, XboxController operator, Shooter shooter, Intake intake, Drive drive,
-			DigitalInput photosensor, Climber climber, Compressor compressor) {
-		driver.setRumble(RumbleType.kRightRumble, 0.0f);
+	public void periodic() {
 
 		// Toggles the long piston
 		if (driver.getAbutton()) {
@@ -52,8 +50,6 @@ public class Default extends ControllerSettings {
 		// hold to change gears for driving let go and it goes back
 		drive.setGear(driver.getRightBumperbutton());
 
-		double throttle = driver.getLeftY();
-
 		// press to toggle which direction is front
 		if (driver.getRightStickButton()) {
 			if (!changedRS) {
@@ -68,15 +64,20 @@ public class Default extends ControllerSettings {
 
 		firing = false;
 		if (operator.getRightTrigger() >= 0.5) {
-			throttle = Util.limit(throttle, 0.2);
 			shooter.spinUp();
 			hoodSpeed = 0.5;
 			if (shooter.atTargetRPM()) {
 				firing = true;
 				driver.setRumble(RumbleType.kRightRumble, 0.5f);
+				driver.setRumble(RumbleType.kLeftRumble, 0.5f);
+			} else {
+				driver.setRumble(RumbleType.kRightRumble, 0.0f);
+				driver.setRumble(RumbleType.kLeftRumble, 0.0f);
 			}
 		} else {
 			shooter.stop();
+			driver.setRumble(RumbleType.kRightRumble, 0.0f);
+			driver.setRumble(RumbleType.kLeftRumble, 0.0f);
 		}
 
 		if (driver.getLeftTrigger() >= 0.5) {
@@ -118,6 +119,7 @@ public class Default extends ControllerSettings {
 			if (O_ChangedBack)
 				O_ChangedBack = false;
 		}
-		drive.cheesyDrive(driver.getRightX(), throttle, driver.getLeftBumperbutton());
+		
+		drive.cheesyDrive(driver.getRightX(), driver.getLeftY(), driver.getLeftBumperbutton());
 	}
 }

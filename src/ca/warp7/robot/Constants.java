@@ -28,8 +28,8 @@ public class Constants {
 	public static final char TALON = 't';
 	public static final char VICTOR = 'v';
 	public static final char GEAR_BOX = 'g';
-	public static final int BATTERY = -1;
-	public static final int INTAKE = 1;
+	public static final int BATTERY = 1;
+	public static final int INTAKE = -1;
 	public static final boolean LOW_GEAR = false;
 	public static final boolean HIGH_GEAR = true;
 	public static final double HARDSTOP_RPM = 4000;
@@ -37,7 +37,7 @@ public class Constants {
 	public static final char[] RIGHT_DRIVE_MOTOR_TYPES = new char[] { VICTOR, VICTOR, VICTOR };
 	public static final char[] INTAKE_MOTOR_TYPES = new char[] { VICTOR };
 	public static final char[] FLY_WHEEL_MOTOR_TYPE = new char[] { VICTOR };
-	public static final double DISTANCE_TO_DEFENCE_BASE = 123; // made in mm
+	public static final double DISTANCE_TO_DEFENCE_BASE = 0;
 
 	// Robot dimensions and stuff
 	public static double SHOOTER_ANGLE = 75;

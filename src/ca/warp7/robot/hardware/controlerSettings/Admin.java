@@ -1,14 +1,14 @@
 package ca.warp7.robot.hardware.controlerSettings;
 
+import static ca.warp7.robot.Warp7Robot.drive;
+import static ca.warp7.robot.Warp7Robot.driver;
+import static ca.warp7.robot.Warp7Robot.intake;
+import static ca.warp7.robot.Warp7Robot.photosensor;
+import static ca.warp7.robot.Warp7Robot.shooter;
+
 import ca.warp7.robot.Constants;
-import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.networking.DataPool;
-import ca.warp7.robot.subsystems.Climber;
-import ca.warp7.robot.subsystems.Drive;
-import ca.warp7.robot.subsystems.Intake;
-import ca.warp7.robot.subsystems.Shooter;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DigitalInput;
+
 
 public class Admin extends ControllerSettings {
 
@@ -24,7 +24,7 @@ public class Admin extends ControllerSettings {
 	private static boolean firing;
 
 	@Override
-	public void init(Drive drive) {
+	public void init() {
 		degrees = 0.0;
 		firing = false;
 		increased = false;
@@ -39,8 +39,7 @@ public class Admin extends ControllerSettings {
 	}
 
 	@Override
-	public void periodic(XboxController driver, XboxController operator, Shooter shooter, Intake intake, Drive drive,
-			DigitalInput photosensor, Climber climber, Compressor compressor) {
+	public void periodic() {
 		// if(degrees ==0)shooter.setHood(0.15);
 
 		if (driver.getAbutton()) {
