@@ -1,53 +1,60 @@
 package ca.warp7.robot.autonomous.autoModuals;
 
 public class DefenceModules {
-
+	
 	/**
-	 * Used to cross this defense from the base of it assuming you are aligned
+	 * Used to cross this defense from the base of it 
+	 * assuming you are aligned
 	 */
-	protected void lowbar() {
-
+	public static void lowbar(){
+		
 	}
-
+	
 	/**
-	 * Used to cross this defense from the base of it assuming you are aligned
+	 * Used to cross this defense from the base of it 
+	 * assuming you are aligned
 	 */
-	protected void chival() {
-
+	public static void chival(){
+		
 	}
-
+	
 	/**
-	 * Used to cross this defense from the base of it assuming you are aligned
+	 * Used to cross this defense from the base of it 
+	 * assuming you are aligned
 	 */
-	protected void portculus() {
-
+	public static void portculus(){
+		
 	}
-
+	
 	/**
-	 * Used to cross this defense from the base of it assuming you are aligned
+	 * Used to cross this defense from the base of it 
+	 * assuming you are aligned
 	 */
-	protected void roughTerrain() {
-
+	public static void roughTerrain(){
+		
 	}
-
+	
 	/**
-	 * Used to cross this defense from the base of it assuming you are aligned
+	 * Used to cross this defense from the base of it 
+	 * assuming you are aligned
 	 */
-	protected void ramparts() {
-
+	public static void ramparts(){
+		
 	}
-
+	
 	/**
-	 * Used to cross this defense from the base of it assuming you are aligned
+	 * Used to cross this defense from the base of it 
+	 * assuming you are aligned
 	 */
-	protected void moat() {
-
+	public static void moat(){
+		
 	}
-
+	
 	/**
-	 * Used to cross this defense from the base of it assuming you are aligned
+	 * Used to cross this defense from the base of it 
+	 * assuming you are aligned
 	 */
-	protected void rockWall() {
-
+	public static void rockWall(){
+		
 	}
 }

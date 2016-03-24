@@ -30,5 +30,4 @@ public class IntakeFirst extends AutonomousBase {
 		 * if(hardstop){ curve(x, y); shoot(direction); } }
 		 */
 	}
-
 }
