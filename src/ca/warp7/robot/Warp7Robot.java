@@ -20,6 +20,7 @@ import com.ni.vision.NIVision.Image;
 
 import ca.warp7.robot.autonomous.AutonomousBase;
 import ca.warp7.robot.autonomous.BatteryFirst;
+import ca.warp7.robot.autonomous.IntakeForwardIntakesUp;
 import ca.warp7.robot.hardware.GearBox;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
@@ -127,6 +128,7 @@ public class Warp7Robot extends SampleRobot {
 	public void autonomous() {
 		// auto = new IntakeFirst(drive, shooter, intake);
 		auto = new BatteryFirst(drive, shooter, intake);
+		// auto = new IntakeForwardIntakesUp(drive, shooter, intake);
 		// auto = new Rotato(drive, shooter, intake);
 		// auto = new SpybotHardstop(drive, shooter, intake);
 
