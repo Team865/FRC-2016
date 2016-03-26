@@ -193,4 +193,12 @@ public class Drive {
 	public void slowPeriodic() {
 		pool.logDouble("gyro angle", getRotation());
 	}
+
+	public boolean getDirection() {
+		if(direction == 1){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

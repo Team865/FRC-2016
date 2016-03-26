@@ -176,6 +176,8 @@ public class Warp7Robot extends SampleRobot {
 			shooter.slowPeriodic();
 			drive.slowPeriodic();
 			_pool.logBoolean("photosensor", photosensor.get());
+			_pool.logBoolean("compressor", compressor.getClosedLoopControl());
+			_pool.logBoolean("direction", drive.getDirection());
 			_pool.logData("hotbot", pdp.getTemperature());
 			DataPool.collectAllData();
 		}
