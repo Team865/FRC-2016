@@ -1,19 +1,27 @@
 package ca.warp7.robot.subsystems;
 
-import ca.warp7.robot.hardware.GearBox;
+import static ca.warp7.robot.Constants.*;
+
+import ca.warp7.robot.networking.DataPool;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.VictorSP;
 
 public class Intake {
 	private static double INTAKE_SPEED = 1.0;
 	private Solenoid initialArm;
 	private Solenoid adjustingArm;
-	private GearBox box;
+	private VictorSP motor;
 	int goCounter = 0;
+	private DigitalInput photosensor;
+	private DataPool _pool;
 
-	public Intake(GearBox motor, Solenoid initialArm_, Solenoid adjustingArm_) {
-		box = motor;
-		initialArm = initialArm_;
-		adjustingArm = adjustingArm_;
+	public Intake() {
+		_pool = new DataPool("Intake");
+		photosensor = new DigitalInput(INTAKE_PHOTOSENSOR);
+		motor = new VictorSP(INTAKE_MOTOR_PIN);
+		initialArm = new Solenoid(INTAKE_PISTON_A);
+		adjustingArm = new Solenoid(INTAKE_PISTON_B);
 		initialArm.set(false);
 		adjustingArm.set(false);
 	}
@@ -30,31 +38,30 @@ public class Intake {
 		adjustingArm.set(!adjustingArm.get());
 	}
 
-	/**
-	 * @param sensorReading
-	 *            This is the photo-sensor reading if it is false it will run
-	 */
-	public void intake(boolean sensorReading) {
+	public void intake() {
 		// put ! before sensorReading to fix
-		if (sensorReading) {
-			box.set(-INTAKE_SPEED);
+		if (photosensor.get()) {
+			motor.set(-INTAKE_SPEED);
 		} else {
-			box.set(0);
+			motor.set(0);
 		}
+	}
+	public void shoot() {
+		motor.set(-INTAKE_SPEED);
 	}
 
 	public void outake() {
-		box.set(INTAKE_SPEED);
+		motor.set(INTAKE_SPEED);
 	}
 
 	public void stop() {
-		box.set(0);
+		motor.set(0);
 		initialArm.set(false);
 		adjustingArm.set(false);
 	}
 
 	public void set(double speed) {
-		box.set(speed);
+		motor.set(speed);
 	}
 
 	public boolean adjustedArmRetracted() {
@@ -62,7 +69,7 @@ public class Intake {
 	}
 
 	public void stopIntake() {
-		box.set(0);
+		motor.set(0);
 	}
 
 	public void raisePortculus(boolean b) {
@@ -72,12 +79,16 @@ public class Intake {
 
 	public void periodic() {
 		if (goCounter > 0) {
-			box.set(-INTAKE_SPEED);
+			motor.set(-INTAKE_SPEED);
 			goCounter--;
 		}
 	}
 
 	public void fireBall() {
 		goCounter = 100;
+	}
+
+	public void slowPeriodic() {
+		_pool.logBoolean("photosensor", photosensor.get());
 	}
 }

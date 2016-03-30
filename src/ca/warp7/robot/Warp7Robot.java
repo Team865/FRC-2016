@@ -1,54 +1,36 @@
 package ca.warp7.robot;
 
 import static ca.warp7.robot.Constants.COMPRESSOR_PIN;
-import static ca.warp7.robot.Constants.GEAR_CHANGE;
-import static ca.warp7.robot.Constants.HOOD_PIN;
-import static ca.warp7.robot.Constants.INTAKE_MOTOR;
-import static ca.warp7.robot.Constants.INTAKE_MOTOR_TYPES;
-import static ca.warp7.robot.Constants.INTAKE_PHOTOSENSOR;
-import static ca.warp7.robot.Constants.INTAKE_PISTON_A;
-import static ca.warp7.robot.Constants.INTAKE_PISTON_B;
-import static ca.warp7.robot.Constants.LEFT_DRIVE_MOTOR_PINS;
-import static ca.warp7.robot.Constants.LEFT_DRIVE_MOTOR_TYPES;
-import static ca.warp7.robot.Constants.PTO;
-import static ca.warp7.robot.Constants.RIGHT_DRIVE_MOTOR_PINS;
-import static ca.warp7.robot.Constants.RIGHT_DRIVE_MOTOR_TYPES;
-import static ca.warp7.robot.Constants.SHOOTER_CAN_ID;
 
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
 import ca.warp7.robot.autonomous.AutonomousBase;
 import ca.warp7.robot.autonomous.BatteryFirst;
-import ca.warp7.robot.autonomous.IntakeForwardIntakesUp;
-import ca.warp7.robot.hardware.GearBox;
+import ca.warp7.robot.autonomous.SwagDrive;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
-import ca.warp7.robot.hardware.controlerSettings.Default;
+import ca.warp7.robot.hardware.controlerSettings.DefaultControls;
 import ca.warp7.robot.networking.DataPool;
 import ca.warp7.robot.networking.GUITableListener;
 import ca.warp7.robot.subsystems.Climber;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
-import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
+
 public class Warp7Robot extends SampleRobot {
 
-	public static XboxController driver; // set to ID 1 in DriverStation
-	public static XboxController operator; // set to ID 2 in DriverStation
-	public static DigitalInput photosensor;
-	public static ControllerSettings controls;
-	public static Compressor compressor;
-	public static PowerDistributionPanel pdp;
+	public XboxController driver; // set to ID 1 in DriverStation
+	public XboxController operator; // set to ID 2 in DriverStation
+	public ControllerSettings controls;
+	public Compressor compressor;
+	public PowerDistributionPanel pdp;
 	int camera_session;
 	Image camera_frame;
 	public static Shooter shooter;
@@ -61,7 +43,7 @@ public class Warp7Robot extends SampleRobot {
 	private static String messageBuffer = "";
 	private static String warningBuffer = "";
 	private static int robotMode = 0;
-//	private static boolean visionTablesUpdated = false;
+	// private static boolean visionTablesUpdated = false;
 	private static boolean updateRobotTables = false;
 	private static NetworkTable robotTable;
 	private static NetworkTable visionTable;
@@ -74,9 +56,6 @@ public class Warp7Robot extends SampleRobot {
 	public void robotInit() {
 		System.out.println("hello i am robit");
 		_pool = new DataPool("Robot");
-		driver = new XboxController(0);
-		operator = new XboxController(1);
-		controls = new Default();
 		try {
 			camera_frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
 
@@ -101,20 +80,21 @@ public class Warp7Robot extends SampleRobot {
 		compressor = new Compressor(COMPRESSOR_PIN);
 		compressor.setClosedLoopControl(true);
 
-		shooter = new Shooter(new CANTalon(SHOOTER_CAN_ID), new Victor(HOOD_PIN));
-		drive = new Drive(new GearBox(RIGHT_DRIVE_MOTOR_PINS, RIGHT_DRIVE_MOTOR_TYPES),
-				new GearBox(LEFT_DRIVE_MOTOR_PINS, LEFT_DRIVE_MOTOR_TYPES),
-				new Solenoid(GEAR_CHANGE), new Solenoid(PTO), compressor);
-		intake = new Intake(new GearBox(INTAKE_MOTOR, INTAKE_MOTOR_TYPES),
-				new Solenoid(INTAKE_PISTON_A), new Solenoid(INTAKE_PISTON_B));
+		shooter = new Shooter();
+		drive = new Drive(compressor);
+		intake = new Intake();
 		climber = new Climber();
 
-		photosensor = new DigitalInput(INTAKE_PHOTOSENSOR);
 		pdp = new PowerDistributionPanel();
 
+		driver = new XboxController(0);
+		operator = new XboxController(1);
+		controls = new DefaultControls(driver, operator, compressor);
+
 	}
+
 	public void operatorControl() {
-		controls.init();
+		controls.reset();
 		intake.reset();
 		compressor.setClosedLoopControl(false);
 		while (isOperatorControl() && isEnabled()) {
@@ -127,7 +107,8 @@ public class Warp7Robot extends SampleRobot {
 
 	public void autonomous() {
 		// auto = new IntakeFirst(drive, shooter, intake);
-		auto = new BatteryFirst(drive, shooter, intake);
+		//auto = new BatteryFirst(drive, shooter, intake);
+		auto = new SwagDrive();
 		// auto = new IntakeForwardIntakesUp(drive, shooter, intake);
 		// auto = new Rotato(drive, shooter, intake);
 		// auto = new SpybotHardstop(drive, shooter, intake);
@@ -136,7 +117,7 @@ public class Warp7Robot extends SampleRobot {
 			auto.periodic(drive, shooter, intake);
 			allEnabledLoop();
 			allLoop();
-			Timer.delay(0.005);
+			Timer.delay(0.001); // lower dT for auton
 		}
 	}
 
@@ -174,8 +155,8 @@ public class Warp7Robot extends SampleRobot {
 
 			counter = 0;
 			shooter.slowPeriodic();
+			intake.slowPeriodic();
 			drive.slowPeriodic();
-			_pool.logBoolean("photosensor", photosensor.get());
 			_pool.logBoolean("compressor", compressor.getClosedLoopControl());
 			_pool.logBoolean("direction", drive.getDirection());
 			_pool.logData("hotbot", pdp.getTemperature());

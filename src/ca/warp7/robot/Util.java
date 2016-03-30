@@ -12,8 +12,9 @@ public class Util {
 	public static double correct_angle(double angle) {
 		return angle + 360 * Math.floor(0.5 - angle / 360);
 	}
+
 	public static double deadband(double num) {
-		return Math.abs(num) < 0.13? 0 : num;
+		return Math.abs(num) < 0.13 ? 0 : num;
 	}
 
 	public static double sinScale(double val, double non_linearity, int passes) {

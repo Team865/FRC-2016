@@ -1,24 +1,33 @@
 package ca.warp7.robot.subsystems;
 
 import ca.warp7.robot.Util;
-import ca.warp7.robot.hardware.GearBox;
+import ca.warp7.robot.hardware.MotorGroup;
 import ca.warp7.robot.networking.DataPool;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.VictorSP;
+import jaci.pathfinder.Pathfinder;
+import jaci.pathfinder.followers.EncoderFollower;
+
+import static ca.warp7.robot.Constants.*;
 
 public class Drive {
 
 	// https://code.google.com/p/3647robotics/source/browse/WCDRobot/src/Robot/DriveTrain.java?r=63
 	private static int direction;
-	private static GearBox rightGearBox;
-	private static GearBox leftGearBox;
+	private static MotorGroup rightDrive;
+	private static MotorGroup leftDrive;
+	private Encoder leftEncoder;
+	private Encoder rightEncoder;
+
+	private static Solenoid shifter;
 	private static Solenoid PTO;
-	private static Solenoid gearChange;
 	private ADXRS450_Gyro gyro;
 	private DataPool pool;
 
@@ -50,18 +59,28 @@ public class Drive {
 			move(-output, output);
 		}
 	});
+	private EncoderFollower leftEncoderFollower;
+	private EncoderFollower rightEncoderFollower;
 
-	public Drive(GearBox right, GearBox left, Solenoid PTO_, Solenoid gearChange_, Compressor comp) {
-		rightGearBox = right;
-		leftGearBox = left;
-		direction = -1;
-		PTO = PTO_;
-		gearChange = gearChange_;
-		PTO.set(false);
-		gearChange.set(false);
-		gyro = new ADXRS450_Gyro();
+	public Drive(Compressor comp) {
 		pool = new DataPool("Drive");
+
+		// Hardware components
+		rightDrive = new MotorGroup(RIGHT_DRIVE_MOTOR_PINS, VictorSP.class);
+		rightDrive.setInverted(true);
+		leftDrive = new MotorGroup(LEFT_DRIVE_MOTOR_PINS, VictorSP.class);
+		direction = -1;
+		shifter = new Solenoid(GEAR_CHANGE); // actually ear change
+		PTO = new Solenoid(PTO_SOLENOID); // actually pto
+		shifter.set(false);
+		PTO.set(false);
+		
+		leftEncoder =  new Encoder(LEFT_DRIVE_ENCODER_A, LEFT_DRIVE_ENCODER_B);;
+		rightEncoder = new Encoder(RIGHT_DRIVE_ENCODER_A, RIGHT_DRIVE_ENCODER_B);
+		gyro = new ADXRS450_Gyro();
+		
 		pid.setAbsoluteTolerance(1);
+
 	}
 
 	public void changeDirection() {
@@ -69,7 +88,7 @@ public class Drive {
 	}
 
 	public void setGear(boolean gear) {
-		PTO.set(gear); // TODO gear pto swap
+		shifter.set(gear); // TODO gear pto swap
 	}
 
 	public void setDirection(int direction_) {
@@ -93,6 +112,7 @@ public class Drive {
 		 * robot should drive in the Y direction. -1 is forward. [-1.0..1.0]
 		 * :param quickturn: If the robot should drive arcade-drive style
 		 */
+		
 		throttle = Util.deadband(throttle * direction);
 		wheel = Util.deadband(wheel * direction);
 		double right_pwm;
@@ -152,34 +172,31 @@ public class Drive {
 	}
 
 	public void move(double left, double right) {
-		right *= 0.94;
+		//right *= 0.94;
 
 		/*
-		double currentVoltage = pdp.getVoltage();
-		double speedLimit = 1;
-		if(currentVoltage <= 8.5){
-			speedLimit = 0.6;
-		}
-		
-		right = Math.max(-speedLimit, Math.min(speedLimit, right));
-		left = Math.max(-speedLimit, Math.min(speedLimit, left));
-		*/
-		
-		rightGearBox.set(right * (-1));
-		leftGearBox.set((left));
-		}
+		 * double currentVoltage = pdp.getVoltage(); double speedLimit = 1;
+		 * if(currentVoltage <= 8.5){ speedLimit = 0.6; }
+		 * 
+		 * right = Math.max(-speedLimit, Math.min(speedLimit, right)); left =
+		 * Math.max(-speedLimit, Math.min(speedLimit, left));
+		 */
+
+		rightDrive.set(right);
+		leftDrive.set(left);
+	}
 
 	public void stop() {
-		rightGearBox.set(0);
-		leftGearBox.set(0);
+		rightDrive.set(0);
+		leftDrive.set(0);
 	}
 
 	public void changeGear() {
-		PTO.set(!(PTO.get()));
+		shifter.set(!(shifter.get()));
 	}
 
 	public void changePTO() {
-		gearChange.set(!(gearChange.get()));
+		PTO.set(!(PTO.get()));
 	}
 
 	public void overrideMotors(double d) {
@@ -192,13 +209,43 @@ public class Drive {
 
 	public void slowPeriodic() {
 		pool.logDouble("gyro angle", getRotation());
+		pool.logDouble("left_enc", leftEncoder.getDistance());
+		pool.logDouble("right_enc", rightEncoder.getDistance());
 	}
 
 	public boolean getDirection() {
-		if(direction == 1){
-			return true;
-		}else{
-			return false;
+		return direction == 1;
+	}
+	
+	public void followPath() {
+		if(leftEncoderFollower == null || rightEncoderFollower == null) {
+			return; //bmlep
 		}
+		double leftOutput = leftEncoderFollower.calculate(leftEncoder.get());
+		double rightOutput = rightEncoderFollower.calculate(rightEncoder.get());
+		double gyro_heading = gyro.getAngle();    // Assuming the gyro is giving a value in degrees
+		double desired_heading = Pathfinder.r2d(leftEncoderFollower.getHeading());  // Should also be in degrees
+
+		double angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
+		double turn = 0.8 * (-1.0/80.0) * angleDifference;
+
+		move(leftOutput + turn, rightOutput - turn);
+	}
+
+	public void setEncoderFollowers(EncoderFollower left, EncoderFollower right) {
+		leftEncoderFollower = left;
+		rightEncoderFollower = right;
+		
+		leftEncoderFollower.configureEncoder(leftEncoder.get(), DRIVE_TICKS_PER_REV, WHEEL_DIAMETER);
+		rightEncoderFollower.configureEncoder(rightEncoder.get(), DRIVE_TICKS_PER_REV, WHEEL_DIAMETER);
+		
+		// The first argument is the proportional gain. Usually this will be quite high
+		// The second argument is the integral gain. This is unused for motion profiling
+		// The third argument is the derivative gain. Tweak this if you are unhappy with the tracking of the trajectory
+		// The fourth argument is the velocity ratio. This is 1 over the maximum velocity you provided in the 
+		//     trajectory configuration (it translates m/s to a -1 to 1 scale that your motors can read)
+		// The fifth argument is your acceleration gain. Tweak this if you want to get to a higher or lower speed quicker
+		leftEncoderFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / MAX_VELOCITY, 0);
+		rightEncoderFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / MAX_VELOCITY, 0);
 	}
 }

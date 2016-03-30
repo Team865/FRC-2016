@@ -1,17 +1,16 @@
 package ca.warp7.robot.hardware.controlerSettings;
 
-import static ca.warp7.robot.Warp7Robot.compressor;
-import static ca.warp7.robot.Warp7Robot.drive;
-import static ca.warp7.robot.Warp7Robot.driver;
-import static ca.warp7.robot.Warp7Robot.intake;
-import static ca.warp7.robot.Warp7Robot.operator;
-import static ca.warp7.robot.Warp7Robot.photosensor;
-import static ca.warp7.robot.Warp7Robot.shooter;
 
 import ca.warp7.robot.Constants;
+import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.XboxController.RumbleType;
+import edu.wpi.first.wpilibj.Compressor;
+import static ca.warp7.robot.Warp7Robot.drive;
+import static ca.warp7.robot.Warp7Robot.intake;
+import static ca.warp7.robot.Warp7Robot.shooter;
+import static ca.warp7.robot.Warp7Robot.climber;
 
-public class Default extends ControllerSettings {
+public class DefaultControls extends ControllerSettings {
 	private static boolean changedA;
 	private static boolean changedRS;
 	private static boolean O_ChangedLB;
@@ -19,9 +18,17 @@ public class Default extends ControllerSettings {
 
 	private static double hoodSpeed;
 	private static boolean firing;
+	private XboxController driver;
+	private XboxController operator;
+	private Compressor compressor;
 
-	@Override
-	public void init() {
+	public DefaultControls(XboxController driver, XboxController operator, Compressor compressor) {
+		this.driver = driver;
+		this.operator = operator;
+		this.compressor = compressor;
+	}
+	
+	public void reset() {
 		changedA = false;
 		changedRS = false;
 		O_ChangedLB = false;
@@ -82,7 +89,7 @@ public class Default extends ControllerSettings {
 
 		if (driver.getLeftTrigger() >= 0.5) {
 			if (!firing) {
-				intake.intake(photosensor.get());
+				intake.intake();
 			} else {
 				intake.fireBall();
 			}
@@ -91,7 +98,7 @@ public class Default extends ControllerSettings {
 		} else {
 			intake.stopIntake();
 		}
-		
+
 		if (operator.getAbutton()) {
 			hoodSpeed = -0.2; // a to down
 		}
@@ -119,7 +126,7 @@ public class Default extends ControllerSettings {
 			if (O_ChangedBack)
 				O_ChangedBack = false;
 		}
-		
+
 		drive.cheesyDrive(driver.getRightX(), driver.getLeftY(), driver.getLeftBumperbutton());
 	}
 }

@@ -28,7 +28,7 @@ public class SpybotHardstop extends AutonomousBase {
 		} else {
 			drive.overrideMotors(0);
 			if (shooter.atTargetRPM()) {
-				intake.intake(false);
+				intake.shoot();
 			}
 			shooter.spinUp();
 		}

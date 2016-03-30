@@ -7,14 +7,14 @@ import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 
 public abstract class AutonomousBase {
-	
+
 	protected boolean moving;
 	protected int defence;
 	protected boolean hardstop;
 	protected boolean rangedShooting;
 	protected boolean shooting;
 	protected boolean twoBall;
-	
+
 	protected final int NO_DEFENCE = 0;
 	protected final int LOWBAR = 1;
 	protected final int CHIVAL = 2;
@@ -23,40 +23,39 @@ public abstract class AutonomousBase {
 	protected final int RAMPARTS = 5;
 	protected final int MOAT = 6;
 	protected final int ROCK_WALL = 7;
-	
-	
-	protected AutonomousBase(){
+
+	protected AutonomousBase() {
 		moving = false;
 		defence = NO_DEFENCE;
 		hardstop = false;
 		rangedShooting = false;
 		shooting = false;
 		twoBall = false;
-		
+
 		getModularInfo();
 	}
-	
+
 	public abstract void periodic(Drive drive, Shooter shooter, Intake intake);
 
-	public double getWantedRPM(){
-		return  0.0;
+	public double getWantedRPM() {
+		return 0.0;
 	}
 
-	public boolean isFiring(){
+	public boolean isFiring() {
 		return false;
 	}
-	
-	private void getModularInfo(){
-		//TODO make this interact with some human interface
+
+	private void getModularInfo() {
+		// TODO make this interact with some human interface
 		moving = true;
 		defence = 0;
 		hardstop = true;
-		//rangedShooting = true;
+		// rangedShooting = true;
 		shooting = true;
-		//twoBall = true;
+		// twoBall = true;
 	}
-	
-	protected void doDefence(){
+
+	protected void doDefence() {
 		switch (defence) {
 		case LOWBAR:
 			DefenceModules.lowbar();
@@ -81,7 +80,7 @@ public abstract class AutonomousBase {
 			break;
 		}
 	}
-	
+
 	protected double getDefenceDirection() {
 		switch (defence) {
 		case LOWBAR:

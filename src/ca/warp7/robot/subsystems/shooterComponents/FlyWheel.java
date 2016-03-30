@@ -18,21 +18,17 @@ public class FlyWheel {
 		_talon.configPeakOutputVoltage(+12.0f, -12.0f);
 		_talon.changeControlMode(TalonControlMode.Speed);
 		_talon.setProfile(0);
-		
+
 		_talon.setF(1.478);
 		_talon.setP(15);
 		_talon.setI(0);
 		_talon.setD(0.1);
-		
-		
+
 		/*
-		 * practice bot
-		 * _talon.setF(1.345);
-		_talon.setP(30);
-		_talon.setI(0);
-		_talon.setD(0);
+		 * practice bot _talon.setF(1.345); _talon.setP(30); _talon.setI(0);
+		 * _talon.setD(0);
 		 */
-		//_talon.setVoltageRampRate(10);
+		// _talon.setVoltageRampRate(10);
 
 		pool = new DataPool("FlyWheel");
 	}

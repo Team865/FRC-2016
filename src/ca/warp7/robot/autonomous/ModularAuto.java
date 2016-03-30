@@ -7,12 +7,12 @@ import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 
-public class ModularAuto extends AutonomousBase{
-	
+public class ModularAuto extends AutonomousBase {
+
 	protected double wantedRPM;
 	protected boolean isFiring;
-	
-	public ModularAuto(Drive drive, Shooter shooter, Intake intake){
+
+	public ModularAuto(Drive drive, Shooter shooter, Intake intake) {
 		super();
 		wantedRPM = 0.0;
 		isFiring = false;
@@ -20,20 +20,20 @@ public class ModularAuto extends AutonomousBase{
 
 	@Override
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
-		if(moving){
+		if (moving) {
 			BasicModules.move(Constants.DISTANCE_TO_DEFENCE_BASE * getDefenceDirection());
-			if(defence != NO_DEFENCE){
+			if (defence != NO_DEFENCE) {
 				doDefence();
-				if(hardstop){
-					//AdvancedModules.turnToGoal(direction, drive);
-					//BasicModules.move(distance);
-					if(shooting){
+				if (hardstop) {
+					// AdvancedModules.turnToGoal(direction, drive);
+					// BasicModules.move(distance);
+					if (shooting) {
 						AdvancedModules.hardstopShoot(shooter, intake);
 					}
-				}else if(rangedShooting){
-					if(shooting){
-						if(twoBall){
-							
+				} else if (rangedShooting) {
+					if (shooting) {
+						if (twoBall) {
+
 						}
 					}
 				}

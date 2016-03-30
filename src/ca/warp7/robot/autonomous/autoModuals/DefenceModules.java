@@ -1,60 +1,55 @@
 package ca.warp7.robot.autonomous.autoModuals;
 
 public class DefenceModules {
-	
+
 	/**
-	 * Used to cross this defense from the base of it 
-	 * assuming you are aligned
+	 * Used to cross this defense from the base of it assuming you are aligned
 	 */
-	public static void lowbar(){
-		
+	public static void lowbar() {
+		// The distance from one bottom of ramp to the other
+		final double LOWBAR_WIDTH = 0.0;
+		BasicModules.move(LOWBAR_WIDTH);
 	}
-	
+
 	/**
-	 * Used to cross this defense from the base of it 
-	 * assuming you are aligned
+	 * Used to cross this defense from the base of it assuming you are aligned
 	 */
-	public static void chival(){
-		
+	public static void chival() {
+
 	}
-	
+
 	/**
-	 * Used to cross this defense from the base of it 
-	 * assuming you are aligned
+	 * Used to cross this defense from the base of it assuming you are aligned
 	 */
-	public static void portculus(){
-		
+	public static void portculus() {
+
 	}
-	
+
 	/**
-	 * Used to cross this defense from the base of it 
-	 * assuming you are aligned
+	 * Used to cross this defense from the base of it assuming you are aligned
 	 */
-	public static void roughTerrain(){
-		
+	public static void roughTerrain() {
+
 	}
-	
+
 	/**
-	 * Used to cross this defense from the base of it 
-	 * assuming you are aligned
+	 * Used to cross this defense from the base of it assuming you are aligned
 	 */
-	public static void ramparts(){
-		
+	public static void ramparts() {
+
 	}
-	
+
 	/**
-	 * Used to cross this defense from the base of it 
-	 * assuming you are aligned
+	 * Used to cross this defense from the base of it assuming you are aligned
 	 */
-	public static void moat(){
-		
+	public static void moat() {
+
 	}
-	
+
 	/**
-	 * Used to cross this defense from the base of it 
-	 * assuming you are aligned
+	 * Used to cross this defense from the base of it assuming you are aligned
 	 */
-	public static void rockWall(){
-		
+	public static void rockWall() {
+
 	}
 }

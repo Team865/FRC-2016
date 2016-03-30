@@ -1,22 +1,19 @@
 package ca.warp7.robot.subsystems;
 
-import ca.warp7.robot.Constants;
+import static ca.warp7.robot.Constants.*;
+
 import ca.warp7.robot.subsystems.shooterComponents.FlyWheel;
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.VictorSP;
 
 public class Shooter {
 
-	private Victor hood;
+	private VictorSP hood;
 	private FlyWheel flyWheel;
 
-	/**
-	 * @param motor
-	 *            controller
-	 */
-	public Shooter(CANTalon flyWheelMotor, Victor motor) {
-		flyWheel = new FlyWheel(flyWheelMotor);
-		hood = motor;
+	public Shooter() {
+		flyWheel = new FlyWheel(new CANTalon(SHOOTER_CAN_ID));
+		hood = new VictorSP(HOOD_PIN);
 
 		// hood.changeControlMode(TalonControlMode.Position);
 		// hood.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Absolute);
@@ -43,10 +40,6 @@ public class Shooter {
 		flyWheel.coast();
 	}
 
-	public void safety() {
-		// TODO if the hood is past some safety distance set the speed to 0
-	}
-
 	public void setHood(double degrees) {
 		hood.set(degrees);
 	}
@@ -56,6 +49,6 @@ public class Shooter {
 	}
 
 	public void spinUp() {
-		flyWheel.spinUp(Constants.HARDSTOP_RPM);
+		flyWheel.spinUp(HARDSTOP_RPM);
 	}
 }
