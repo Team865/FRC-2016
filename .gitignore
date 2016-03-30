@@ -22,7 +22,7 @@ dist
 # Definitely include these ...
 !/resources
 !build.xml
-!build.properties
+build.properties
 
 # Ignore the files compiled/built from Java source ...
 *.class
