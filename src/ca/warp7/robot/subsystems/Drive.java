@@ -6,10 +6,6 @@ import ca.warp7.robot.networking.DataPool;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
@@ -32,35 +28,12 @@ public class Drive {
 	private static Solenoid PTO;
 	private ADXRS450_Gyro gyro;
 	private DataPool pool;
+	double leftRamp = 0.0;
+	double rightRamp = 0.0;
 
-	double quickstop_accumulator = 0f;
-	double old_wheel = 0f;
-	double sensitivity = .9f;
-	// public PIDController pid = new PIDController(2, 0.5, 0.03125, new
-	// PIDSource() {
-	public PIDController pid = new PIDController(0.04, 0.00004, 0.065, new PIDSource() {
-
-		@Override
-		public void setPIDSourceType(PIDSourceType pidSource) {
-			gyro.setPIDSourceType(pidSource);
-		}
-
-		@Override
-		public PIDSourceType getPIDSourceType() {
-			return gyro.getPIDSourceType();
-		}
-
-		@Override
-		public double pidGet() {
-			return Util.correct_angle(gyro.getAngle());
-		}
-
-	}, new PIDOutput() {
-		@Override
-		public void pidWrite(double output) {
-			move(-output, output);
-		}
-	});
+	double quickstop_accumulator = 0;
+	double old_wheel = 0;
+	double sensitivity = .9;
 	private DistanceFollower leftFollower;
 	private DistanceFollower rightFollower;
 
@@ -71,6 +44,7 @@ public class Drive {
 		rightDrive = new MotorGroup(RIGHT_DRIVE_MOTOR_PINS, VictorSP.class);
 		rightDrive.setInverted(true);
 		leftDrive = new MotorGroup(LEFT_DRIVE_MOTOR_PINS, VictorSP.class);
+		leftDrive.setInverted(true);
 		direction = -1;
 		shifter = new Solenoid(GEAR_CHANGE); // actually ear change
 		PTO = new Solenoid(PTO_SOLENOID); // actually pto
@@ -84,7 +58,6 @@ public class Drive {
 		rightEncoder.setDistancePerPulse(DRIVE_METERS_PER_TICK);
 		gyro = new ADXRS450_Gyro();
 		
-		pid.setAbsoluteTolerance(1);
 
 	}
 
@@ -101,18 +74,12 @@ public class Drive {
 	}
 
 	public void tankDrive(double left, double right) {
-		pid.disable();
-		left *= direction;
-		right *= direction;
-
-		left = Util.deadband(left);
-		right = Util.deadband(right);
-
-		move(left, right);
+		pool.logDouble("desiredLeft", left);
+		pool.logDouble("desiredRight", right);
+		moveRamped(left, right);
 	}
 
 	public void cheesyDrive(double wheel, double throttle, boolean quickturn) {
-		pid.disable();
 		/*
 		 * Poofs! :param wheel: The speed that the robot should turn in the X
 		 * direction. 1 is right [-1.0..1.0] :param throttle: The speed that the
@@ -174,23 +141,20 @@ public class Drive {
 			left_pwm += over_power * (-1 - right_pwm);
 			right_pwm = -1;
 		}
-		// SET MOTORS to left_pwm and right_pwm
-		move(left_pwm, right_pwm);
+		if(shifter.get()) {
+			leftDrive.set(left_pwm);
+			rightDrive.set(right_pwm);
+		} else {
+			moveRamped(left_pwm, right_pwm);
+		}
 	}
 
-	public void move(double left, double right) {
-		//right *= 0.94;
-
-		/*
-		 * double currentVoltage = pdp.getVoltage(); double speedLimit = 1;
-		 * if(currentVoltage <= 8.5){ speedLimit = 0.6; }
-		 * 
-		 * right = Math.max(-speedLimit, Math.min(speedLimit, right)); left =
-		 * Math.max(-speedLimit, Math.min(speedLimit, left));
-		 */
-
-		rightDrive.set(right);
-		leftDrive.set(left);
+	public void moveRamped(double desiredLeft, double desiredRight) {
+		double ramp_speed = 10;
+		leftRamp += (desiredLeft - leftRamp) / ramp_speed;
+		rightRamp += (desiredRight - rightRamp) / ramp_speed;
+		leftDrive.set(leftRamp);
+		rightDrive.set(rightRamp);
 	}
 
 	public void stop() {
@@ -207,7 +171,7 @@ public class Drive {
 	}
 
 	public void overrideMotors(double d) {
-		move(d, d);
+		//move(d, d);
 	}
 
 	public double getRotation() {
@@ -218,6 +182,8 @@ public class Drive {
 		pool.logDouble("gyro angle", getRotation());
 		pool.logDouble("left_enc", leftEncoder.getDistance());
 		pool.logDouble("right_enc", rightEncoder.getDistance());
+		pool.logDouble("left_ramp", leftRamp);
+		pool.logDouble("right_ramp", rightRamp);
 	}
 
 	public boolean getDirection() {
@@ -241,7 +207,8 @@ public class Drive {
 		*/
 		double turn = 0;
 
-		move(leftOutput + turn, rightOutput - turn);
+		leftDrive.set(leftOutput + turn);
+		rightDrive.set(rightOutput - turn);
 	}
 
 	public void setTrajectory(Trajectory traj) {

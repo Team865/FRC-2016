@@ -46,6 +46,7 @@ public class Warp7Robot extends SampleRobot {
 	public static double autonAngle;
 	private int counter;
 	private DataPool _pool;
+	private double lastTime;
 
 	public void robotInit() {
 		System.out.println("hello i am robit");
@@ -92,11 +93,14 @@ public class Warp7Robot extends SampleRobot {
 		controls.reset();
 		intake.reset();
 		compressor.setClosedLoopControl(false);
+		lastTime = Timer.getFPGATimestamp();
 		while (isOperatorControl() && isEnabled()) {
-			controls.periodic();
-			allEnabledLoop();
-			allLoop();
-			Timer.delay(0.005);
+			if(Timer.getFPGATimestamp()-lastTime > 0.005) {
+				controls.periodic();
+				allEnabledLoop();
+				slowLoop();
+			}
+			controls.fastUpdate();
 		}
 	}
 
@@ -104,7 +108,7 @@ public class Warp7Robot extends SampleRobot {
 		while (isAutonomous() && isEnabled()) {
 			auto.periodic(drive, shooter, intake);
 			allEnabledLoop();
-			allLoop();
+			slowLoop();
 			Timer.delay(0.01); // lower dT for auton
 		}
 	}
@@ -115,7 +119,7 @@ public class Warp7Robot extends SampleRobot {
 			drive.stop();
 			climber.stop();
 			intake.stop(); // TODO Investigate these, seem pointless
-			allLoop();
+			slowLoop();
 			Timer.delay(0.005);
 		}
 	}
@@ -125,7 +129,7 @@ public class Warp7Robot extends SampleRobot {
 		intake.periodic();
 	}
 
-	private void allLoop() {
+	private void slowLoop() {
 		if (counter++ >= 10) {
 			try {
 				NIVision.IMAQdxGrab(camera_session, camera_frame, 1);

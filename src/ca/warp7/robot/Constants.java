@@ -12,10 +12,10 @@ public class Constants {
 
 	// DIG Pins
 	public static final int INTAKE_PHOTOSENSOR = 0;
-	public static final int LEFT_DRIVE_ENCODER_A = 3; // ding
-	public static final int LEFT_DRIVE_ENCODER_B = 4; // ding
-	public static final int RIGHT_DRIVE_ENCODER_A = 6; // ding
-	public static final int RIGHT_DRIVE_ENCODER_B = 5; // ding
+	public static final int LEFT_DRIVE_ENCODER_A = 6; // ding
+	public static final int LEFT_DRIVE_ENCODER_B = 5; // ding
+	public static final int RIGHT_DRIVE_ENCODER_A = 3; // ding
+	public static final int RIGHT_DRIVE_ENCODER_B = 4; // ding
 
 	// Solenoids (manifold ports)
 	public static final int GEAR_CHANGE = 0;

@@ -1,15 +1,11 @@
 package ca.warp7.robot.autonomous;
 
-import ca.warp7.robot.networking.DataPool;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
-import jaci.pathfinder.followers.EncoderFollower;
-import jaci.pathfinder.modifiers.TankModifier;
-import static ca.warp7.robot.Constants.*;
 import static ca.warp7.robot.Warp7Robot.drive;
 
 import java.io.File;
@@ -18,11 +14,11 @@ import java.io.File;
 public class SwagDrive extends AutonomousBase {
 
 	public SwagDrive() {
-		Waypoint[] points = new Waypoint[] {
-			    new Waypoint(-1, -0.5, Pathfinder.d2r(-45)),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
-			    new Waypoint(-0.5, -0.5, 0),                        // Waypoint @ x=-2, y=-2, exit angle=0 radians
-			    new Waypoint(0, 0, 0)                           // Waypoint @ x=0, y=0,   exit angle=0 radians
-			};
+		//Waypoint[] points = new Waypoint[] {
+		//	    new Waypoint(-1, -0.5, Pathfinder.d2r(-45)),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
+		//	    new Waypoint(-0.5, -0.5, 0),                        // Waypoint @ x=-2, y=-2, exit angle=0 radians
+		//	    new Waypoint(0, 0, 0)                           // Waypoint @ x=0, y=0,   exit angle=0 radians
+		//	};
 
 		// Create the Trajectory Configuration
 		//
@@ -35,13 +31,14 @@ public class SwagDrive extends AutonomousBase {
 		// Max Velocity:        0.1 m/s
 		// Max Acceleration:    2.0 m/s/s
 		// Max Jerk:            60.0 m/s/s/s
-		Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.01, 0.1, 2.0, 60.0);
+		//Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.01, 0.1, 2.0, 60.0);
 
 		// Generate the trajectory
-		Trajectory trajectory = Pathfinder.generate(points, config);
+		//Trajectory trajectory = Pathfinder.generate(points, config);
 		
-		Pathfinder.writeToCSV(new File("/home/lvuser/traj.csv"), trajectory);
+		//Pathfinder.writeToCSV(new File("/home/lvuser/traj.csv"), trajectory);
 		System.out.println("Trajectories generated");
+		Trajectory trajectory = Pathfinder.readFromCSV(new File("/home/lvuser/traj.csv"));
 
 		drive.setTrajectory(trajectory);
 	}

@@ -87,18 +87,6 @@ public class DefaultControls extends ControllerSettings {
 			driver.setRumble(RumbleType.kLeftRumble, 0.0f);
 		}
 
-		if (driver.getLeftTrigger() >= 0.5) {
-			if (!firing) {
-				intake.intake();
-			} else {
-				intake.fireBall();
-			}
-		} else if (driver.getRightTrigger() >= 0.5) { // outtake
-			intake.outake();
-		} else {
-			intake.stopIntake();
-		}
-
 		if (operator.getAbutton()) {
 			hoodSpeed = -0.2; // a to down
 		}
@@ -127,6 +115,23 @@ public class DefaultControls extends ControllerSettings {
 				O_ChangedBack = false;
 		}
 
-		drive.cheesyDrive(driver.getRightX(), driver.getLeftY(), driver.getLeftBumperbutton());
+		//drive.cheesyDrive(driver.getRightX(), driver.getLeftY(), driver.getLeftBumperbutton());
+//		drive.tankDrive(driver.getLeftY(), driver.getRightY());
+	}
+
+	@Override
+	public void fastUpdate() {
+		//run as fast as possible because photosensor might change some random time
+		if (driver.getLeftTrigger() >= 0.5) {
+			if (!firing) {
+				intake.intake();
+			} else {
+				intake.fireBall();
+			}
+		} else if (driver.getRightTrigger() >= 0.5) { // outtake
+			intake.outake();
+		} else {
+			intake.stopIntake();
+		}
 	}
 }

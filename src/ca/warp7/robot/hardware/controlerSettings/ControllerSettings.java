@@ -5,4 +5,6 @@ public abstract class ControllerSettings {
 	abstract public void reset();
 
 	abstract public void periodic();
+
+	abstract public void fastUpdate();
 }
