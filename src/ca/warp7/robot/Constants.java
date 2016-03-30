@@ -12,8 +12,8 @@ public class Constants {
 
 	// DIG Pins
 	public static final int INTAKE_PHOTOSENSOR = 0;
-	public static final int LEFT_DRIVE_ENCODER_A = 4; // ding
-	public static final int LEFT_DRIVE_ENCODER_B = 3; // ding
+	public static final int LEFT_DRIVE_ENCODER_A = 3; // ding
+	public static final int LEFT_DRIVE_ENCODER_B = 4; // ding
 	public static final int RIGHT_DRIVE_ENCODER_A = 6; // ding
 	public static final int RIGHT_DRIVE_ENCODER_B = 5; // ding
 
@@ -43,7 +43,9 @@ public class Constants {
 	public static double SHOOTER_WHEEL_CIRCUMFERENCE = SHOOTER_WHEEL_RADIUS * 2 * Math.PI;
 	public static double WHEELBASE_WIDTH = 0.6096; // meters
 	public static double WHEEL_DIAMETER = 0.19431; // meters???
-	public static int DRIVE_TICKS_PER_REV = 21; // TODO ???!??
+	public static double WHEEL_CIRCUMFERENCE = Math.PI * WHEEL_DIAMETER;
+	public static int DRIVE_TICKS_PER_REV = 1024; // TODO ???!??
+	public static double DRIVE_METERS_PER_TICK = WHEEL_CIRCUMFERENCE / DRIVE_TICKS_PER_REV;
 	
-	public static double MAX_VELOCITY = 3.6576;// m/s
+	public static double MAX_VELOCITY = 0.5;//3.6576;// m/s
 }

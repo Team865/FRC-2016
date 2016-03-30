@@ -2,6 +2,7 @@ package ca.warp7.robot;
 
 import static ca.warp7.robot.Constants.COMPRESSOR_PIN;
 
+
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
@@ -38,14 +39,7 @@ public class Warp7Robot extends SampleRobot {
 	public static Drive drive;
 	public static Climber climber;
 	private AutonomousBase auto;
-
-	private static NetworkTable autonTable;
-	private static String messageBuffer = "";
-	private static String warningBuffer = "";
-	private static int robotMode = 0;
 	// private static boolean visionTablesUpdated = false;
-	private static boolean updateRobotTables = false;
-	private static NetworkTable robotTable;
 	private static NetworkTable visionTable;
 	public static double autonID;
 	public static double autonDistance;
@@ -67,15 +61,9 @@ public class Warp7Robot extends SampleRobot {
 			NIVision.IMAQdxStartAcquisition(camera_session);
 		} catch (Exception e) {
 		}
-		autonTable = NetworkTable.getTable("autonSelect");
-		autonID = 0;
-		autonDistance = 0;
-		autonAngle = 0;
 
-		autonTable.addTableListener(new GUITableListener());
 		visionTable = NetworkTable.getTable("vision");
 		visionTable.addTableListener(new GUITableListener());
-		robotTable = NetworkTable.getTable("status");
 
 		compressor = new Compressor(COMPRESSOR_PIN);
 		compressor.setClosedLoopControl(true);
@@ -90,6 +78,13 @@ public class Warp7Robot extends SampleRobot {
 		driver = new XboxController(0);
 		operator = new XboxController(1);
 		controls = new DefaultControls(driver, operator, compressor);
+
+		// auto = new IntakeFirst(drive, shooter, intake);
+//		auto = new BatteryFirst(drive, shooter, intake);
+		auto = new SwagDrive();
+		// auto = new IntakeForwardIntakesUp(drive, shooter, intake);
+//		 auto = new Rotato(drive, shooter, intake);
+		// auto = new SpybotHardstop(drive, shooter, intake);
 
 	}
 
@@ -106,18 +101,11 @@ public class Warp7Robot extends SampleRobot {
 	}
 
 	public void autonomous() {
-		// auto = new IntakeFirst(drive, shooter, intake);
-		//auto = new BatteryFirst(drive, shooter, intake);
-		auto = new SwagDrive();
-		// auto = new IntakeForwardIntakesUp(drive, shooter, intake);
-		// auto = new Rotato(drive, shooter, intake);
-		// auto = new SpybotHardstop(drive, shooter, intake);
-
-		while (isAutonomous() && !isOperatorControl() && isEnabled()) {
+		while (isAutonomous() && isEnabled()) {
 			auto.periodic(drive, shooter, intake);
 			allEnabledLoop();
 			allLoop();
-			Timer.delay(0.001); // lower dT for auton
+			Timer.delay(0.01); // lower dT for auton
 		}
 	}
 
@@ -144,14 +132,6 @@ public class Warp7Robot extends SampleRobot {
 				CameraServer.getInstance().setImage(camera_frame);
 			} catch (Exception e) {
 			}
-			if (updateRobotTables) {
-				if (!messageBuffer.isEmpty())
-					robotTable.putString("messages", messageBuffer);
-				if (!warningBuffer.isEmpty())
-					robotTable.putString("warnings", Timer.getFPGATimestamp() + ": " + warningBuffer);
-				robotTable.putNumber("mode", (double) robotMode);
-				updateRobotTables = false;
-			}
 
 			counter = 0;
 			shooter.slowPeriodic();
@@ -162,20 +142,5 @@ public class Warp7Robot extends SampleRobot {
 			_pool.logData("hotbot", pdp.getTemperature());
 			DataPool.collectAllData();
 		}
-	}
-
-	public static void logMessage(String msg) {
-		messageBuffer += msg;
-		updateRobotTables = true;
-	}
-
-	public static void logWarning(String msg) {
-		warningBuffer += msg;
-		updateRobotTables = true;
-	}
-
-	public static void changeMode(Mode mode) {
-		robotMode = mode.code;
-		updateRobotTables = true;
 	}
 }

@@ -12,8 +12,10 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.VictorSP;
-import jaci.pathfinder.Pathfinder;
-import jaci.pathfinder.followers.EncoderFollower;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+import jaci.pathfinder.Trajectory;
+import jaci.pathfinder.followers.DistanceFollower;
+import jaci.pathfinder.modifiers.TankModifier;
 
 import static ca.warp7.robot.Constants.*;
 
@@ -59,8 +61,8 @@ public class Drive {
 			move(-output, output);
 		}
 	});
-	private EncoderFollower leftEncoderFollower;
-	private EncoderFollower rightEncoderFollower;
+	private DistanceFollower leftFollower;
+	private DistanceFollower rightFollower;
 
 	public Drive(Compressor comp) {
 		pool = new DataPool("Drive");
@@ -75,8 +77,11 @@ public class Drive {
 		shifter.set(false);
 		PTO.set(false);
 		
-		leftEncoder =  new Encoder(LEFT_DRIVE_ENCODER_A, LEFT_DRIVE_ENCODER_B);;
-		rightEncoder = new Encoder(RIGHT_DRIVE_ENCODER_A, RIGHT_DRIVE_ENCODER_B);
+		leftEncoder =  new Encoder(LEFT_DRIVE_ENCODER_A, LEFT_DRIVE_ENCODER_B, false, EncodingType.k4X);
+		rightEncoder = new Encoder(RIGHT_DRIVE_ENCODER_A, RIGHT_DRIVE_ENCODER_B, false, EncodingType.k4X);
+		
+		leftEncoder.setDistancePerPulse(DRIVE_METERS_PER_TICK);
+		rightEncoder.setDistancePerPulse(DRIVE_METERS_PER_TICK);
 		gyro = new ADXRS450_Gyro();
 		
 		pid.setAbsoluteTolerance(1);
@@ -96,6 +101,7 @@ public class Drive {
 	}
 
 	public void tankDrive(double left, double right) {
+		pid.disable();
 		left *= direction;
 		right *= direction;
 
@@ -106,6 +112,7 @@ public class Drive {
 	}
 
 	public void cheesyDrive(double wheel, double throttle, boolean quickturn) {
+		pid.disable();
 		/*
 		 * Poofs! :param wheel: The speed that the robot should turn in the X
 		 * direction. 1 is right [-1.0..1.0] :param throttle: The speed that the
@@ -218,26 +225,29 @@ public class Drive {
 	}
 	
 	public void followPath() {
-		if(leftEncoderFollower == null || rightEncoderFollower == null) {
+		if(leftFollower == null || rightFollower == null) {
+			System.out.println("NO FOLLOWER INITIALIZED");
 			return; //bmlep
 		}
-		double leftOutput = leftEncoderFollower.calculate(leftEncoder.get());
-		double rightOutput = rightEncoderFollower.calculate(rightEncoder.get());
+		double leftOutput = leftFollower.calculate(leftEncoder.get());
+		double rightOutput = rightFollower.calculate(rightEncoder.get());
+		/*
 		double gyro_heading = gyro.getAngle();    // Assuming the gyro is giving a value in degrees
+		 
 		double desired_heading = Pathfinder.r2d(leftEncoderFollower.getHeading());  // Should also be in degrees
 
 		double angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
 		double turn = 0.8 * (-1.0/80.0) * angleDifference;
+		*/
+		double turn = 0;
 
 		move(leftOutput + turn, rightOutput - turn);
 	}
 
-	public void setEncoderFollowers(EncoderFollower left, EncoderFollower right) {
-		leftEncoderFollower = left;
-		rightEncoderFollower = right;
-		
-		leftEncoderFollower.configureEncoder(leftEncoder.get(), DRIVE_TICKS_PER_REV, WHEEL_DIAMETER);
-		rightEncoderFollower.configureEncoder(rightEncoder.get(), DRIVE_TICKS_PER_REV, WHEEL_DIAMETER);
+	public void setTrajectory(Trajectory traj) {
+		TankModifier modifier = new TankModifier(traj).modify(WHEELBASE_WIDTH);
+		leftFollower = new DistanceFollower(modifier.getLeftTrajectory());
+		rightFollower = new DistanceFollower(modifier.getRightTrajectory());
 		
 		// The first argument is the proportional gain. Usually this will be quite high
 		// The second argument is the integral gain. This is unused for motion profiling
@@ -245,7 +255,11 @@ public class Drive {
 		// The fourth argument is the velocity ratio. This is 1 over the maximum velocity you provided in the 
 		//     trajectory configuration (it translates m/s to a -1 to 1 scale that your motors can read)
 		// The fifth argument is your acceleration gain. Tweak this if you want to get to a higher or lower speed quicker
-		leftEncoderFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / MAX_VELOCITY, 0);
-		rightEncoderFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / MAX_VELOCITY, 0);
+		leftFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / MAX_VELOCITY, 0);
+		rightFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / MAX_VELOCITY, 0);
+	}
+
+	public double getDesiredHeading() {
+		return leftFollower.getHeading();
 	}
 }

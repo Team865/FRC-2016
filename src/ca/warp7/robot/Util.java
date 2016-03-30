@@ -14,7 +14,7 @@ public class Util {
 	}
 
 	public static double deadband(double num) {
-		return Math.abs(num) < 0.13 ? 0 : num;
+		return Math.abs(num) < 0.18 ? 0 : (num - (0.18* Math.signum(num))) * 1.22;
 	}
 
 	public static double sinScale(double val, double non_linearity, int passes) {
