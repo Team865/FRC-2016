@@ -51,7 +51,7 @@ public class Warp7Robot extends SampleRobot {
 
             // the camera name (ex "cam0") can be found through the roborio web
             // interface
-            camera_session = NIVision.IMAQdxOpenCamera("cam0",
+            camera_session = NIVision.IMAQdxOpenCamera("cam1",
                     NIVision.IMAQdxCameraControlMode.CameraControlModeController);
             NIVision.IMAQdxConfigureGrab(camera_session);
             NIVision.IMAQdxStartAcquisition(camera_session);
