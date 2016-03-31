@@ -20,7 +20,7 @@ public class IntakeFirst extends AutonomousBase {
 			count++;
 			drive.moveRamped(0.8, 0.9);
 		} else {
-			drive.overrideMotors(0);
+			drive.stop();
 			shooter.setHood(0.3);
 		}
 

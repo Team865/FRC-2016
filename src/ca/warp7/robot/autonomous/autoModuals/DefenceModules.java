@@ -1,14 +1,16 @@
 package ca.warp7.robot.autonomous.autoModuals;
 
-public class DefenceModules {
+import ca.warp7.robot.subsystems.Drive;
+
+public class DefenceModules extends ModuleBase{
 
 	/**
 	 * Used to cross this defense from the base of it assuming you are aligned
 	 */
-	public static void lowbar() {
+	public static void lowbar(Drive drive) {
 		// The distance from one bottom of ramp to the other
 		final double LOWBAR_WIDTH = 0.0;
-		BasicModules.move(LOWBAR_WIDTH);
+		BasicModules.move(LOWBAR_WIDTH, drive);
 	}
 
 	/**

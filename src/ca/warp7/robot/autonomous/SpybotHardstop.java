@@ -21,12 +21,12 @@ public class SpybotHardstop extends AutonomousBase {
 		if (count <= 250) {
 			count++;
 			if (count <= 175) {
-				drive.overrideMotors(-1.0);
+				drive.autoMove(-1.0, -1.0);
 			} else {
-				drive.overrideMotors(-0.6);
+				drive.autoMove(-0.6, -0.6);
 			}
 		} else {
-			drive.overrideMotors(0);
+			drive.stop();
 			if (shooter.atTargetRPM()) {
 				intake.shoot();
 			}

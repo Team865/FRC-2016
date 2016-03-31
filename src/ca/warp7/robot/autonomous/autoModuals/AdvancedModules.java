@@ -4,7 +4,7 @@ import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 
-public class AdvancedModules {
+public class AdvancedModules extends ModuleBase{
 
 	/**
 	 * 0 is where you are so you need negative to curve left(looking from

@@ -55,10 +55,10 @@ public abstract class AutonomousBase {
 		// twoBall = true;
 	}
 
-	protected void doDefence() {
+	protected void doDefence(Drive drive) {
 		switch (defence) {
 		case LOWBAR:
-			DefenceModules.lowbar();
+			DefenceModules.lowbar(drive);
 			break;
 		case CHIVAL:
 			DefenceModules.chival();

@@ -1,14 +1,14 @@
 package ca.warp7.robot.autonomous;
 
+import static ca.warp7.robot.Warp7Robot.drive;
+
+import java.io.File;
+
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
-import jaci.pathfinder.Waypoint;
-import static ca.warp7.robot.Warp7Robot.drive;
-
-import java.io.File;
 
 
 public class SwagDrive extends AutonomousBase {

@@ -1,29 +1,33 @@
 package ca.warp7.robot.autonomous;
 
+import ca.warp7.robot.autonomous.autoModuals.BasicModules;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.Timer;
 
-public class IntakeForwardIntakesUp extends AutonomousBase {
+public class EncoderDrive extends AutonomousBase {
 
-	private int count;
+	private int step;
 
-	public IntakeForwardIntakesUp(Drive drive, Shooter shooter, Intake intake) {
-		count = 0;
+	public EncoderDrive(Drive drive, Shooter shooter, Intake intake) {
+		step = 1;
 		intake.raisePortculus(true);
 		// drive.setGear(true);
 		// intake.adjustedArmRetracted();
-		// Timer.delay(7);
+		Timer.delay(3);
 	}
 
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
-		if (count <= 400) {
-			count++;
-			drive.moveRamped(0.8, 0.9);
-		} else {
+		switch(step){
+		case 1:
+			boolean finished = BasicModules.move(100, drive);
+			if(finished)step++;
+			break;
+		default:
 			drive.stop();
 			shooter.setHood(0.3);
+			break;
 		}
 
 		/*
@@ -32,4 +36,5 @@ public class IntakeForwardIntakesUp extends AutonomousBase {
 		 * if(hardstop){ curve(x, y); shoot(direction); } }
 		 */
 	}
+
 }

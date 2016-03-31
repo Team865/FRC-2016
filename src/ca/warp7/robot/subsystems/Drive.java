@@ -21,12 +21,12 @@ public class Drive {
 	private static int direction;
 	private static MotorGroup rightDrive;
 	private static MotorGroup leftDrive;
-	private Encoder leftEncoder;
-	private Encoder rightEncoder;
+	public Encoder leftEncoder;
+	public Encoder rightEncoder;
 
 	private static Solenoid shifter;
 	private static Solenoid PTO;
-	private ADXRS450_Gyro gyro;
+	public ADXRS450_Gyro gyro;
 	private DataPool pool;
 	double leftRamp = 0.0;
 	double rightRamp = 0.0;
@@ -57,8 +57,6 @@ public class Drive {
 		leftEncoder.setDistancePerPulse(DRIVE_METERS_PER_TICK);
 		rightEncoder.setDistancePerPulse(DRIVE_METERS_PER_TICK);
 		gyro = new ADXRS450_Gyro();
-		
-
 	}
 
 	public void changeDirection() {
@@ -170,8 +168,9 @@ public class Drive {
 		PTO.set(!(PTO.get()));
 	}
 
-	public void overrideMotors(double d) {
-		//move(d, d);
+	public void autoMove(double left, double right) {
+		leftDrive.set(left);
+		rightDrive.set(right);
 	}
 
 	public double getRotation() {
