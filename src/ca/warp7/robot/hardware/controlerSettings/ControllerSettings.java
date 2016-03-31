@@ -6,5 +6,4 @@ public abstract class ControllerSettings {
 
 	abstract public void periodic();
 
-	abstract public void fastUpdate();
 }

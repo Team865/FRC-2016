@@ -5,10 +5,8 @@ import ca.warp7.robot.Constants;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.XboxController.RumbleType;
 import edu.wpi.first.wpilibj.Compressor;
-import static ca.warp7.robot.Warp7Robot.drive;
-import static ca.warp7.robot.Warp7Robot.intake;
-import static ca.warp7.robot.Warp7Robot.shooter;
-import static ca.warp7.robot.Warp7Robot.climber;
+
+import static ca.warp7.robot.Warp7Robot.*;
 
 public class DefaultControls extends ControllerSettings {
 	private static boolean changedA;
@@ -42,6 +40,26 @@ public class DefaultControls extends ControllerSettings {
 
 	@Override
 	public void periodic() {
+        if(!driverStation.isFMSAttached()) { // if we're not fms controlled
+            if (operator.getLeftTrigger() < 0.5) {
+                shooter.stop();
+                drive.stop();
+                intake.stopIntake();
+                return; // stop doing thing if our dead man's switch isn't held.
+            }
+        }
+
+        if (driver.getLeftTrigger() >= 0.5) {
+            if (!firing) {
+                intake.intake();
+            } else {
+                intake.fireBall();
+            }
+        } else if (driver.getRightTrigger() >= 0.5) { // outtake
+            intake.outake();
+        } else {
+            intake.stopIntake();
+        }
 
 		// Toggles the long piston
 		if (driver.getAbutton()) {
@@ -117,21 +135,5 @@ public class DefaultControls extends ControllerSettings {
 
 		//drive.cheesyDrive(driver.getRightX(), driver.getLeftY(), driver.getLeftBumperbutton());
 //		drive.tankDrive(driver.getLeftY(), driver.getRightY());
-	}
-
-	@Override
-	public void fastUpdate() {
-		//run as fast as possible because photosensor might change some random time
-		if (driver.getLeftTrigger() >= 0.5) {
-			if (!firing) {
-				intake.intake();
-			} else {
-				intake.fireBall();
-			}
-		} else if (driver.getRightTrigger() >= 0.5) { // outtake
-			intake.outake();
-		} else {
-			intake.stopIntake();
-		}
 	}
 }

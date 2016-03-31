@@ -15,9 +15,16 @@ import jaci.pathfinder.Waypoint;
 public class SwagDrive extends AutonomousBase {
 
 	public SwagDrive() {
+		// Imagine the robot starts facing right on the centerline.
+		// X+ is forwards
+        // Y+ is down (to the right of the robot)
+        // X- is backwards
+        // Y- is up (to the left of the robot)
+        // Positive headings go from forward to right,
+        // Negative headings go from forward to left
 		Waypoint[] points = new Waypoint[] {
-		    new Waypoint(-0.5, -0.5, 0), // Waypoint @ x=-2, y=-2, exit angle=0 radians
-		    new Waypoint(0, 0, 0) // Waypoint @ x=0, y=0,   exit angle=0 radians
+		    new Waypoint(0, 0, 0),
+		    new Waypoint(1, 1, 45) // Drive 1 meter forwards and 1 meter right, end up turned 45deg.
 		};
 
 		// Create the Trajectory Configuration
