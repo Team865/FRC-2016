@@ -38,4 +38,8 @@ public class Constants {
 	public static double DRIVE_METERS_PER_TICK = WHEEL_CIRCUMFERENCE / DRIVE_TICKS_PER_REV;
 	
 	public static double MAX_VELOCITY = 0.5;//3.6576;// m/s
+
+    // reversed?
+    public static boolean BATTERY = false;
+    public static boolean INTAKE = true;
 }

@@ -50,7 +50,7 @@ public class Warp7Robot extends SampleRobot {
             NIVision.IMAQdxStartAcquisition(camera_session);
         } catch (Exception ignored) {
         }
-        
+
         compressor = new Compressor(COMPRESSOR_PIN);
         compressor.setClosedLoopControl(true);
 

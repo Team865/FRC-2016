@@ -81,7 +81,7 @@ public abstract class AutonomousBase {
 		}
 	}
 
-	protected double getDefenceDirection() {
+	protected boolean getDefenceDirection() {
 		switch (defence) {
 		case LOWBAR:
 			return Constants.BATTERY;
