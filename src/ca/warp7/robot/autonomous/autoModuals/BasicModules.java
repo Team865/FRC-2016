@@ -4,7 +4,7 @@ import ca.warp7.robot.subsystems.Drive;
 
 public class BasicModules extends ModuleBase{
 
-	private static int zero = 0;
+	private static double zero = 0;
 	
 	/**
 	 * @param distance
@@ -13,11 +13,11 @@ public class BasicModules extends ModuleBase{
 	public static boolean move(double distance, Drive drive) {
 		double driveSpeed = 0.3 * Math.signum(distance);
 		if(!moving){
-			zero = drive.leftEncoder.get();
+			zero = drive.leftEncoder.getDistance();
 			drive.autoMove(driveSpeed, driveSpeed);
 			moving = true;
 		}
-		if(Math.abs(drive.leftEncoder.get()-zero) >= Math.abs(distance/100) && moving){
+		if(Math.abs(drive.leftEncoder.getDistance()-zero) >= Math.abs(distance/100) && moving){
 			drive.stop();
 			moving = false;
 			zero = 0;
@@ -35,7 +35,7 @@ public class BasicModules extends ModuleBase{
 		double turnSpeed = 0.3 * Math.signum(degrees);
 		double allowableError = 5;
 		if(!moving){
-			zero = (int) drive.gyro.getAngle();
+			zero = drive.gyro.getAngle();
 			drive.autoMove(turnSpeed, -turnSpeed);
 			moving = true;
 		}
