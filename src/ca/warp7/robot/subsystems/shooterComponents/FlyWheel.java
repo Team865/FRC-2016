@@ -19,8 +19,8 @@ public class FlyWheel {
 		_talon.changeControlMode(TalonControlMode.Speed);
 		_talon.setProfile(0);
 
-		_talon.setF(0);
-		_talon.setP(0);
+		_talon.setF(1.76);
+		_talon.setP(15);
 		_talon.setI(0);
 		_talon.setD(0);
 
