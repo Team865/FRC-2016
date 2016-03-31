@@ -23,7 +23,7 @@ public class ModularAuto extends AutonomousBase {
 		if (moving) {
 			BasicModules.move(Constants.DISTANCE_TO_DEFENCE_BASE * getDefenceDirection(), drive);
 			if (defence != NO_DEFENCE) {
-				doDefence(drive);
+				doDefence(drive, intake);
 				if (hardstop) {
 					// AdvancedModules.turnToGoal(direction, drive);
 					// BasicModules.move(distance);

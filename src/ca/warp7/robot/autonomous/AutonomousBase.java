@@ -32,7 +32,7 @@ public abstract class AutonomousBase {
 		shooting = false;
 		twoBall = false;
 
-		getModularInfo();
+		updateModularInfo();
 	}
 
 	public abstract void periodic(Drive drive, Shooter shooter, Intake intake);
@@ -45,38 +45,38 @@ public abstract class AutonomousBase {
 		return false;
 	}
 
-	private void getModularInfo() {
+	private void updateModularInfo() {
 		// TODO make this interact with some human interface
 		moving = true;
 		defence = 0;
 		hardstop = true;
-		// rangedShooting = true;
+		rangedShooting = false;
 		shooting = true;
-		// twoBall = true;
+		twoBall = false;
 	}
 
-	protected void doDefence(Drive drive) {
+	protected void doDefence(Drive drive, Intake intake) {
 		switch (defence) {
 		case LOWBAR:
 			DefenceModules.lowbar(drive);
 			break;
 		case CHIVAL:
-			DefenceModules.chival();
+			DefenceModules.chival(drive, intake);
 			break;
 		case PORTCULUS:
-			DefenceModules.portculus();
+			DefenceModules.portculus(drive, intake);
 			break;
 		case ROUGH_TERRAIN:
-			DefenceModules.roughTerrain();
+			DefenceModules.roughTerrain(drive);
 			break;
 		case RAMPARTS:
-			DefenceModules.ramparts();
+			DefenceModules.ramparts(drive);
 			break;
 		case MOAT:
-			DefenceModules.moat();
+			DefenceModules.moat(drive);
 			break;
 		case ROCK_WALL:
-			DefenceModules.rockWall();
+			DefenceModules.rockWall(drive);
 			break;
 		}
 	}
