@@ -19,6 +19,7 @@ bin
 build
 dist
 /dist
+sysProps.xml
 
 # Definitely include these ...
 !/resources
