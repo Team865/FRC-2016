@@ -85,9 +85,11 @@ public class DefaultControls extends ControllerSettings {
 				intake.initialBackAdjustingForward(true);
 				O_ChangedB = true;
 			}
-		}else{
-			if(O_ChangedB)
-				O_ChangedB = false;
+		}else {
+            if (O_ChangedB){
+                O_ChangedB = false;
+            intake.initialBackAdjustingForward(false);
+        }
 		}
 
 		// hold to change gears for driving let go and it goes back
@@ -108,7 +110,7 @@ public class DefaultControls extends ControllerSettings {
 		firing = false;
 		if (operator.getRightTrigger() >= 0.5) {
 			shooter.spinUp();
-			hoodSpeed = 0.5;
+			hoodSpeed = 0.3;
 			if (shooter.atTargetRPM()) {
 				firing = true;
 				driver.setRumble(RumbleType.kRightRumble, 0.5f);
@@ -151,7 +153,7 @@ public class DefaultControls extends ControllerSettings {
 		if(disableHood) {
 			hoodSpeed = 0;
 		}
-		// shooter.setHood(hoodSpeed);
+		 shooter.setHood(hoodSpeed);
 
 		if (operator.getBackButton()) {
 			if (!O_ChangedBack) {
@@ -166,4 +168,9 @@ public class DefaultControls extends ControllerSettings {
 		drive.cheesyDrive(driver.getRightX(), driver.getLeftY(), driver.getLeftBumperbutton());
 //		drive.tankDrive(driver.getLeftY(), driver.getRightY());
 	}
+    @Override
+    public void disabled() {
+        driver.setRumble(RumbleType.kLeftRumble, 0);
+        driver.setRumble(RumbleType.kRightRumble, 0);
+    }
 }

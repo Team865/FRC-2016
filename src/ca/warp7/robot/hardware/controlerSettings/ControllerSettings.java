@@ -6,4 +6,5 @@ public abstract class ControllerSettings {
 
 	abstract public void periodic();
 
+    public abstract void disabled();
 }
