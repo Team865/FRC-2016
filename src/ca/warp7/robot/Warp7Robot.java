@@ -109,7 +109,7 @@ public class Warp7Robot extends SampleRobot {
 			auto.periodic(drive, shooter, intake);
 			allEnabledLoop();
 			slowLoop();
-			Timer.delay(0.01); // lower dT for auton
+			Timer.delay(1/50); // 1/50 second delay
 		}
 	}
 

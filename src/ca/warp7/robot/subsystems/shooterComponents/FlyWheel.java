@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 public class FlyWheel {
 
 	private CANTalon _talon;
-	private DataPool pool;
+	private DataPool _pool;
 
 	public FlyWheel(CANTalon motor) {
 		_talon = motor;
@@ -30,7 +30,7 @@ public class FlyWheel {
 		 */
 		// _talon.setVoltageRampRate(10);
 
-		pool = new DataPool("FlyWheel");
+		_pool = new DataPool("FlyWheel");
 	}
 
 	public void spinUp(double targetSpeed) {
@@ -39,8 +39,8 @@ public class FlyWheel {
 	}
 
 	public void slowPeriodic() {
-		pool.logDouble("Flywheel Speed", _talon.getSpeed());
-		pool.logBoolean("readyToFire", atTargetRPM());
+		_pool.logDouble("speed", _talon.getSpeed());
+		_pool.logBoolean("readyToFire", atTargetRPM());
 	}
 
 	public double getSpeed() {

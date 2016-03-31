@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/Pathfinder-Java.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/Pathfinder-Java.jar" sourcepath="C:/Users/R Lounds/Documents/sos/Pathfinder-Java/Pathfinder-Java/src/main/java"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="var" path="wpilib" sourcepath="wpilib.sources"/>
 	<classpathentry kind="var" path="networktables" sourcepath="networktables.sources"/>

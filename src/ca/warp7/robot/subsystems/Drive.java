@@ -141,7 +141,7 @@ public class Drive {
 			left_pwm += over_power * (-1 - right_pwm);
 			right_pwm = -1;
 		}
-		if(shifter.get()) {
+		if(shifter.get()) { // if low gear
 			leftDrive.set(left_pwm);
 			rightDrive.set(right_pwm);
 		} else {
@@ -179,11 +179,16 @@ public class Drive {
 	}
 
 	public void slowPeriodic() {
-		pool.logDouble("gyro angle", getRotation());
+		pool.logDouble("gyro_angle", getRotation());
 		pool.logDouble("left_enc", leftEncoder.getDistance());
 		pool.logDouble("right_enc", rightEncoder.getDistance());
 		pool.logDouble("left_ramp", leftRamp);
 		pool.logDouble("right_ramp", rightRamp);
+		if (leftFollower != null && !leftFollower.isFinished()) {
+            Trajectory.Segment seg = leftFollower.getSegment();
+            double leftError = seg.position - leftEncoder.get();
+            pool.logDouble("left_error", leftError);
+		}
 	}
 
 	public boolean getDirection() {
@@ -213,8 +218,10 @@ public class Drive {
 
 	public void setTrajectory(Trajectory traj) {
 		TankModifier modifier = new TankModifier(traj).modify(WHEELBASE_WIDTH);
-		leftFollower = new DistanceFollower(modifier.getLeftTrajectory());
-		rightFollower = new DistanceFollower(modifier.getRightTrajectory());
+		Trajectory leftTraj = modifier.getLeftTrajectory();
+		Trajectory rightTraj = modifier.getRightTrajectory();
+		leftFollower = new DistanceFollower(leftTraj);
+		rightFollower = new DistanceFollower(rightTraj);
 		
 		// The first argument is the proportional gain. Usually this will be quite high
 		// The second argument is the integral gain. This is unused for motion profiling
