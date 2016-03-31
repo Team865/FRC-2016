@@ -27,20 +27,10 @@ public class Constants {
 	public static final int COMPRESSOR_PIN = 0;
 
 	// General References
-	public static final int BATTERY = 1;
-	public static final int INTAKE = -1;
-	public static final boolean LOW_GEAR = false;
-	public static final boolean HIGH_GEAR = true;
 	public static final double HARDSTOP_RPM = 3700;
 	public static final double DISTANCE_TO_DEFENCE_BASE = 0;
 
 	// Robot dimensions and stuff
-	public static double SHOOTER_ANGLE = 75;
-	private static double TARGET_HEIGHT = 3;
-	private static double ROBOT_HEIGHT = 2;
-	public static double HEIGHT_DIFFERENCE = TARGET_HEIGHT - ROBOT_HEIGHT;
-	private static double SHOOTER_WHEEL_RADIUS = 2;
-	public static double SHOOTER_WHEEL_CIRCUMFERENCE = SHOOTER_WHEEL_RADIUS * 2 * Math.PI;
 	public static double WHEELBASE_WIDTH = 0.6096; // meters
 	public static double WHEEL_DIAMETER = 0.19431; // meters???
 	public static double WHEEL_CIRCUMFERENCE = Math.PI * WHEEL_DIAMETER;

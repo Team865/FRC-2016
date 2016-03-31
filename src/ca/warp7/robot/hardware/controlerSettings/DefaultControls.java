@@ -35,7 +35,7 @@ public class DefaultControls extends ControllerSettings {
 		hoodSpeed = 0.0;
 		firing = false;
 
-		drive.setDirection(Constants.BATTERY);
+		drive.setReversed(false);
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public class DefaultControls extends ControllerSettings {
 				O_ChangedBack = false;
 		}
 
-		//drive.cheesyDrive(driver.getRightX(), driver.getLeftY(), driver.getLeftBumperbutton());
+		drive.cheesyDrive(driver.getRightX(), driver.getLeftY(), driver.getLeftBumperbutton());
 //		drive.tankDrive(driver.getLeftY(), driver.getRightY());
 	}
 }

@@ -12,7 +12,6 @@ import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
 import ca.warp7.robot.hardware.controlerSettings.DefaultControls;
 import ca.warp7.robot.networking.DataPool;
-import ca.warp7.robot.networking.GUITableListener;
 import ca.warp7.robot.subsystems.Climber;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
@@ -51,16 +50,13 @@ public class Warp7Robot extends SampleRobot {
             NIVision.IMAQdxStartAcquisition(camera_session);
         } catch (Exception ignored) {
         }
-
-        NetworkTable visionTable = NetworkTable.getTable("vision");
-        visionTable.addTableListener(new GUITableListener());
-
+        
         compressor = new Compressor(COMPRESSOR_PIN);
         compressor.setClosedLoopControl(true);
 
 
         shooter = new Shooter();
-        drive = new Drive(compressor);
+        drive = new Drive();
         intake = new Intake();
         climber = new Climber();
 

@@ -18,7 +18,6 @@ import static ca.warp7.robot.Constants.*;
 public class Drive {
 
 	// https://code.google.com/p/3647robotics/source/browse/WCDRobot/src/Robot/DriveTrain.java?r=63
-	private static int direction;
 	private static MotorGroup rightDrive;
 	private static MotorGroup leftDrive;
 	public Encoder leftEncoder;
@@ -28,25 +27,25 @@ public class Drive {
 	private static Solenoid PTO;
 	public ADXRS450_Gyro gyro;
 	private DataPool pool;
-	double leftRamp = 0.0;
-	double rightRamp = 0.0;
+	private double leftRamp = 0.0;
+	private double rightRamp = 0.0;
 
-	double quickstop_accumulator = 0;
-	double old_wheel = 0;
-	double sensitivity = .9;
-	private DistanceFollower leftFollower;
+	private double quickstop_accumulator = 0;
+	private double old_wheel = 0;
+    private DistanceFollower leftFollower;
 	private DistanceFollower rightFollower;
+    private boolean isDrivetrainReversed = false;
 
-	public Drive(Compressor comp) {
+    public Drive() {
 		pool = new DataPool("Drive");
 
 		// Hardware components
 		rightDrive = new MotorGroup(RIGHT_DRIVE_MOTOR_PINS, VictorSP.class);
-		rightDrive.setInverted(true);
+//		rightDrive.setInverted(true);
 		leftDrive = new MotorGroup(LEFT_DRIVE_MOTOR_PINS, VictorSP.class);
-		leftDrive.setInverted(true);
-		direction = -1;
-		shifter = new Solenoid(GEAR_CHANGE); // actually ear change
+//		leftDrive.setInverted(true);
+
+        shifter = new Solenoid(GEAR_CHANGE); // actually ear change
 		PTO = new Solenoid(PTO_SOLENOID); // actually pto
 		shifter.set(false);
 		PTO.set(false);
@@ -59,16 +58,9 @@ public class Drive {
 		gyro = new ADXRS450_Gyro();
 	}
 
-	public void changeDirection() {
-		direction *= -1;
-	}
 
 	public void setGear(boolean gear) {
 		shifter.set(gear); // TODO gear pto swap
-	}
-
-	public void setDirection(int direction_) {
-		direction = direction_;
 	}
 
 	public void tankDrive(double left, double right) {
@@ -84,9 +76,8 @@ public class Drive {
 		 * robot should drive in the Y direction. -1 is forward. [-1.0..1.0]
 		 * :param quickturn: If the robot should drive arcade-drive style
 		 */
-		
-		throttle = Util.deadband(throttle * direction);
-		wheel = Util.deadband(wheel * direction);
+		throttle = Util.deadband(throttle);
+		wheel = Util.deadband(wheel);
 		double right_pwm;
 		double left_pwm;
 		double neg_inertia_scalar;
@@ -115,10 +106,11 @@ public class Drive {
 				quickstop_accumulator = (1 - alpha) * quickstop_accumulator + alpha * Util.limit(wheel, 1.0) * 5;
 			}
 			over_power = 1;
-			angular_power = -wheel * direction * .85;
+			angular_power = -wheel * .85;
 		} else {
 			over_power = 0;
-			angular_power = throttle * wheel * sensitivity - quickstop_accumulator;
+            double sensitivity = .9;
+            angular_power = throttle * wheel * sensitivity - quickstop_accumulator;
 			quickstop_accumulator = Util.wrap_accumulator(quickstop_accumulator);
 		}
 		right_pwm = left_pwm = throttle;
@@ -139,6 +131,10 @@ public class Drive {
 			left_pwm += over_power * (-1 - right_pwm);
 			right_pwm = -1;
 		}
+        if(isDrivetrainReversed) {
+            left_pwm *= -1;
+            right_pwm *= -1;
+        }
 		if(shifter.get()) { // if low gear
 			leftDrive.set(left_pwm);
 			rightDrive.set(right_pwm);
@@ -158,14 +154,6 @@ public class Drive {
 	public void stop() {
 		rightDrive.set(0);
 		leftDrive.set(0);
-	}
-
-	public void changeGear() {
-		shifter.set(!(shifter.get()));
-	}
-
-	public void changePTO() {
-		PTO.set(!(PTO.get()));
 	}
 
 	public void autoMove(double left, double right) {
@@ -190,13 +178,9 @@ public class Drive {
 		}
 	}
 
-	public boolean getDirection() {
-		return direction == 1;
-	}
-	
 	public void followPath() {
 		if(leftFollower == null || rightFollower == null) {
-			System.out.println("NO FOLLOWER INITIALIZED");
+			System.out.println("No path follower initialized!!!");
 			return; //bmlep
 		}
 		double leftOutput = leftFollower.calculate(leftEncoder.get());
@@ -217,10 +201,10 @@ public class Drive {
 
 	public void setTrajectory(Trajectory traj) {
 		TankModifier modifier = new TankModifier(traj).modify(WHEELBASE_WIDTH);
-		Trajectory leftTraj = modifier.getLeftTrajectory();
-		Trajectory rightTraj = modifier.getRightTrajectory();
-		leftFollower = new DistanceFollower(leftTraj);
-		rightFollower = new DistanceFollower(rightTraj);
+		Trajectory leftTrajectory = modifier.getLeftTrajectory();
+		Trajectory rightTrajectory = modifier.getRightTrajectory();
+		leftFollower = new DistanceFollower(leftTrajectory);
+		rightFollower = new DistanceFollower(rightTrajectory);
 		
 		// The first argument is the proportional gain. Usually this will be quite high
 		// The second argument is the integral gain. This is unused for motion profiling
@@ -232,7 +216,11 @@ public class Drive {
 		rightFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / MAX_VELOCITY, 0);
 	}
 
-	public double getDesiredHeading() {
-		return leftFollower.getHeading();
-	}
+    public void setReversed(boolean reversed) {
+        isDrivetrainReversed = reversed;
+    }
+
+    public boolean getDirection() {
+        return isDrivetrainReversed;
+    }
 }
