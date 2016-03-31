@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Warp7Robot extends SampleRobot {
 
@@ -41,6 +42,7 @@ public class Warp7Robot extends SampleRobot {
     public void robotInit() {
         System.out.println("hello i am robit");
         _pool = new DataPool("Robot");
+        NetworkTable.setUpdateRate(0.050);
         driverStation = DriverStation.getInstance();
         try {
             camera_frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
@@ -55,7 +57,6 @@ public class Warp7Robot extends SampleRobot {
         }
 
         compressor = new Compressor(COMPRESSOR_PIN);
-        compressor.setClosedLoopControl(true);
 
 
         shooter = new Shooter();
@@ -128,9 +129,9 @@ public class Warp7Robot extends SampleRobot {
             }
 
             counter = 0;
-            shooter.slowPeriodic();
             intake.slowPeriodic();
             drive.slowPeriodic();
+            shooter.slowPeriodic();
             _pool.logBoolean("compressor", compressor.getClosedLoopControl());
             _pool.logBoolean("direction", drive.isDrivetrainReversed());
             _pool.logData("hotbot", pdp.getTemperature());

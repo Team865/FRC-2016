@@ -19,10 +19,10 @@ public class FlyWheel {
 		_talon.changeControlMode(TalonControlMode.Speed);
 		_talon.setProfile(0);
 
-		_talon.setF(1.478);
-		_talon.setP(15);
+		_talon.setF(0);
+		_talon.setP(0);
 		_talon.setI(0);
-		_talon.setD(0.1);
+		_talon.setD(0);
 
 		/*
 		 * practice bot _talon.setF(1.345); _talon.setP(30); _talon.setI(0);
@@ -40,6 +40,7 @@ public class FlyWheel {
 
 	public void slowPeriodic() {
 		_pool.logDouble("speed", _talon.getSpeed());
+        _pool.logDouble("setpoint", _talon.getSetpoint());
 		_pool.logBoolean("readyToFire", atTargetRPM());
 	}
 

@@ -22,7 +22,7 @@ public class SwagDrive extends AutonomousBase {
         // Y- is up (to the left of the robot)
         // Positive headings go from forward to right,
         // Negative headings go from forward to left
-		Waypoint[] points = new Waypoint[] {
+		/*Waypoint[] points = new Waypoint[] {
 		    new Waypoint(0, 0, 0),
 		    new Waypoint(1, 1, 45) // Drive 1 meter forwards and 1 meter right, end up turned 45deg.
 		};
@@ -44,9 +44,10 @@ public class SwagDrive extends AutonomousBase {
 		Trajectory trajectory = Pathfinder.generate(points, config);
 		
 		Pathfinder.writeToCSV(new File("/home/lvuser/traj.csv"), trajectory);
+		*/
 		//Trajectory trajectory = Pathfinder.readFromCSV(new File("/home/lvuser/traj.csv"));
 		System.out.println("Trajectories loaded.");
-		drive.setTrajectory(trajectory);
+		//drive.setTrajectory(trajectory);
 	}
 	@Override
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {

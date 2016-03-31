@@ -27,7 +27,7 @@ public class Constants {
 	public static final int COMPRESSOR_PIN = 0;
 
 	// General References
-	public static final double HARDSTOP_RPM = 3700;
+	public static final double HARDSTOP_RPM = 3000;
 	public static final double DISTANCE_TO_DEFENCE_BASE = 0;
 
 	// Robot dimensions and stuff

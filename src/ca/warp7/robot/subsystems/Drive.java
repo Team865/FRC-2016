@@ -41,7 +41,7 @@ public class Drive {
 
 		// Hardware components
 		rightDrive = new MotorGroup(RIGHT_DRIVE_MOTOR_PINS, VictorSP.class);
-//		rightDrive.setInverted(true);
+		rightDrive.setInverted(true);
 		leftDrive = new MotorGroup(LEFT_DRIVE_MOTOR_PINS, VictorSP.class);
 //		leftDrive.setInverted(true);
 
@@ -78,6 +78,9 @@ public class Drive {
 		 */
 		throttle = Util.deadband(throttle);
 		wheel = Util.deadband(wheel);
+		if(isDrivetrainReversed){
+			wheel*=-1;
+		}
 		double right_pwm;
 		double left_pwm;
 		double neg_inertia_scalar;

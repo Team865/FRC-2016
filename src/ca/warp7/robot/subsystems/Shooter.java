@@ -40,8 +40,8 @@ public class Shooter {
 		flyWheel.coast();
 	}
 
-	public void setHood(double degrees) {
-		hood.set(degrees);
+	public void setHood(double power) {
+		hood.set(power);
 	}
 
 	public void slowPeriodic() {

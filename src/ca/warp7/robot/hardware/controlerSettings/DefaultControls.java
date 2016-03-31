@@ -12,12 +12,14 @@ public class DefaultControls extends ControllerSettings {
 	private static boolean changedRS;
 	private static boolean O_ChangedLB;
 	private static boolean O_ChangedBack;
+	private static boolean O_ChangedStart;
 
 	private static double hoodSpeed;
 	private static boolean firing;
 	private XboxController driver;
 	private XboxController operator;
 	private Compressor compressor;
+	boolean disableHood;
 
 	public DefaultControls(XboxController driver, XboxController operator, Compressor compressor) {
 		this.driver = driver;
@@ -30,23 +32,25 @@ public class DefaultControls extends ControllerSettings {
 		changedRS = false;
 		O_ChangedLB = false;
 		O_ChangedBack = false;
+		O_ChangedStart = false;
 
 		hoodSpeed = 0.0;
 		firing = false;
-
+		disableHood = false;
 		drive.setDrivetrainReversed(false);
 	}
 
 	@Override
 	public void periodic() {
+		/*
         if(!driverStation.isFMSAttached()) { // if we're not fms controlled
             if (operator.getLeftTrigger() < 0.5) {
                 shooter.stop();
                 drive.stop();
                 intake.stopIntake();
-                return; // stop doing thing if our dead man's switch isn't held.
+                return; // stop doing thing if our deadman's switch isn't held.
             }
-        }
+        }*/
 
         if (driver.getLeftTrigger() >= 0.5) {
             if (!firing) {
@@ -119,8 +123,20 @@ public class DefaultControls extends ControllerSettings {
 				O_ChangedLB = false;
 			}
 		}
-
-		shooter.setHood(hoodSpeed);
+		if(operator.getStartButton()) {
+			if (!O_ChangedStart) {
+				disableHood = !disableHood;
+				O_ChangedStart = true;
+			}
+		} else {
+			if(O_ChangedStart) {
+				O_ChangedStart = false;
+			}
+		}
+		if(disableHood) {
+			hoodSpeed = 0;
+		}
+		// shooter.setHood(hoodSpeed);
 
 		if (operator.getBackButton()) {
 			if (!O_ChangedBack) {

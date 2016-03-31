@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.VictorSP;
 
 public class Intake {
 	private static final double INTAKE_SPEED = 1.0;
-	private static final double SLOW_INTAKE_SPEED = 0.6;
+	private static final double SLOW_INTAKE_SPEED = 0.8;
 	private Solenoid initialArm;
 	private Solenoid adjustingArm;
 	private VictorSP motor;
