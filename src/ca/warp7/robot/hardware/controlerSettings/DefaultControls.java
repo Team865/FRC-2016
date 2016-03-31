@@ -1,7 +1,6 @@
 package ca.warp7.robot.hardware.controlerSettings;
 
 
-import ca.warp7.robot.Constants;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.XboxController.RumbleType;
 import edu.wpi.first.wpilibj.Compressor;
@@ -35,7 +34,7 @@ public class DefaultControls extends ControllerSettings {
 		hoodSpeed = 0.0;
 		firing = false;
 
-		drive.setReversed(false);
+		drive.setDrivetrainReversed(false);
 	}
 
 	@Override
@@ -78,7 +77,7 @@ public class DefaultControls extends ControllerSettings {
 		// press to toggle which direction is front
 		if (driver.getRightStickButton()) {
 			if (!changedRS) {
-				drive.changeDirection();
+				drive.setDrivetrainReversed(!drive.isDrivetrainReversed());
 				changedRS = true;
 			}
 		} else {

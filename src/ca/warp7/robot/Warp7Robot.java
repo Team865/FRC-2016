@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Warp7Robot extends SampleRobot {
 
@@ -54,7 +53,7 @@ public class Warp7Robot extends SampleRobot {
             NIVision.IMAQdxStartAcquisition(camera_session);
         } catch (Exception ignored) {
         }
-        
+
         compressor = new Compressor(COMPRESSOR_PIN);
         compressor.setClosedLoopControl(true);
 
@@ -133,7 +132,7 @@ public class Warp7Robot extends SampleRobot {
             intake.slowPeriodic();
             drive.slowPeriodic();
             _pool.logBoolean("compressor", compressor.getClosedLoopControl());
-            _pool.logBoolean("direction", drive.getDirection());
+            _pool.logBoolean("direction", drive.isDrivetrainReversed());
             _pool.logData("hotbot", pdp.getTemperature());
             DataPool.collectAllData();
         }

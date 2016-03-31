@@ -216,11 +216,11 @@ public class Drive {
 		rightFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / MAX_VELOCITY, 0);
 	}
 
-    public void setReversed(boolean reversed) {
+    public void setDrivetrainReversed(boolean reversed) {
         isDrivetrainReversed = reversed;
     }
 
-    public boolean getDirection() {
+    public boolean isDrivetrainReversed() {
         return isDrivetrainReversed;
     }
 }

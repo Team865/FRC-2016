@@ -21,7 +21,8 @@ public class ModularAuto extends AutonomousBase {
 	@Override
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
 		if (moving) {
-			BasicModules.move(Constants.DISTANCE_TO_DEFENCE_BASE * getDefenceDirection(), drive);
+            int dir = getDefenceDirection() ? 1 : -1;
+			BasicModules.move(Constants.DISTANCE_TO_DEFENCE_BASE * dir, drive);
 			if (defence != NO_DEFENCE) {
 				doDefence(drive, intake);
 				if (hardstop) {
