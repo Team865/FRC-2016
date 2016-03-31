@@ -39,6 +39,15 @@ public class Intake {
 		adjustingArm.set(!adjustingArm.get());
 	}
 
+	public void initialBackAdjustingForward(Boolean b){
+		if(b){
+		initialArm.set(false);
+		adjustingArm.set(true);
+		}else{
+			initialArm.set(true);
+		}
+	}
+	
 	public void intake() {
 		// put ! before sensorReading to fix
 		if (photosensor.get()) {

@@ -13,6 +13,7 @@ public class DefaultControls extends ControllerSettings {
 	private static boolean O_ChangedLB;
 	private static boolean O_ChangedBack;
 	private static boolean O_ChangedStart;
+	private static boolean O_ChangedB;
 
 	private static double hoodSpeed;
 	private static boolean firing;
@@ -33,6 +34,7 @@ public class DefaultControls extends ControllerSettings {
 		O_ChangedLB = false;
 		O_ChangedBack = false;
 		O_ChangedStart = false;
+		O_ChangedB = false;
 
 		hoodSpeed = 0.0;
 		firing = false;
@@ -68,11 +70,22 @@ public class DefaultControls extends ControllerSettings {
 		if (driver.getAbutton()) {
 			if (!changedA) {
 				intake.toggleAdjustingArm();
+				intake.initialBackAdjustingForward(false);
 				changedA = true;
 			}
 		} else {
 			if (changedA)
 				changedA = false;
+		}
+		
+		if(operator.getBbutton()){
+			if(!O_ChangedB){
+				intake.initialBackAdjustingForward(true);
+				O_ChangedB = true;
+			}
+		}else{
+			if(O_ChangedB)
+				O_ChangedB = false;
 		}
 
 		// hold to change gears for driving let go and it goes back
@@ -107,7 +120,7 @@ public class DefaultControls extends ControllerSettings {
 			driver.setRumble(RumbleType.kRightRumble, 0.0f);
 			driver.setRumble(RumbleType.kLeftRumble, 0.0f);
 		}
-
+		
 		if (operator.getAbutton()) {
 			hoodSpeed = -0.2; // a to down
 		}
