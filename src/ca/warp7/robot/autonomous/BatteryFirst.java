@@ -20,7 +20,7 @@ public class BatteryFirst extends AutonomousBase {
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
 		if (count <= 400) {
 			count++;
-			drive.moveRamped(-1, -1);
+			drive.autoMove(-1, -1);
 		} else {
 			drive.stop();
 			shooter.setHood(0.3);

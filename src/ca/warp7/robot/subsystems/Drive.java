@@ -147,7 +147,7 @@ public class Drive {
 	}
 
 	public void moveRamped(double desiredLeft, double desiredRight) {
-		double ramp_speed = 10;
+		double ramp_speed = 6;
 		leftRamp += (desiredLeft - leftRamp) / ramp_speed;
 		rightRamp += (desiredRight - rightRamp) / ramp_speed;
 		leftDrive.set(leftRamp);

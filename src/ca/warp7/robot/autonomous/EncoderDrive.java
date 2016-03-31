@@ -8,11 +8,12 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class EncoderDrive extends AutonomousBase {
 
-	private int step;
+	private static int step;
 
 	public EncoderDrive(Drive drive, Shooter shooter, Intake intake) {
 		step = 1;
 		intake.raisePortculus(false);
+        //intake.toggleInitialArm();
 		// drive.setGear(true);
 		// intake.adjustedArmRetracted();
 		Timer.delay(3);
