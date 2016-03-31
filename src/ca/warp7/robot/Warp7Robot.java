@@ -2,7 +2,6 @@ package ca.warp7.robot;
 
 import static ca.warp7.robot.Constants.COMPRESSOR_PIN;
 
-
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
@@ -12,12 +11,16 @@ import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
 import ca.warp7.robot.hardware.controlerSettings.DefaultControls;
 import ca.warp7.robot.networking.DataPool;
-import ca.warp7.robot.networking.GUITableListener;
 import ca.warp7.robot.subsystems.Climber;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
-import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
 
 public class Warp7Robot extends SampleRobot {
@@ -53,7 +56,6 @@ public class Warp7Robot extends SampleRobot {
         }
 
         NetworkTable visionTable = NetworkTable.getTable("vision");
-        visionTable.addTableListener(new GUITableListener());
 
         compressor = new Compressor(COMPRESSOR_PIN);
         compressor.setClosedLoopControl(true);

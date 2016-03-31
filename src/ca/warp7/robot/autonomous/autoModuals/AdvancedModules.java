@@ -7,20 +7,81 @@ import ca.warp7.robot.subsystems.Shooter;
 public class AdvancedModules extends ModuleBase{
 
 	public static final int END_ANGLE_DOESNT_MATTER = 865;
+	private static double zeroLeft = 0.0;
+	private static double zeroRight = 0.0;
+	private static double zeroAngle = 0.0;
+	private static double actualX = 0.0;
+	private static double actualY = 0.0;
+	private static int step = 1;
 	
 	/**
 	 * 0 is where you are so you need negative to curve left(looking from
 	 * battery to intakes side)
 	 * 
-	 * @param x
+	 * @param x  Left/Right  positive is to the right
+	 *            in centimeters 
+	 * @param y	 Forward/backward  positive is forward(battery side)
 	 *            in centimeters
-	 * @param y
-	 *            in centimeters
-	 * @param endAngle
-	 * 			  the angle you end up in after you finish the curve
+	 * @param endAngle    Relative to where the curve was started
+	 * 			  			t++++++++++++++++++++++++++++++++++++++++++he angle you end up in after you finish the curve
 	 */
-	public static void curve(double x, double y, int endAngle, Drive drive) {
+	public static boolean curve(double x, double y, int endAngle, Drive drive) {
+		double driveSpeed = 0.3 * Math.signum(y);
+		if(!moving){
+			zeroLeft = drive.leftEncoder.getDistance();
+			zeroRight = drive.rightEncoder.getDistance();
+			zeroAngle = drive.gyro.getAngle();
+			moving = true;
+		}
+		if(moving){
+			switch(step){
+			case 1:
+				// initial curve
+				
+				return false;
+			case 2:
+				// move
+				
+				return false;
+			case 3:
+				// 2nd initial curve
+				
+				return false;
+			case 4:
+				// move
+				
+				return false;
+			case 5:
+				// last curve
+				
+				return false;
+			case 6:
+				//move
+				
+				if(Math.signum(x) == (Math.signum(endAngle)) * Math.signum(y)){
+					
+				}else{
+					step++;
+				}
+				return false;
+			case 7:
+				// turn for correction
+				
+				return false;
+			default:
+				return false;
+			}
+		}
+		return false;
 		
+		/*
+		if(Math.abs(drive.leftEncoder.getDistance()-zero) >= Math.abs(distance/100) && moving){
+			drive.stop();
+			moving = false;
+			zero = 0;
+			return true;
+		}
+		*/
 	}
 
 	/**

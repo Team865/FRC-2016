@@ -8,7 +8,8 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 
 public class Intake {
-	private static double INTAKE_SPEED = 1.0;
+	private static final double INTAKE_SPEED = 1.0;
+	private static final double SLOW_INTAKE_SPEED = 0.6;
 	private Solenoid initialArm;
 	private Solenoid adjustingArm;
 	private VictorSP motor;
@@ -41,8 +42,8 @@ public class Intake {
 	public void intake() {
 		// put ! before sensorReading to fix
 		if (photosensor.get()) {
-			motor.set(-INTAKE_SPEED);
-		} else {
+			motor.set(-SLOW_INTAKE_SPEED);
+		} else if (goCounter <= 0) {
 			motor.set(0);
 		}
 	}
@@ -85,7 +86,7 @@ public class Intake {
 	}
 
 	public void fireBall() {
-		goCounter = 100;
+		goCounter = 150;
 	}
 
 	public void slowPeriodic() {
