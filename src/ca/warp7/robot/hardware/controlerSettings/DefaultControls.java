@@ -42,7 +42,7 @@ public class DefaultControls extends ControllerSettings {
 
 	@Override
 	public void periodic() {
-		/*
+
         if(!driverStation.isFMSAttached()) { // if we're not fms controlled
             if (operator.getLeftTrigger() < 0.5) {
                 shooter.stop();
@@ -50,7 +50,7 @@ public class DefaultControls extends ControllerSettings {
                 intake.stopIntake();
                 return; // stop doing thing if our deadman's switch isn't held.
             }
-        }*/
+        }
 
         if (driver.getLeftTrigger() >= 0.5) {
             if (!firing) {
