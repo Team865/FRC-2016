@@ -1,11 +1,13 @@
 package ca.warp7.robot.hardware.controlerSettings;
 
 
+import static ca.warp7.robot.Warp7Robot.drive;
+import static ca.warp7.robot.Warp7Robot.intake;
+import static ca.warp7.robot.Warp7Robot.shooter;
+
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.XboxController.RumbleType;
 import edu.wpi.first.wpilibj.Compressor;
-
-import static ca.warp7.robot.Warp7Robot.*;
 
 public class DefaultControls extends ControllerSettings {
 	private static boolean changedA;
