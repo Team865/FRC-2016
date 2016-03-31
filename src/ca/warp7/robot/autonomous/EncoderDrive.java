@@ -12,7 +12,7 @@ public class EncoderDrive extends AutonomousBase {
 
 	public EncoderDrive(Drive drive, Shooter shooter, Intake intake) {
 		step = 1;
-		intake.raisePortculus(true);
+		intake.raisePortculus(false);
 		// drive.setGear(true);
 		// intake.adjustedArmRetracted();
 		Timer.delay(3);

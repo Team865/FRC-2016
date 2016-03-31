@@ -6,17 +6,21 @@ import ca.warp7.robot.subsystems.Shooter;
 
 public class AdvancedModules extends ModuleBase{
 
+	public static final int END_ANGLE_DOESNT_MATTER = 865;
+	
 	/**
 	 * 0 is where you are so you need negative to curve left(looking from
 	 * battery to intakes side)
 	 * 
 	 * @param x
-	 *            in millimeters
+	 *            in centimeters
 	 * @param y
-	 *            in millimeters
+	 *            in centimeters
+	 * @param endAngle
+	 * 			  the angle you end up in after you finish the curve
 	 */
-	public static void curve(double x, double y) {
-
+	public static void curve(double x, double y, int endAngle, Drive drive) {
+		
 	}
 
 	/**
@@ -35,6 +39,10 @@ public class AdvancedModules extends ModuleBase{
 		 */
 	}
 
+	/**
+	 * Spins up the fly wheel and shoots for the hardstop shot
+	 * 
+	 */
 	public static void hardstopShoot(Shooter shooter, Intake intake) {
 
 	}
