@@ -130,6 +130,9 @@ public class Warp7Robot extends SampleRobot {
                 NIVision.IMAQdxGrab(camera_session, camera_frame, 1);
                 CameraServer.getInstance().setImage(camera_frame);
             } catch (Exception ignored) {
+            	camera_session = NIVision.IMAQdxOpenCamera("cam1",
+                        NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+                NIVision.IMAQdxConfigureGrab(camera_session);
             }
 
             counter = 0;
