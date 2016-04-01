@@ -2,6 +2,7 @@ package ca.warp7.robot;
 
 import static ca.warp7.robot.Constants.COMPRESSOR_PIN;
 
+import ca.warp7.robot.autonomous.BatteryFirst;
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
@@ -71,9 +72,9 @@ public class Warp7Robot extends SampleRobot {
         controls = new DefaultControls(driver, operator, compressor);
 
         // auto = new IntakeFirst(drive, shooter, intake);
-		//auto = new BatteryFirst(drive, shooter, intake);
+		auto = new BatteryFirst(drive, shooter, intake);
         //auto = new EncoderDrive(drive, shooter, intake);
-        auto = new NoAuto();
+        //auto = new NoAuto();
         //        auto = new SwagDrive();
         // auto = new IntakeForwardIntakesUp(drive, shooter, intake);
 //		 auto = new Rotato(drive, shooter, intake);
@@ -125,14 +126,19 @@ public class Warp7Robot extends SampleRobot {
 
     private void slowLoop() {
         if (counter++ >= 10) {
+            /*
             try {
                 NIVision.IMAQdxGrab(camera_session, camera_frame, 1);
                 CameraServer.getInstance().setImage(camera_frame);
             } catch (Exception ignored) {
-            	camera_session = NIVision.IMAQdxOpenCamera("cam1",
-                        NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-                NIVision.IMAQdxConfigureGrab(camera_session);
-            }
+                try {
+                    camera_session = NIVision.IMAQdxOpenCamera("cam1",
+                            NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+                    NIVision.IMAQdxConfigureGrab(camera_session);
+                } catch (Exception ig) {
+
+                }
+            } */
 
             counter = 0;
             intake.slowPeriodic();
