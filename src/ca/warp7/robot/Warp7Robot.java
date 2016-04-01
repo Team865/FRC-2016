@@ -2,12 +2,11 @@ package ca.warp7.robot;
 
 import static ca.warp7.robot.Constants.COMPRESSOR_PIN;
 
-import ca.warp7.robot.autonomous.BatteryFirst;
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
 import ca.warp7.robot.autonomous.AutonomousBase;
-import ca.warp7.robot.autonomous.NoAuto;
+import ca.warp7.robot.autonomous.EncoderDrive;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
 import ca.warp7.robot.hardware.controlerSettings.DefaultControls;
@@ -64,16 +63,6 @@ public class Warp7Robot extends SampleRobot {
         XboxController driver = new XboxController(0);
         XboxController operator = new XboxController(1);
         controls = new DefaultControls(driver, operator, compressor);
-
-        // auto = new IntakeFirst(drive, shooter, intake);
-		auto = new BatteryFirst(drive, shooter, intake);
-        //auto = new EncoderDrive(drive, shooter, intake);
-        //auto = new NoAuto();
-        //        auto = new SwagDrive();
-        // auto = new IntakeForwardIntakesUp(drive, shooter, intake);
-//		 auto = new Rotato(drive, shooter, intake);
-        // auto = new SpybotHardstop(drive, shooter, intake);
-
     }
 
     private void initializeCamera() {
@@ -110,7 +99,20 @@ public class Warp7Robot extends SampleRobot {
     }
 
     public void autonomous() {
-        while (isAutonomous() && isEnabled()) {
+    	// changed to here so then the begining code runs
+    	
+        // auto = new IntakeFirst(drive, shooter, intake);
+		//auto = new ShootAuto(intake);
+        // auto = new BatteryFirst(drive, shooter, intake);
+        auto = new EncoderDrive(drive, shooter, intake);
+        //auto = new NoAuto();
+        //        auto = new SwagDrive();
+        // auto = new IntakeForwardIntakesUp(drive, shooter, intake);
+//		 auto = new Rotato(drive, shooter, intake);
+        // auto = new SpybotHardstop(drive, shooter, intake);
+
+
+    	while (isAutonomous() && isEnabled()) {
             auto.periodic(drive, shooter, intake);
             allEnabledLoop();
             slowLoop();

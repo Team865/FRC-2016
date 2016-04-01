@@ -10,8 +10,8 @@ public class AdvancedModules extends ModuleBase{
 	private static double zeroLeft = 0.0;
 	private static double zeroRight = 0.0;
 	private static double zeroAngle = 0.0;
-	private static double actualX = 0.0;
-	private static double actualY = 0.0;
+	private static double currentX = 0.0;
+	private static double currentY = 0.0;
 	private static int step = 1;
 	
 	/**

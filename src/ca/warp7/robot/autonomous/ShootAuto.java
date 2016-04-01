@@ -7,7 +7,8 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class ShootAuto extends AutonomousBase{
 
-	public ShootAuto(){
+	public ShootAuto(Intake intake){
+		intake.toggleInitialArm();
 		Timer.delay(0.5);
 	}
 	

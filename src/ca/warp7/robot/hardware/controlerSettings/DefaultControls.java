@@ -71,7 +71,9 @@ public class DefaultControls extends ControllerSettings {
 		// Toggles the long piston
 		if (driver.getAbutton()) {
 			if (!changedA) {
-				intake.toggleAdjustingArm();
+				if(!operator.getBbutton()){
+					intake.toggleAdjustingArm();
+				}
 				intake.initialBackAdjustingForward(false);
 				changedA = true;
 			}
