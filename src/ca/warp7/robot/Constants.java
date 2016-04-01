@@ -45,4 +45,7 @@ public class Constants {
 
     public static String ATTR_EX_MODE = "CameraAttributes::Exposure::Mode";
     public static String ATTR_EX_VALUE = "CameraAttributes::Exposure::Value";
+
+    public static String ATTR_BR_MODE = "CameraAttributes::Brightness::Mode";
+    public static String ATTR_BR_VALUE = "CameraAttributes::Brightness::Value";
 }

@@ -86,6 +86,10 @@ public class Warp7Robot extends SampleRobot {
         NIVision.IMAQdxSetAttributeString(camera_session, Constants.ATTR_EX_MODE, "Manual");
         long minExposure = NIVision.IMAQdxGetAttributeMinimumI64(camera_session, Constants.ATTR_EX_VALUE);
         NIVision.IMAQdxSetAttributeI64(camera_session, Constants.ATTR_EX_VALUE, minExposure);
+        NIVision.IMAQdxSetAttributeString(camera_session, Constants.ATTR_BR_MODE, "Manual");
+        long maxBrightness = NIVision.IMAQdxGetAttributeMaximumI64(camera_session, Constants.ATTR_BR_VALUE);
+        NIVision.IMAQdxSetAttributeI64(camera_session, Constants.ATTR_BR_VALUE, maxBrightness);
+
 
     }
 
