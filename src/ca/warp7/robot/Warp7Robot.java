@@ -47,13 +47,7 @@ public class Warp7Robot extends SampleRobot {
         driverStation = DriverStation.getInstance();
         try {
             camera_frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
-
-            // the camera name (ex "cam0") can be found through the roborio web
-            // interface
-            camera_session = NIVision.IMAQdxOpenCamera("cam1",
-                    NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-            NIVision.IMAQdxConfigureGrab(camera_session);
-            NIVision.IMAQdxStartAcquisition(camera_session);
+            initializeCamera();
         } catch (Exception ignored) {
         }
 
@@ -80,6 +74,15 @@ public class Warp7Robot extends SampleRobot {
 //		 auto = new Rotato(drive, shooter, intake);
         // auto = new SpybotHardstop(drive, shooter, intake);
 
+    }
+
+    private void initializeCamera() {
+        // the camera name (ex "cam0") can be found through the roborio web
+        // interface
+        camera_session = NIVision.IMAQdxOpenCamera("cam1",
+                NIVision.IMAQdxCameraControlMode.CameraControlModeController);
+        NIVision.IMAQdxConfigureGrab(camera_session);
+        NIVision.IMAQdxStartAcquisition(camera_session);
     }
 
     public void operatorControl() {
@@ -126,19 +129,15 @@ public class Warp7Robot extends SampleRobot {
 
     private void slowLoop() {
         if (counter++ >= 10) {
-            /*
+
             try {
                 NIVision.IMAQdxGrab(camera_session, camera_frame, 1);
                 CameraServer.getInstance().setImage(camera_frame);
-            } catch (Exception ignored) {
+            } catch (Exception not_initialized) {
                 try {
-                    camera_session = NIVision.IMAQdxOpenCamera("cam1",
-                            NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-                    NIVision.IMAQdxConfigureGrab(camera_session);
-                } catch (Exception ig) {
-
-                }
-            } */
+                    initializeCamera();
+                } catch (Exception ignored) {}
+            }
 
             counter = 0;
             intake.slowPeriodic();
