@@ -2,13 +2,11 @@ package ca.warp7.robot;
 
 import static ca.warp7.robot.Constants.COMPRESSOR_PIN;
 
-import ca.warp7.robot.autonomous.BatteryFirst;
-import ca.warp7.robot.autonomous.EncoderDrive;
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
 import ca.warp7.robot.autonomous.AutonomousBase;
-import ca.warp7.robot.autonomous.SwagDrive;
+import ca.warp7.robot.autonomous.NoAuto;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
 import ca.warp7.robot.hardware.controlerSettings.DefaultControls;
@@ -74,8 +72,9 @@ public class Warp7Robot extends SampleRobot {
 
         // auto = new IntakeFirst(drive, shooter, intake);
 		//auto = new BatteryFirst(drive, shooter, intake);
-        auto = new EncoderDrive(drive, shooter, intake);
-//        auto = new SwagDrive();
+        //auto = new EncoderDrive(drive, shooter, intake);
+        auto = new NoAuto();
+        //        auto = new SwagDrive();
         // auto = new IntakeForwardIntakesUp(drive, shooter, intake);
 //		 auto = new Rotato(drive, shooter, intake);
         // auto = new SpybotHardstop(drive, shooter, intake);
@@ -103,7 +102,7 @@ public class Warp7Robot extends SampleRobot {
             auto.periodic(drive, shooter, intake);
             allEnabledLoop();
             slowLoop();
-            Timer.delay(1 / 50); // 1/50 second delay
+            Timer.delay(0.005); // 1/50 second delay
         }
     }
 
