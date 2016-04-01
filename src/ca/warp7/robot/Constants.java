@@ -42,4 +42,7 @@ public class Constants {
     // reversed?
     public static boolean BATTERY = false;
     public static boolean INTAKE = true;
+
+    public static String ATTR_EX_MODE = "CameraAttributes::Exposure::Mode";
+    public static String ATTR_EX_VALUE = "CameraAttributes::Exposure::Value";
 }
