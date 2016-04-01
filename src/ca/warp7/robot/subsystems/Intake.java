@@ -101,4 +101,8 @@ public class Intake {
 	public void slowPeriodic() {
 		_pool.logBoolean("photosensor", photosensor.get());
 	}
+	
+	public boolean hasBall(){
+		return !photosensor.get();
+	}
 }

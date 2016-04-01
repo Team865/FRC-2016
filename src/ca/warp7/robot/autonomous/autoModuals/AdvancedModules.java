@@ -40,7 +40,7 @@ public class AdvancedModules extends ModuleBase{
 				
 				return false;
 			case 2:
-				// move
+				// move vertical
 				
 				return false;
 			case 3:
@@ -48,7 +48,7 @@ public class AdvancedModules extends ModuleBase{
 				
 				return false;
 			case 4:
-				// move
+				// move horizontal
 				
 				return false;
 			case 5:
@@ -56,18 +56,16 @@ public class AdvancedModules extends ModuleBase{
 				
 				return false;
 			case 6:
-				//move
+				//move vertical
 				
-				if(Math.signum(x) == (Math.signum(endAngle)) * Math.signum(y)){
-					
-				}else{
+				if(Math.signum(x) != (Math.signum(endAngle)) * Math.signum(y)){
 					step++;
 				}
 				return false;
 			case 7:
 				// turn for correction
-				
-				return false;
+				double amountToTurn = drive.gyro.getAngle()-endAngle;
+				return BasicModules.relativeTurn(amountToTurn, drive);
 			default:
 				return false;
 			}

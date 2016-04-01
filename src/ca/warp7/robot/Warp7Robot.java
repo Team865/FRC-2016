@@ -6,7 +6,7 @@ import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
 import ca.warp7.robot.autonomous.AutonomousBase;
-import ca.warp7.robot.autonomous.BatteryFirst;
+import ca.warp7.robot.autonomous.ShootAuto;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
 import ca.warp7.robot.hardware.controlerSettings.DefaultControls;
@@ -102,8 +102,8 @@ public class Warp7Robot extends SampleRobot {
     	// changed to here so then the begining code runs
     	
         // auto = new IntakeFirst(drive, shooter, intake);
-		//auto = new ShootAuto(intake);
-        auto = new BatteryFirst(drive, shooter, intake);
+		auto = new ShootAuto(intake);
+       // auto = new BatteryFirst(drive, shooter, intake);
         // auto = new EncoderDrive(drive, shooter, intake);
         //auto = new NoAuto();
         //        auto = new SwagDrive();

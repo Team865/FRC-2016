@@ -11,7 +11,7 @@ public class BasicModules extends ModuleBase{
 	 *            in centimeters
 	 */
 	public static boolean move(double distance, Drive drive) {
-		double driveSpeed = 0.3 * Math.signum(distance);
+		double driveSpeed = 0.4 * Math.signum(distance);
 		if(!moving){
 			zero = drive.leftEncoder.getDistance();
 			drive.autoMove(driveSpeed, driveSpeed);
