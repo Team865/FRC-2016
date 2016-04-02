@@ -22,9 +22,11 @@ public class SwagDrive extends AutonomousBase {
         // Y- is up (to the left of the robot)
         // Positive headings go from forward to right,
         // Negative headings go from forward to left
-		/*Waypoint[] points = new Waypoint[] {
-		    new Waypoint(0, 0, 0),
-		    new Waypoint(1, 1, 45) // Drive 1 meter forwards and 1 meter right, end up turned 45deg.
+		Waypoint[] points = new Waypoint[] {
+		        new Waypoint(40, 10, 0.244978663),
+		        new Waypoint(6.5, 142, Pathfinder.d2r(-90)),
+                new Waypoint(6.5, 200, Pathfinder.d2r(-90)),
+                new Waypoint(6.5, 120, Pathfinder.d2r(-90))
 		};
 
 		// Create the Trajectory Configuration
@@ -38,20 +40,20 @@ public class SwagDrive extends AutonomousBase {
 		// Max Velocity:        0.1 m/s
 		// Max Acceleration:    2.0 m/s/s
 		// Max Jerk:            60.0 m/s/s/s
-		Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 1/50, 0.1, 2.0, 60.0);
+		Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.02, 0.1, 2.0, 60.0);
 
 		// Generate the trajectory
 		Trajectory trajectory = Pathfinder.generate(points, config);
 		
 		Pathfinder.writeToCSV(new File("/home/lvuser/traj.csv"), trajectory);
-		*/
+
 		//Trajectory trajectory = Pathfinder.readFromCSV(new File("/home/lvuser/traj.csv"));
 		System.out.println("Trajectories loaded.");
 		//drive.setTrajectory(trajectory);
 	}
 	@Override
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
-		drive.followPath(); // pls no bork
+		//drive.followPath(); // pls no bork
 		//_pool.logDouble("heading", drive.getDesiredHeading());
 	}
 

@@ -18,7 +18,7 @@ public class BatteryFirst extends AutonomousBase {
 	}
 
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
-		if (count <= 225) {
+		if (count <= 56) { // 1.125 seconds
 			count++;
 			drive.autoMove(-1, -1);
 		} else {

@@ -16,7 +16,7 @@ public class IntakeFirst extends AutonomousBase {
 	}
 
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
-		if (count <= 400) {
+		if (count <= 100) { // 2 seconds??
 			count++;
 			drive.moveRamped(0.8, 0.9);
 		} else {

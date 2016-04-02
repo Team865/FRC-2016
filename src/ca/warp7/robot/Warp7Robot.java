@@ -2,6 +2,7 @@ package ca.warp7.robot;
 
 import static ca.warp7.robot.Constants.COMPRESSOR_PIN;
 
+import ca.warp7.robot.autonomous.SwagDrive;
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
@@ -40,6 +41,7 @@ public class Warp7Robot extends SampleRobot {
     private DataPool _pool;
 
     public void robotInit() {
+
         System.out.println("hello i am robit");
         _pool = new DataPool("Robot");
         NetworkTable.setUpdateRate(0.050);
@@ -63,6 +65,8 @@ public class Warp7Robot extends SampleRobot {
         XboxController driver = new XboxController(0);
         XboxController operator = new XboxController(1);
         controls = new DefaultControls(driver, operator, compressor);
+//        auto = new SwagDrive();
+
     }
 
     private void initializeCamera() {
@@ -72,6 +76,7 @@ public class Warp7Robot extends SampleRobot {
                 NIVision.IMAQdxCameraControlMode.CameraControlModeController);
         NIVision.IMAQdxConfigureGrab(camera_session);
         NIVision.IMAQdxStartAcquisition(camera_session);
+
         NIVision.IMAQdxSetAttributeString(camera_session, Constants.ATTR_EX_MODE, "Manual");
         long minExposure = NIVision.IMAQdxGetAttributeMinimumI64(camera_session, Constants.ATTR_EX_VALUE);
         NIVision.IMAQdxSetAttributeI64(camera_session, Constants.ATTR_EX_VALUE, minExposure);
@@ -100,13 +105,12 @@ public class Warp7Robot extends SampleRobot {
 
     public void autonomous() {
     	// changed to here so then the begining code runs
-    	
+
         // auto = new IntakeFirst(drive, shooter, intake);
 		auto = new ShootAuto(intake);
        // auto = new BatteryFirst(drive, shooter, intake);
         // auto = new EncoderDrive(drive, shooter, intake);
         //auto = new NoAuto();
-        //        auto = new SwagDrive();
         // auto = new IntakeForwardIntakesUp(drive, shooter, intake);
 //		 auto = new Rotato(drive, shooter, intake);
         // auto = new SpybotHardstop(drive, shooter, intake);
@@ -116,7 +120,7 @@ public class Warp7Robot extends SampleRobot {
             auto.periodic(drive, shooter, intake);
             allEnabledLoop();
             slowLoop();
-            Timer.delay(0.005); // 1/50 second delay
+            Timer.delay(0.02); // 1/50 second delay
         }
     }
 
