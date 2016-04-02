@@ -29,6 +29,7 @@ public class ShootAuto extends AutonomousBase{
 			}
 			break;
 		case 2:
+			System.out.println("All done");
 			//boolean finished2 = ;
 			break;
 		default:
