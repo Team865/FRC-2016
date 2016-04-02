@@ -102,6 +102,10 @@ public class Intake {
 		_pool.logBoolean("photosensor", photosensor.get());
 	}
 	
+	public int getCounter(){
+		return goCounter;
+	}
+	
 	public boolean hasBall(){
 		return !photosensor.get();
 	}
