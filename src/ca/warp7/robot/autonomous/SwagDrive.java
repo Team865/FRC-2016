@@ -7,6 +7,7 @@ import java.io.File;
 import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
+import edu.wpi.first.wpilibj.Timer;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
@@ -23,10 +24,11 @@ public class SwagDrive extends AutonomousBase {
         // Positive headings go from forward to right,
         // Negative headings go from forward to left
 		Waypoint[] points = new Waypoint[] {
-		        new Waypoint(40, 10, 0.244978663),
-		        new Waypoint(6.5, 142, Pathfinder.d2r(-90)),
-                new Waypoint(6.5, 200, Pathfinder.d2r(-90)),
-                new Waypoint(6.5, 120, Pathfinder.d2r(-90))
+                new Waypoint(0, 0, Pathfinder.d2r(0)),
+		        new Waypoint(40, -10, 0.244978663),
+		        new Waypoint(6.5, -50, Pathfinder.d2r(89.5)),
+                new Waypoint(6.5, -200, Pathfinder.d2r(89.5)),
+                new Waypoint(6.5, -120, Pathfinder.d2r(89.5))
 		};
 
 		// Create the Trajectory Configuration
@@ -37,23 +39,25 @@ public class SwagDrive extends AutonomousBase {
 //		                      SAMPLES_LOW  (10 000)
 //		                      SAMPLES_FAST (1 000)
 		// Time Step:           1/50 Seconds
-		// Max Velocity:        0.1 m/s
-		// Max Acceleration:    2.0 m/s/s
-		// Max Jerk:            60.0 m/s/s/s
-		Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.02, 0.1, 2.0, 60.0);
+		// Max Velocity:        12 ft/s
+		// Max Acceleration:    6 ft/s/s
+		// Max Jerk:            60 ft/s/s/s
+		Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_FAST, 0.02, 12, 3, 60.0);
 
 		// Generate the trajectory
-		Trajectory trajectory = Pathfinder.generate(points, config);
-		
-		Pathfinder.writeToCSV(new File("/home/lvuser/traj.csv"), trajectory);
+        double s =Timer.getFPGATimestamp();
+        Trajectory trajectory = Pathfinder.generate(points, config);
 
-		//Trajectory trajectory = Pathfinder.readFromCSV(new File("/home/lvuser/traj.csv"));
-		System.out.println("Trajectories loaded.");
-		//drive.setTrajectory(trajectory);
+		Pathfinder.writeToCSV(new File("/home/lvuser/traj.csv"), trajectory);
+        Pathfinder.writeToFile(new File("/home/lvuser/traj.bin"), trajectory);
+
+//		Trajectory trajectory = Pathfinder.readFromFile(new File("/home/lvuser/traj.bin"));
+		System.out.println("Trajectories loaded in " + (Timer.getFPGATimestamp() - s) + "seconds");
+		drive.setTrajectory(trajectory);
 	}
 	@Override
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
-		//drive.followPath(); // pls no bork
+		drive.followPath(); // pls no bork
 		//_pool.logDouble("heading", drive.getDesiredHeading());
 	}
 

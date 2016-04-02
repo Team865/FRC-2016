@@ -1,5 +1,6 @@
 package ca.warp7.robot.subsystems;
 
+import ca.warp7.robot.Constants;
 import ca.warp7.robot.Util;
 import ca.warp7.robot.hardware.MotorGroup;
 import ca.warp7.robot.networking.DataPool;
@@ -9,8 +10,10 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.followers.DistanceFollower;
+import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
 
 import static ca.warp7.robot.Constants.*;
@@ -32,9 +35,10 @@ public class Drive {
 
 	private double quickstop_accumulator = 0;
 	private double old_wheel = 0;
-    private DistanceFollower leftFollower;
-	private DistanceFollower rightFollower;
+    private EncoderFollower leftFollower;
+	private EncoderFollower rightFollower;
     private boolean isDrivetrainReversed = false;
+    private int profileStep = 0;
 
     public Drive() {
 		pool = new DataPool("Drive");
@@ -188,35 +192,44 @@ public class Drive {
 		}
 		double leftOutput = leftFollower.calculate(leftEncoder.get());
 		double rightOutput = rightFollower.calculate(rightEncoder.get());
-		/*
+        pool.logDouble("leftOutput", leftOutput);
+        pool.logDouble("rightOutput", rightOutput);
+        if(!leftFollower.isFinished()) {
+            pool.logDouble("leftDesired", leftFollower.getSegment().position);
+        }
+        if (!rightFollower.isFinished()) {
+            pool.logDouble("rightDesired", rightFollower.getSegment().position);
+        }
+
 		double gyro_heading = gyro.getAngle();    // Assuming the gyro is giving a value in degrees
 		 
-		double desired_heading = Pathfinder.r2d(leftEncoderFollower.getHeading());  // Should also be in degrees
+		double desired_heading = Pathfinder.r2d(leftFollower.getHeading());  // Should also be in degrees
 
 		double angleDifference = Pathfinder.boundHalfDegrees(desired_heading - gyro_heading);
 		double turn = 0.8 * (-1.0/80.0) * angleDifference;
-		*/
-		double turn = 0;
 
-		leftDrive.set(leftOutput + turn);
-		rightDrive.set(rightOutput - turn);
+		leftDrive.set(-leftOutput + turn);
+		rightDrive.set(-rightOutput - turn);
+        profileStep++;
 	}
 
 	public void setTrajectory(Trajectory traj) {
 		TankModifier modifier = new TankModifier(traj).modify(WHEELBASE_WIDTH);
 		Trajectory leftTrajectory = modifier.getLeftTrajectory();
 		Trajectory rightTrajectory = modifier.getRightTrajectory();
-		leftFollower = new DistanceFollower(leftTrajectory);
-		rightFollower = new DistanceFollower(rightTrajectory);
-		
+		leftFollower = new EncoderFollower(leftTrajectory);
+		rightFollower = new EncoderFollower(rightTrajectory);
+        leftFollower.configureEncoder(leftEncoder.get(), Constants.DRIVE_TICKS_PER_REV, Constants.WHEEL_DIAMETER);
+        rightFollower.configureEncoder(rightEncoder.get(), Constants.DRIVE_TICKS_PER_REV, Constants.WHEEL_DIAMETER);
+
 		// The first argument is the proportional gain. Usually this will be quite high
 		// The second argument is the integral gain. This is unused for motion profiling
 		// The third argument is the derivative gain. Tweak this if you are unhappy with the tracking of the trajectory
 		// The fourth argument is the velocity ratio. This is 1 over the maximum velocity you provided in the 
 		//     trajectory configuration (it translates m/s to a -1 to 1 scale that your motors can read)
 		// The fifth argument is your acceleration gain. Tweak this if you want to get to a higher or lower speed quicker
-		leftFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / MAX_VELOCITY, 0);
-		rightFollower.configurePIDVA(1.0, 0.0, 0.0, 1 / MAX_VELOCITY, 0);
+		leftFollower.configurePIDVA(0.001, 0.0, 0.0, 1 / MAX_VELOCITY, 0);
+		rightFollower.configurePIDVA(0.001, 0.0, 0.0, 1 / MAX_VELOCITY, 0);
 	}
 
     public void setDrivetrainReversed(boolean reversed) {

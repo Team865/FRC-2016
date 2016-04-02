@@ -14,7 +14,7 @@ public class BatteryFirst extends AutonomousBase {
 		intake.raisePortculus(true);
 		// drive.setGear(true);
 		// intake.adjustedArmRetracted();
-		Timer.delay(3);
+		Timer.delay(10);
 	}
 
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {

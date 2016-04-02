@@ -2,6 +2,7 @@ package ca.warp7.robot;
 
 import static ca.warp7.robot.Constants.COMPRESSOR_PIN;
 
+import ca.warp7.robot.autonomous.BatteryFirst;
 import ca.warp7.robot.autonomous.SwagDrive;
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
@@ -65,7 +66,7 @@ public class Warp7Robot extends SampleRobot {
         XboxController driver = new XboxController(0);
         XboxController operator = new XboxController(1);
         controls = new DefaultControls(driver, operator, compressor);
-//        auto = new SwagDrive();
+        auto = new SwagDrive();
 
     }
 
@@ -107,8 +108,8 @@ public class Warp7Robot extends SampleRobot {
     	// changed to here so then the begining code runs
 
         // auto = new IntakeFirst(drive, shooter, intake);
-		auto = new ShootAuto(intake);
-       // auto = new BatteryFirst(drive, shooter, intake);
+//		auto = new ShootAuto(intake);
+//        auto = new BatteryFirst(drive, shooter, intake);
         // auto = new EncoderDrive(drive, shooter, intake);
         //auto = new NoAuto();
         // auto = new IntakeForwardIntakesUp(drive, shooter, intake);

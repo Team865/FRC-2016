@@ -31,13 +31,13 @@ public class Constants {
 	public static final double DISTANCE_TO_DEFENCE_BASE = 0;
 
 	// Robot dimensions and stuff
-	public static double WHEELBASE_WIDTH = 0.6096; // meters
-	public static double WHEEL_DIAMETER = 0.19431; // meters???
+	public static double WHEELBASE_WIDTH = 24; // inches
+	public static double WHEEL_DIAMETER = 8; // inches
 	public static double WHEEL_CIRCUMFERENCE = Math.PI * WHEEL_DIAMETER;
 	public static int DRIVE_TICKS_PER_REV = 1024; // TODO ???!??
 	public static double DRIVE_METERS_PER_TICK = WHEEL_CIRCUMFERENCE / DRIVE_TICKS_PER_REV;
 	
-	public static double MAX_VELOCITY = 0.5;//3.6576;// m/s
+	public static double MAX_VELOCITY = 12;// ft/s
 
     // reversed?
     public static boolean BATTERY = false;
