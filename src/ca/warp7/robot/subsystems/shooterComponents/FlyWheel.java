@@ -12,18 +12,18 @@ public class FlyWheel {
 
 	public FlyWheel(CANTalon motor) {
 		_talon = motor;
-		_talon.configEncoderCodesPerRev(20);
+		_talon.configEncoderCodesPerRev(12*86);
 		_talon.setFeedbackDevice(FeedbackDevice.QuadEncoder);
 		_talon.configNominalOutputVoltage(+0.0f, -0.0f);
 		_talon.configPeakOutputVoltage(+12.0f, -12.0f);
 		_talon.changeControlMode(TalonControlMode.Speed);
 		_talon.setProfile(0);
-
-		_talon.setF(1.76);
-		_talon.setP(15);
+		_talon.setF(0.0386);
+		_talon.setP(1);
 		_talon.setI(0);
 		_talon.setD(0);
-
+		_talon.reverseOutput(true);
+		
 		/*
 		 * practice bot _talon.setF(1.345); _talon.setP(30); _talon.setI(0);
 		 * _talon.setD(0);
@@ -35,7 +35,7 @@ public class FlyWheel {
 
 	public void spinUp(double targetSpeed) {
 		_talon.enable();
-		_talon.set(targetSpeed);
+		_talon.setSetpoint(targetSpeed);
 	}
 
 	public void slowPeriodic() {
