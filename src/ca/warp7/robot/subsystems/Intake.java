@@ -8,18 +8,20 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 
 public class Intake {
-	private static final double INTAKE_SPEED = 1.0;
-	private static final double SLOW_INTAKE_SPEED = 0.9;
+	private static final double INTAKE_SPEED = 0.9;
+	private static final double SLOW_INTAKE_SPEED = 0.5;
 	private Solenoid initialArm;
 	private Solenoid adjustingArm;
 	private VictorSP motor;
 	int goCounter = 0;
-	private DigitalInput photosensor;
+	private DigitalInput photosensorClose;
+	private DigitalInput photosensorFar;
 	private DataPool _pool;
 
 	public Intake() {
 		_pool = new DataPool("Intake");
-		photosensor = new DigitalInput(INTAKE_PHOTOSENSOR);
+		photosensorClose = new DigitalInput(INTAKE_PHOTOSENSOR_CLOSE);
+		photosensorFar = new DigitalInput(INTAKE_PHOTOSENSOR_FAR);
 		motor = new VictorSP(INTAKE_MOTOR_PIN);
 		initialArm = new Solenoid(INTAKE_PISTON_A);
 		adjustingArm = new Solenoid(INTAKE_PISTON_B);
@@ -50,8 +52,12 @@ public class Intake {
 	
 	public void intake() {
 		// put ! before sensorReading to fix
-		if (photosensor.get()) {
-			motor.set(-SLOW_INTAKE_SPEED);
+		if (photosensorClose.get()) {
+			if(photosensorFar.get()){
+				motor.set(-SLOW_INTAKE_SPEED);
+			}else{
+				motor.set(-INTAKE_SPEED);
+			}
 		} else if (goCounter <= 0) {
 			motor.set(0);
 		}
@@ -99,7 +105,8 @@ public class Intake {
 	}
 
 	public void slowPeriodic() {
-		_pool.logBoolean("photosensor", photosensor.get());
+		_pool.logBoolean("photosensorClose", photosensorClose.get());
+		_pool.logBoolean("photosensorFar", photosensorFar.get());
 	}
 	
 	public int getCounter(){
@@ -107,6 +114,6 @@ public class Intake {
 	}
 	
 	public boolean hasBall(){
-		return !photosensor.get();
+		return !photosensorClose.get();
 	}
 }

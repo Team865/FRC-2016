@@ -11,7 +11,8 @@ public class Constants {
 	public static final int SHOOTER_CAN_ID = 0;
 
 	// DIG Pins
-	public static final int INTAKE_PHOTOSENSOR = 0;
+	public static final int INTAKE_PHOTOSENSOR_CLOSE = 0;
+	public static final int INTAKE_PHOTOSENSOR_FAR = 1;
 	public static final int LEFT_DRIVE_ENCODER_A = 6; // ding
 	public static final int LEFT_DRIVE_ENCODER_B = 5; // ding
 	public static final int RIGHT_DRIVE_ENCODER_A = 3; // ding

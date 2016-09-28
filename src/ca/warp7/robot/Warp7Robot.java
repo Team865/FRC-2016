@@ -2,13 +2,11 @@ package ca.warp7.robot;
 
 import static ca.warp7.robot.Constants.COMPRESSOR_PIN;
 
-import ca.warp7.robot.autonomous.BatteryFirst;
-import ca.warp7.robot.autonomous.SwagDrive;
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
 import ca.warp7.robot.autonomous.AutonomousBase;
-import ca.warp7.robot.autonomous.ShootAuto;
+import ca.warp7.robot.autonomous.SwagDrive;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
 import ca.warp7.robot.hardware.controlerSettings.DefaultControls;
