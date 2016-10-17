@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.VictorSP;
 
 public class Intake {
-	private static final double INTAKE_SPEED = 0.9;
-	private static final double SLOW_INTAKE_SPEED = 0.5;
 	private Solenoid initialArm;
 	private Solenoid adjustingArm;
 	private VictorSP motor;
@@ -51,17 +49,23 @@ public class Intake {
 	}
 	
 	public void intake() {
-		// put ! before sensorReading to fix
-		if (photosensorClose.get()) {
-			if(photosensorFar.get()){
-				motor.set(-SLOW_INTAKE_SPEED);
-			}else{
-				motor.set(-INTAKE_SPEED);
-			}
-		} else if (goCounter <= 0) {
+		//               ||
+		// Nathan wiring VV
+		boolean close = !photosensorClose.get();
+		boolean far = photosensorFar.get();
+		
+		if(close && far){
+			motor.set(-SUPER_SLOW_INTAKE_SPEED);
+		}else if(far){
+			motor.set(-SLOW_INTAKE_SPEED);
+		}else if(!close && !far){
+			motor.set(-INTAKE_SPEED);
+		// close is true
+		}else if (goCounter <= 0) {
 			motor.set(0);
 		}
 	}
+	
 	public void shoot() {
 		motor.set(-INTAKE_SPEED);
 	}
@@ -105,7 +109,9 @@ public class Intake {
 	}
 
 	public void slowPeriodic() {
-		_pool.logBoolean("photosensorClose", photosensorClose.get());
+		//									 ||
+		//					Nathan wiring	 VV
+		_pool.logBoolean("photosensorClose", !photosensorClose.get());
 		_pool.logBoolean("photosensorFar", photosensorFar.get());
 	}
 	

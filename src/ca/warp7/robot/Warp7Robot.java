@@ -1,6 +1,8 @@
 package ca.warp7.robot;
 
 import static ca.warp7.robot.Constants.COMPRESSOR_PIN;
+import static ca.warp7.robot.Constants.SWITCH_A_PIN;
+import static ca.warp7.robot.Constants.SWITCH_B_PIN;
 
 import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
@@ -17,6 +19,7 @@ import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -38,7 +41,10 @@ public class Warp7Robot extends SampleRobot {
     private AutonomousBase auto;
     private int counter;
     private DataPool _pool;
-
+    public DigitalInput switchA;
+    public DigitalInput switchB;
+    
+    
     public void robotInit() {
 
         System.out.println("hello i am robit");
@@ -52,8 +58,9 @@ public class Warp7Robot extends SampleRobot {
         }
 
         compressor = new Compressor(COMPRESSOR_PIN);
-
-
+        switchA = new DigitalInput(SWITCH_A_PIN);
+        switchB = new DigitalInput(SWITCH_B_PIN);
+        
         shooter = new Shooter();
         drive = new Drive();
         intake = new Intake();
@@ -159,6 +166,8 @@ public class Warp7Robot extends SampleRobot {
             _pool.logBoolean("compressor", compressor.getClosedLoopControl());
             _pool.logBoolean("direction", drive.isDrivetrainReversed());
             _pool.logData("hotbot", pdp.getTemperature());
+            _pool.logBoolean("Switch A", switchA.get());
+            _pool.logBoolean("Switch B", switchB.get());
             DataPool.collectAllData();
         }
     }

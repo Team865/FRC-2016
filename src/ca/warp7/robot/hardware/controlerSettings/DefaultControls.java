@@ -15,6 +15,7 @@ public class DefaultControls extends ControllerSettings {
 	private static boolean O_ChangedLB;
 	private static boolean O_ChangedBack;
 	private static boolean O_ChangedStart;
+	private static boolean O_ChangedX;
 	private static boolean O_ChangedB;
 
 	private static double hoodSpeed;
@@ -37,7 +38,8 @@ public class DefaultControls extends ControllerSettings {
 		O_ChangedBack = false;
 		O_ChangedStart = false;
 		O_ChangedB = false;
-
+		O_ChangedX = false;
+		
 		hoodSpeed = 0.0;
 		firing = false;
 		disableHood = false;
@@ -125,6 +127,18 @@ public class DefaultControls extends ControllerSettings {
 			shooter.stop();
 			driver.setRumble(RumbleType.kRightRumble, 0.0f);
 			driver.setRumble(RumbleType.kLeftRumble, 0.0f);
+		}
+		
+		if(operator.getXbutton()){
+			if(!O_ChangedX){
+				shooter.setLight(true);
+				O_ChangedX = true;
+			}
+		}else{
+			//if(O_ChangedX){
+				shooter.setLight(false);
+				O_ChangedX = false;
+			//}
 		}
 		
 		if (operator.getAbutton()) {

@@ -17,7 +17,12 @@ public class Constants {
 	public static final int LEFT_DRIVE_ENCODER_B = 5; // ding
 	public static final int RIGHT_DRIVE_ENCODER_A = 3; // ding
 	public static final int RIGHT_DRIVE_ENCODER_B = 4; // ding
-
+	public static final int SWITCH_A_PIN = 2;
+	public static final int SWITCH_B_PIN = 7;
+	
+	// Relay
+	public static final int SPIKE_PIN = 0;
+	
 	// Solenoids (manifold ports)
 	public static final int GEAR_CHANGE = 0;
 	public static final int PTO_SOLENOID = 1;
@@ -28,9 +33,12 @@ public class Constants {
 	public static final int COMPRESSOR_PIN = 0;
 
 	// General References
-	public static final double HARDSTOP_RPM = 4400; //3000;
+	public static final double HARDSTOP_RPM = 3600; //4500 max;
 	public static final double DISTANCE_TO_DEFENCE_BASE = 0;
-
+	public static final double INTAKE_SPEED = 0.9;
+	public static final double SLOW_INTAKE_SPEED = 0.3;
+	public static final double SUPER_SLOW_INTAKE_SPEED = 0.3;
+	
 	// Robot dimensions and stuff
 	public static double WHEELBASE_WIDTH = 24; // inches
 	public static double WHEEL_DIAMETER = 8; // inches

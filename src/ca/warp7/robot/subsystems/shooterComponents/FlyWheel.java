@@ -18,11 +18,11 @@ public class FlyWheel {
 		_talon.configPeakOutputVoltage(+12.0f, -12.0f);
 		_talon.changeControlMode(TalonControlMode.Speed);
 		_talon.setProfile(0);
-		_talon.setF(0.0386);
+		_talon.setF(0);
 		_talon.setP(1);
-		_talon.setI(0);
-		_talon.setD(0);
-		_talon.reverseOutput(true);
+		_talon.setI(0.000116);
+		_talon.setD(150.37);
+		_talon.reverseOutput(false);
 		
 		/*
 		 * practice bot _talon.setF(1.345); _talon.setP(30); _talon.setI(0);
@@ -39,9 +39,11 @@ public class FlyWheel {
 	}
 
 	public void slowPeriodic() {
-		_pool.logDouble("speed", _talon.getSpeed());
-        _pool.logDouble("setpoint", _talon.getSetpoint());
-		_pool.logBoolean("readyToFire", atTargetRPM());
+		if(_talon != null){
+			_pool.logDouble("speed", _talon.getSpeed());
+	        _pool.logDouble("setpoint", _talon.getSetpoint());
+			_pool.logBoolean("readyToFire", atTargetRPM());
+		}
 	}
 
 	public double getSpeed() {
@@ -49,7 +51,9 @@ public class FlyWheel {
 	}
 
 	public boolean atTargetRPM() {
-		return Math.abs(_talon.getSpeed() - _talon.getSetpoint()) < 50;
+		double speed = _talon.getSpeed();
+		double setpoint = _talon.getSetpoint();
+		return Math.abs(speed - setpoint) < 25 ;
 	}
 
 	public void coast() {
