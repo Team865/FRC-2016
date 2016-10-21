@@ -19,9 +19,9 @@ public class FlyWheel {
 		_talon.changeControlMode(TalonControlMode.Speed);
 		_talon.setProfile(0);
 		_talon.setF(0);
-		_talon.setP(1);
-		_talon.setI(0.000116);
-		_talon.setD(150.37);
+		_talon.setP(15);
+		_talon.setI(0.00076);
+		_talon.setD(868.880005);
 		_talon.reverseOutput(false);
 		
 		/*
@@ -53,7 +53,7 @@ public class FlyWheel {
 	public boolean atTargetRPM() {
 		double speed = _talon.getSpeed();
 		double setpoint = _talon.getSetpoint();
-		return Math.abs(speed - setpoint) < 25 ;
+		return Math.abs(speed - setpoint) < 35 ;
 	}
 
 	public void coast() {
