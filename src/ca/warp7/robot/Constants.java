@@ -17,7 +17,7 @@ public class Constants {
 	public static final int LEFT_DRIVE_ENCODER_B = 5; // ding
 	public static final int RIGHT_DRIVE_ENCODER_A = 3; // ding
 	public static final int RIGHT_DRIVE_ENCODER_B = 4; // ding
-	public static final int SWITCH_A_PIN = 2;
+	public static final int SWITCH_A_PIN = 8;
 	public static final int SWITCH_B_PIN = 7;
 	
 	// Relay

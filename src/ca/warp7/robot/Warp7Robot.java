@@ -8,6 +8,7 @@ import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
 import ca.warp7.robot.autonomous.AutonomousBase;
+import ca.warp7.robot.autonomous.BatteryFirst;
 import ca.warp7.robot.autonomous.SwagDrive;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
@@ -41,8 +42,8 @@ public class Warp7Robot extends SampleRobot {
     private AutonomousBase auto;
     private int counter;
     private DataPool _pool;
-    public DigitalInput switchA;
-    public DigitalInput switchB;
+    public DigitalInput switchA; // square
+    public DigitalInput switchB; // round
     
     
     public void robotInit() {
@@ -114,14 +115,26 @@ public class Warp7Robot extends SampleRobot {
 
         // auto = new IntakeFirst(drive, shooter, intake);
 //		auto = new ShootAuto(intake);
-//        auto = new BatteryFirst(drive, shooter, intake);
+        auto = new BatteryFirst(drive, shooter, intake);
         // auto = new EncoderDrive(drive, shooter, intake);
         //auto = new NoAuto();
         // auto = new IntakeForwardIntakesUp(drive, shooter, intake);
 //		 auto = new Rotato(drive, shooter, intake);
         // auto = new SpybotHardstop(drive, shooter, intake);
-
-
+    	
+    	
+    	//auto = new DoNothin(drive, shooter, intake);
+    	
+    	if(switchB.get()&&switchA.get()){
+    		
+    	}else if(!switchB.get()&&switchA.get()){
+    		
+    	}else if(switchB.get()&&!switchA.get()){
+    		
+    	}else if(!switchB.get()&&!switchA.get()){
+    		// keep do nothing
+    	}
+    	
     	while (isAutonomous() && isEnabled()) {
             auto.periodic(drive, shooter, intake);
             allEnabledLoop();
