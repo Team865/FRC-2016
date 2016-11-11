@@ -36,8 +36,8 @@ public class Constants {
 	public static final double HARDSTOP_RPM = 3600; //4500 max;
 	public static final double DISTANCE_TO_DEFENCE_BASE = 0;
 	public static final double INTAKE_SPEED = 0.9;
-	public static final double SLOW_INTAKE_SPEED = 0.3;
-	public static final double SUPER_SLOW_INTAKE_SPEED = 0.3;
+	public static final double SLOW_INTAKE_SPEED = 0.4;
+	public static final double SUPER_SLOW_INTAKE_SPEED = 0.4;
 	
 	// Robot dimensions and stuff
 	public static double WHEELBASE_WIDTH = 24; // inches

@@ -43,6 +43,7 @@ public class FlyWheel {
 			_pool.logDouble("speed", _talon.getSpeed());
 	        _pool.logDouble("setpoint", _talon.getSetpoint());
 			_pool.logBoolean("readyToFire", atTargetRPM());
+			_pool.logDouble("Hot stuff", _talon.getTemperature());
 		}
 	}
 

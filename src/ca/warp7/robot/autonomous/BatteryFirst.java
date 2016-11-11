@@ -10,6 +10,7 @@ public class BatteryFirst extends AutonomousBase {
 	private int count;
 
 	public BatteryFirst(Drive drive, Shooter shooter, Intake intake) {
+		super(drive, shooter, intake);
 		count = 0;
 		intake.raisePortculus(false);
 		// drive.setGear(true);
@@ -18,7 +19,7 @@ public class BatteryFirst extends AutonomousBase {
 	}
 
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
-		if (count <= 56*1.5) { // 1.125 seconds
+		if (count <= 56*1.75) { // 1.125 seconds*nathan value
 			count++;
 			drive.autoMove(-1, -1);
 		} else {

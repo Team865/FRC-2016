@@ -9,6 +9,7 @@ public class IntakeForwardIntakesUp extends AutonomousBase {
 	private int count;
 
 	public IntakeForwardIntakesUp(Drive drive, Shooter shooter, Intake intake) {
+		super(drive, shooter, intake);
 		count = 0;
 		intake.raisePortculus(true);
 		// drive.setGear(true);

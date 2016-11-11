@@ -7,6 +7,7 @@ import ca.warp7.robot.subsystems.Shooter;
 public class DoNothin extends AutonomousBase{
 
 	public DoNothin(Drive drive, Shooter shooter, Intake intake) {
+		super(drive, shooter, intake);
 		// nothing
 	}
 

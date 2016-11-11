@@ -113,6 +113,7 @@ public class Intake {
 		//					Nathan wiring	 VV
 		_pool.logBoolean("photosensorClose", !photosensorClose.get());
 		_pool.logBoolean("photosensorFar", photosensorFar.get());
+		_pool.logBoolean("photosensor", photosensorClose.get() || !photosensorFar.get());//for gui
 	}
 	
 	public int getCounter(){

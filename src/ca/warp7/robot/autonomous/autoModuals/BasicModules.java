@@ -51,20 +51,36 @@ public class BasicModules extends ModuleBase{
 	/**
 	 * @param degrees
 	 *            absolute (0 is set at the start when the robot is booted up)
+	 * @param gyroOffset 
 	 */
-	public static boolean absoluteTurn(double degrees, Drive drive) {
-		double direction = degrees-drive.gyro.getAngle();
-		double turnSpeed = 0.3 * Math.signum(direction);
-		double allowableError = 5;
-		if(!moving){
-			drive.autoMove(turnSpeed, -turnSpeed);
-			moving = true;
-		}
-		if(drive.gyro.getAngle() >= (degrees-allowableError) && drive.gyro.getAngle() <= (degrees+allowableError) && moving){
-			drive.stop();
-			moving = false;
+	public static boolean absoluteTurn(double degrees, Drive drive, double gyroOffset) {
+		double currentAngle = drive.gyro.getAngle()-gyroOffset;
+		while((currentAngle<360 && currentAngle>-360) == false)
+			if(currentAngle>=360)
+				currentAngle-=360;
+			else if(currentAngle <= -360)
+				currentAngle+=360;
+		
+		double direction = 0;
+		if(degrees < currentAngle)
+			direction = -1;
+		else if(degrees >= currentAngle)
+			direction = 1;
+		
+		double turnSpeed = 0.5;
+		double turnSetting = Math.abs(turnSpeed) * direction;
+		double allowableError = 2;
+		
+		if(currentAngle >= (degrees-allowableError) && currentAngle <= (degrees+allowableError)){
+			drive.autoMove(0.0, 0.0);
 			return true;
 		}
+		
+		if(Math.signum(turnSetting) == 1)
+			drive.autoMove(-turnSetting, turnSetting);
+		else if(Math.signum(turnSetting) == -1)
+			drive.autoMove(turnSetting, -turnSetting);
+		
 		return false;
 	}
 }

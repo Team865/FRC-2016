@@ -24,7 +24,7 @@ public abstract class AutonomousBase {
 	protected final int MOAT = 6;
 	protected final int ROCK_WALL = 7;
 
-	protected AutonomousBase() {
+	protected AutonomousBase(Drive drive, Shooter shooter, Intake intake) {
 		moving = false;
 		defence = NO_DEFENCE;
 		hardstop = false;
