@@ -109,7 +109,7 @@ public class Intake {
 	}
 
 	public void slowPeriodic() {
-		//									 ||
+		//				//					 ||
 		//					Nathan wiring	 VV
 		_pool.logBoolean("photosensorClose", !photosensorClose.get());
 		_pool.logBoolean("photosensorFar", photosensorFar.get());
