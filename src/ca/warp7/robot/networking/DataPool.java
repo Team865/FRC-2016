@@ -61,4 +61,22 @@ public class DataPool {
 			}
 		}
 	}
+	
+	/*
+	public static String findData(String[] path){
+		if (allPools.isEmpty())
+			return null;
+		for(String pathPart : path){
+			return table.getSubTable("data").getSubTable(path[0]).getString(path[1]);
+			for (DataPool pool : allPools) {
+				if (!pool.data.isEmpty()) {
+					ITable poolTable = table.getSubTable(pool.name);
+					for (int i = 0; i < pool.data.size(); i++) {
+						poolTable.putValue(pool.keys.get(i), pool.data.get(i));
+					}
+				}
+			}
+		}
+	}
+	*/
 }

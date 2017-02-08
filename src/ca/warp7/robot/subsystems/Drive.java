@@ -1,22 +1,30 @@
 package ca.warp7.robot.subsystems;
 
+import static ca.warp7.robot.Constants.DRIVE_METERS_PER_TICK;
+import static ca.warp7.robot.Constants.GEAR_CHANGE;
+import static ca.warp7.robot.Constants.LEFT_DRIVE_ENCODER_A;
+import static ca.warp7.robot.Constants.LEFT_DRIVE_ENCODER_B;
+import static ca.warp7.robot.Constants.LEFT_DRIVE_MOTOR_PINS;
+import static ca.warp7.robot.Constants.MAX_VELOCITY;
+import static ca.warp7.robot.Constants.PTO_SOLENOID;
+import static ca.warp7.robot.Constants.RIGHT_DRIVE_ENCODER_A;
+import static ca.warp7.robot.Constants.RIGHT_DRIVE_ENCODER_B;
+import static ca.warp7.robot.Constants.RIGHT_DRIVE_MOTOR_PINS;
+import static ca.warp7.robot.Constants.WHEELBASE_WIDTH;
+
 import ca.warp7.robot.Constants;
 import ca.warp7.robot.Util;
 import ca.warp7.robot.hardware.MotorGroup;
 import ca.warp7.robot.networking.DataPool;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
-import jaci.pathfinder.followers.DistanceFollower;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
-
-import static ca.warp7.robot.Constants.*;
 
 public class Drive {
 
@@ -238,5 +246,13 @@ public class Drive {
 
     public boolean isDrivetrainReversed() {
         return isDrivetrainReversed;
+    }
+    
+    public boolean isMoving(){
+    	return leftDrive.get() != 0.0D || rightDrive.get() != 0.0D;
+    }
+    
+    public void setPTO(boolean on){
+    	PTO.set(on);
     }
 }

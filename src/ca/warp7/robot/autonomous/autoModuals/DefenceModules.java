@@ -4,7 +4,7 @@ import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import edu.wpi.first.wpilibj.Timer;
 
-public class DefenceModules extends ModuleBase{
+public class DefenceModules{
 
 	private static int step = 1;
 	

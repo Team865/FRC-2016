@@ -1,6 +1,5 @@
 package ca.warp7.robot.subsystems;
 
-import static ca.warp7.robot.Constants.HARDSTOP_RPM;
 import static ca.warp7.robot.Constants.HOOD_PIN;
 import static ca.warp7.robot.Constants.SHOOTER_CAN_ID;
 import static ca.warp7.robot.Constants.SPIKE_PIN;
@@ -64,7 +63,7 @@ public class Shooter {
 		flyWheel.slowPeriodic();
 	}
 
-	public void spinUp() {
-		flyWheel.spinUp(HARDSTOP_RPM);
+	public void spinUp(double rpm) {
+		flyWheel.spinUp(rpm);
 	}
 }

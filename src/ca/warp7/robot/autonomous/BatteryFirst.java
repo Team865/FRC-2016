@@ -19,7 +19,7 @@ public class BatteryFirst extends AutonomousBase {
 	}
 
 	public void periodic(Drive drive, Shooter shooter, Intake intake) {
-		if (count <= 56*1.75) { // 1.125 seconds*nathan value
+		if (count <= 56*1.75) { // 1.125 seconds*the nathan not so consistant constant
 			count++;
 			drive.autoMove(-1, -1);
 		} else {

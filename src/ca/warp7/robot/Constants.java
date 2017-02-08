@@ -25,15 +25,23 @@ public class Constants {
 	
 	// Solenoids (manifold ports)
 	public static final int GEAR_CHANGE = 0;
-	public static final int PTO_SOLENOID = 1;
 	public static final int INTAKE_PISTON_A = 3;
 	public static final int INTAKE_PISTON_B = 2;
-
+	// climber stuff
+	public static final int PTO_SOLENOID = 1;
+	public static final int STAGE_1 = 4;
+	public static final int STAGE_2 = 5;
+	// 1, 4, 5
+	//1 is hold
+	//4, 5 toggled
+	
+	
 	// Compressor
 	public static final int COMPRESSOR_PIN = 0;
 
 	// General References
-	public static final double HARDSTOP_RPM = 3600; //4500 max;
+	public static final double LARGE_RPM = 3600; //4500 max;
+	public static final double SMALL_RPM = 3300; //4500 max
 	public static final double DISTANCE_TO_DEFENCE_BASE = 0;
 	public static final double INTAKE_SPEED = 0.9;
 	public static final double SLOW_INTAKE_SPEED = 0.4;

@@ -8,8 +8,7 @@ import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
 
 import ca.warp7.robot.autonomous.AutonomousBase;
-import ca.warp7.robot.autonomous.DoNothin;
-import ca.warp7.robot.autonomous.autoModuals.GyroTests;
+import ca.warp7.robot.autonomous.GyroTests;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.controlerSettings.ControllerSettings;
 import ca.warp7.robot.hardware.controlerSettings.DefaultControls;
@@ -44,10 +43,9 @@ public class Warp7Robot extends SampleRobot {
     private DataPool _pool;
     public DigitalInput switchA; // square
     public DigitalInput switchB; // round
-    
+ 
     
     public void robotInit() {
-
         System.out.println("hello i am robit");
         _pool = new DataPool("Robot");
         NetworkTable.setUpdateRate(0.050);
@@ -111,8 +109,9 @@ public class Warp7Robot extends SampleRobot {
     }
 
     public void autonomous() {
-    	auto = new DoNothin(drive, shooter, intake);
-        
+    	//auto = new DoNothin(drive, shooter, intake);
+        //auto = new BatteryFirst(drive, shooter, intake);
+    	auto = new GyroTests(drive, shooter, intake);
     	//switch b is square
         //switch a is round
     	if(switchB.get()&&switchA.get()){

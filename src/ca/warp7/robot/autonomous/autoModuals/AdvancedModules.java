@@ -4,7 +4,7 @@ import ca.warp7.robot.subsystems.Drive;
 import ca.warp7.robot.subsystems.Intake;
 import ca.warp7.robot.subsystems.Shooter;
 
-public class AdvancedModules extends ModuleBase{
+public class AdvancedModules{
 
 	public static final int END_ANGLE_DOESNT_MATTER = 865;
 	private static double zeroLeft = 0.0;
@@ -27,6 +27,7 @@ public class AdvancedModules extends ModuleBase{
 	 * 			  			the angle you end up in after you finish the curve
 	 */
 	public static boolean spline(double x, double y, int endAngle, Drive drive) {
+		/*
 		double driveSpeed = 0.3 * Math.signum(y);
 		if(!moving){
 			zeroLeft = drive.leftEncoder.getDistance();
@@ -71,6 +72,7 @@ public class AdvancedModules extends ModuleBase{
 				return false;
 			}
 		}
+		*/
 		return false;
 		
 		/*
@@ -95,6 +97,7 @@ public class AdvancedModules extends ModuleBase{
 	 * 			  			the angle you end up in after you finish the curve
 	 */
 	public static boolean curve(double x, double y, double endAngle, Drive drive){
+		/*
 		double driveSpeed = 0.3 * Math.signum(y);
 		if(!moving){
 			zeroLeft = drive.leftEncoder.getDistance();
@@ -123,32 +126,46 @@ public class AdvancedModules extends ModuleBase{
 				return false;
 			}
 		}
-		
+		*/
 		return false;
 	}
 
+	public enum HoodPosition{
+		raised, lowered;
+	}
+	
 	/**
 	 * Direction is for which way to turn
 	 * 
 	 * @param direction
 	 *            use constants for direction (Constants.LEFT, Constants.RIGHT)
 	 */
-	public static void shoot(int direction, Drive drive, Shooter shooter, Intake intake) {
-		/*
-		 * if(!targetFound){
-		 * 
-		 * }else{ if(!alignedTarget){
-		 * 
-		 * }else{ // do shooting things } }
-		 */
+	public static boolean shoot(double rpm, HoodPosition typeOfShot, Drive drive, Shooter shooter, Intake intake) {
+		if(typeOfShot == HoodPosition.raised)
+			intake.setAdjusting(false);
+		else
+			intake.setAdjusting(true);
+		
+		shooter.spinUp(rpm);
+		if (shooter.atTargetRPM()){
+			intake.fireBall();
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {}
+			return true;
+		}else{
+			return false;
+		}
+		
 	}
 
 	/**
 	 * Spins up the fly wheel and shoots for the hardstop shot
 	 * 
 	 */
-	public static void hardstopShoot(Shooter shooter, Intake intake) {
-
+	public static boolean hardstopShoot(double rpm, Shooter shooter, Intake intake) {
+		shooter.spinUp(rpm);
+		return true;
 	}
 
 	/**
@@ -157,7 +174,7 @@ public class AdvancedModules extends ModuleBase{
 	 * @param direction
 	 *            use constants for direction (Constants.LEFT, Constants.RIGHT)
 	 */
-	public static void turnToGoal(int direction, Drive drive) {
+	public static boolean turnToGoal(int direction, Drive drive) {
 		/*
 		 * if(!targetFound){
 		 * 
@@ -165,5 +182,10 @@ public class AdvancedModules extends ModuleBase{
 		 * 
 		 * } }
 		 */
+		return true;
 	}
+}
+
+class Curve{
+	
 }

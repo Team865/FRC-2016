@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.VictorSP;
 public class Intake {
 	private Solenoid initialArm;
 	private Solenoid adjustingArm;
+	private Solenoid climberT1;
+	private Solenoid climberT2;
 	private VictorSP motor;
 	int goCounter = 0;
 	private DigitalInput photosensorClose;
@@ -25,6 +27,10 @@ public class Intake {
 		adjustingArm = new Solenoid(INTAKE_PISTON_B);
 		initialArm.set(false);
 		adjustingArm.set(false);
+		climberT1 = new Solenoid(STAGE_1);
+		climberT2 = new Solenoid(STAGE_2);
+		climberT1.set(false);
+		climberT2.set(false);
 	}
 
 	public void reset() {
@@ -122,5 +128,18 @@ public class Intake {
 	
 	public boolean hasBall(){
 		return !photosensorClose.get();
+	}
+
+	public void setAdjusting(boolean b) {
+		if(adjustingArm.get() != b)
+			adjustingArm.set(b);
+	}
+	
+	public void toggleT1(){
+		climberT1.set(!climberT1.get());
+	}
+	
+	public void toggleT2(){
+		climberT2.set(!climberT2.get());
 	}
 }

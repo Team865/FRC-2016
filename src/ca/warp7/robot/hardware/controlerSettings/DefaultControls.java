@@ -5,6 +5,7 @@ import static ca.warp7.robot.Warp7Robot.drive;
 import static ca.warp7.robot.Warp7Robot.intake;
 import static ca.warp7.robot.Warp7Robot.shooter;
 
+import ca.warp7.robot.Constants;
 import ca.warp7.robot.hardware.XboxController;
 import ca.warp7.robot.hardware.XboxController.RumbleType;
 import edu.wpi.first.wpilibj.Compressor;
@@ -18,6 +19,9 @@ public class DefaultControls extends ControllerSettings {
 	private static boolean O_ChangedX;
 	private static boolean O_ChangedB;
 
+	private static boolean O_DPadLeft;
+	private static boolean O_DPadRight;
+	
 	private static double hoodSpeed;
 	private static boolean firing;
 	private XboxController driver;
@@ -39,6 +43,8 @@ public class DefaultControls extends ControllerSettings {
 		O_ChangedStart = false;
 		O_ChangedB = false;
 		O_ChangedX = false;
+		O_DPadLeft = false;
+		O_DPadRight = false;
 		
 		hoodSpeed = 0.0;
 		firing = false;
@@ -112,8 +118,8 @@ public class DefaultControls extends ControllerSettings {
 		hoodSpeed = 0.2; // drive up by default
 
 		firing = false;
-		if (operator.getRightTrigger() >= 0.5) {
-			shooter.spinUp();
+		if (driver.getBbutton()) {
+			shooter.spinUp(Constants.LARGE_RPM);
 			hoodSpeed = 0.3;
 			if (shooter.atTargetRPM()) {
 				firing = true;
@@ -123,11 +129,54 @@ public class DefaultControls extends ControllerSettings {
 				driver.setRumble(RumbleType.kRightRumble, 0.0f);
 				driver.setRumble(RumbleType.kLeftRumble, 0.0f);
 			}
-		} else {
+		}else if(driver.getBbutton()){ 
+			shooter.spinUp(Constants.SMALL_RPM);
+			hoodSpeed = 0.3;
+			if (shooter.atTargetRPM()) {
+				firing = true;
+				driver.setRumble(RumbleType.kRightRumble, 0.5f);
+				driver.setRumble(RumbleType.kLeftRumble, 0.5f);
+			} else {
+				driver.setRumble(RumbleType.kRightRumble, 0.0f);
+				driver.setRumble(RumbleType.kLeftRumble, 0.0f);
+			}
+		}else {
+		
 			shooter.stop();
 			driver.setRumble(RumbleType.kRightRumble, 0.0f);
 			driver.setRumble(RumbleType.kLeftRumble, 0.0f);
 		}
+		
+		// Climber controls start
+		// pto
+		if(operator.getRightBumperbutton()){
+			drive.setPTO(true);
+		}else{
+			drive.setPTO(false);
+		}
+		//stage 1
+		if(operator.getDPad() == -90){
+			if(!O_DPadLeft){
+				intake.toggleT1();
+				O_DPadLeft = true;
+			}
+		}else{
+			if(O_DPadLeft){
+				O_DPadLeft = false;
+			}
+		}
+		//stage 2
+		if(operator.getDPad() == 90){
+			if(!O_DPadRight){
+				intake.toggleT2();
+				O_DPadRight = true;
+			}
+		}else{
+			if(O_DPadRight){
+				O_DPadRight = false;
+			}
+		}
+		// Climber controls end
 		
 		if(operator.getXbutton()){
 			if(!O_ChangedX){
